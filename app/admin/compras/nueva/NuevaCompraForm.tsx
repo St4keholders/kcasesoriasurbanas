@@ -56,6 +56,12 @@ export function NuevaCompraForm({ costCenters, suppliers }: { costCenters: any[]
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {errorMsg && <div className="p-4 bg-rose-50 text-rose-800 border border-rose-200 rounded-lg text-sm">{errorMsg}</div>}
+      
+      {costCenters.length === 0 && (
+        <div className="p-4 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-sm font-medium">
+          ⚠️ Atención: No tienes Centros de Costo creados. Para registrar una compra es obligatorio asignar un centro de costo. Por favor, ve a "Catálogos &gt; Centros de Costo" y crea uno antes de continuar.
+        </div>
+      )}
 
       <div className="bg-white p-6 rounded-xl shadow-sm border border-[#a8c4d9]/40 space-y-4">
         <h2 className="font-medium text-[#1a2d3d] border-b border-[#a8c4d9]/40 pb-2">Información del Proveedor</h2>
@@ -181,7 +187,7 @@ export function NuevaCompraForm({ costCenters, suppliers }: { costCenters: any[]
       </div>
 
       <div className="flex justify-end">
-        <LoadingButton type="submit" isLoading={isSubmitting}>
+        <LoadingButton type="submit" isLoading={isSubmitting} disabled={costCenters.length === 0}>
           Registrar Gasto
         </LoadingButton>
       </div>
