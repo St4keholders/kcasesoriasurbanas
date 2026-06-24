@@ -104,79 +104,84 @@ export function ComprasClientView({
         title={<span>Compras y <em>gastos</em></span>}
         subtitle="Gestiona las cuentas por pagar y los egresos de la empresa."
         action={
-          <div className="flex flex-col gap-3 items-end">
-            <div className="flex flex-wrap items-center justify-end gap-3">
-              <div className="flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-full px-4 py-2 shadow-sm text-sm">
-              <CalendarIcon className="w-4 h-4 text-[var(--dim)]" />
-              <input 
-                type="date" 
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="bg-transparent text-[var(--fg)] outline-none cursor-pointer"
-                title="Fecha desde"
-              />
-              <span className="text-[var(--dim)]">-</span>
-              <input 
-                type="date" 
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="bg-transparent text-[var(--fg)] outline-none cursor-pointer"
-                title="Fecha hasta"
-              />
-            </div>
-            
-            <select 
-              className="neu-input py-1.5 min-w-[140px]"
-              value={costCenterFilter}
-              onChange={(e) => setCostCenterFilter(e.target.value)}
-            >
-              <option value="">Todos los Centros</option>
-              {costCenters.map(cc => (
-                <option key={cc.id} value={cc.id}>{cc.name}</option>
-              ))}
-            </select>
-            
-            <select 
-              className="neu-input py-1.5 min-w-[140px]"
-              value={supplierFilter}
-              onChange={(e) => setSupplierFilter(e.target.value)}
-            >
-              <option value="">Todos los Proveedores</option>
-              {suppliers.map(s => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
-
-            {(dateFrom || dateTo || supplierFilter || costCenterFilter || searchQuery) && (
-              <button 
-                onClick={() => { setDateFrom(''); setDateTo(''); setSupplierFilter(''); setCostCenterFilter(''); setSearchQuery(''); }} 
-                className="text-xs text-rose-500 hover:text-rose-600 font-medium px-2"
-              >
-                Quitar Filtros
-              </button>
-            )}
-            
+          <div className="flex items-center gap-3">
             <button onClick={() => setIsModalOpen(true)} className="neu-btn-secondary py-1.5 text-sm">
               <UploadCloudIcon className="w-4 h-4" /> Masivo
             </button>
-            
             <Link href="/admin/compras/nueva" className="neu-btn-primary py-1.5 text-sm">
               <PlusIcon className="w-4 h-4" /> Nueva compra
             </Link>
-            </div>
-            <div className="w-full max-w-sm relative mt-1">
-               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--dim)]" />
-               <input 
-                 type="text"
-                 placeholder="Buscar por factura o proveedor..."
-                 className="neu-input pl-9 w-full py-1.5 text-sm"
-                 value={searchQuery}
-                 onChange={e => setSearchQuery(e.target.value)}
-               />
-            </div>
           </div>
         }
       />
+
+      {/* FILTER BAR */}
+      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 mt-6 shadow-sm flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center">
+        {/* Search */}
+        <div className="w-full xl:w-80 relative shrink-0">
+           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--dim)]" />
+           <input 
+             type="text"
+             placeholder="Buscar por factura o proveedor..."
+             className="neu-input pl-9 w-full py-2 text-sm"
+             value={searchQuery}
+             onChange={e => setSearchQuery(e.target.value)}
+           />
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+          <div className="flex items-center gap-2 bg-[var(--bg)] border border-[var(--border)] rounded-full px-4 py-2 text-sm">
+            <CalendarIcon className="w-4 h-4 text-[var(--dim)]" />
+            <input 
+              type="date" 
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="bg-transparent text-[var(--fg)] outline-none cursor-pointer w-[110px]"
+              title="Fecha desde"
+            />
+            <span className="text-[var(--dim)]">-</span>
+            <input 
+              type="date" 
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="bg-transparent text-[var(--fg)] outline-none cursor-pointer w-[110px]"
+              title="Fecha hasta"
+            />
+          </div>
+          
+          <select 
+            className="neu-input py-2 min-w-[160px] text-sm"
+            value={costCenterFilter}
+            onChange={(e) => setCostCenterFilter(e.target.value)}
+          >
+            <option value="">Todos los Centros</option>
+            {costCenters.map(cc => (
+              <option key={cc.id} value={cc.id}>{cc.name}</option>
+            ))}
+          </select>
+          
+          <select 
+            className="neu-input py-2 min-w-[160px] text-sm"
+            value={supplierFilter}
+            onChange={(e) => setSupplierFilter(e.target.value)}
+          >
+            <option value="">Todos los Proveedores</option>
+            {suppliers.map(s => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
+          </select>
+
+          {(dateFrom || dateTo || supplierFilter || costCenterFilter || searchQuery) && (
+            <button 
+              onClick={() => { setDateFrom(''); setDateTo(''); setSupplierFilter(''); setCostCenterFilter(''); setSearchQuery(''); }} 
+              className="text-xs text-rose-500 hover:text-rose-600 font-medium px-2 whitespace-nowrap"
+            >
+              Quitar Filtros
+            </button>
+          )}
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 mt-6">
         <div className="card flex flex-col justify-center p-5">
