@@ -3,60 +3,58 @@ import { SITE } from '@/lib/constants';
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f7fbff]">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg border border-[#a8c4d9]/30 p-8">
-        <div className="flex justify-center mb-6">
-          <svg viewBox="0 0 30 30" className="w-12 h-12 text-[#3b7dbf]" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M15 3L3 13V27H12V19H18V27H27V13L15 3Z"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinejoin="round"
-            />
-            <rect x="11" y="14" width="3" height="3" rx="0.5" fill="none" stroke="currentColor" strokeWidth="1" />
-            <rect x="16" y="14" width="3" height="3" rx="0.5" fill="none" stroke="currentColor" strokeWidth="1" />
-          </svg>
+    <div className="login-screen">
+      <div className="login-card">
+        <div className="login-brand">
+          <div className="login-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9.5L12 3l9 6.5V21a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+              <path d="M9 22V12h6v10"/>
+            </svg>
+          </div>
+          <div className="text-center">
+            <div className="login-name">{SITE.name.split(' ')[0]} <em>{SITE.name.split(' ')[1]}</em> {SITE.name.split(' ').slice(2).join(' ')}</div>
+            <div className="login-sub">Panel Administrativo</div>
+          </div>
         </div>
-        <h2 className="text-center text-2xl font-[var(--font-display)] text-[#1a2d3d] mb-2">
-          {SITE.name}
-        </h2>
-        <p className="text-center text-[#7a99b5] text-sm uppercase tracking-widest font-[var(--font-mono)] mb-8">
-          Panel Administrativo
-        </p>
 
-        <form className="space-y-5">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-[#3d5a73] mb-1">
-              Correo Electrónico
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className="w-full px-4 py-2 bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] focus:ring-2 focus:ring-[#5ba3d9]/20 transition-colors"
+        <form className="login-form">
+          <div className="field">
+            <label htmlFor="email" className="field-label">Correo electrónico</label>
+            <input 
+              type="email" 
+              name="email" 
+              id="email" 
+              className="input" 
+              placeholder="tu@kcasesorias.com" 
+              required 
             />
           </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-[#3d5a73] mb-1">
-              Contraseña
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              className="w-full px-4 py-2 bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] focus:ring-2 focus:ring-[#5ba3d9]/20 transition-colors"
+
+          <div className="field">
+            <label htmlFor="password" className="field-label">Contraseña</label>
+            <input 
+              type="password" 
+              name="password" 
+              id="password" 
+              className="input" 
+              placeholder="••••••••" 
+              required 
             />
           </div>
-          <button
-            formAction={login}
-            className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#5ba3d9] hover:bg-[#3b7dbf] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5ba3d9] transition-colors"
-          >
-            Iniciar Sesión
+
+          <button type="submit" formAction={login} className="btn btn-primary btn-lg w-full mt-2">
+            Iniciar sesión
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
           </button>
         </form>
+
+        <div className="login-footer">
+          Acceso restringido — solo personal autorizado
+        </div>
       </div>
     </div>
   );

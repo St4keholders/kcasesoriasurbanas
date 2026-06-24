@@ -5,11 +5,15 @@ import { DataTable } from '@/components/admin/ui/DataTable';
 import { StatusBadge } from '@/components/admin/ui/StatusBadge';
 import { Modal } from '@/components/admin/ui/Modal';
 import { LoadingButton } from '@/components/admin/ui/LoadingButton';
-import { EditIcon, PlusIcon } from 'lucide-react';
-import { saveCostCenter } from './actions';
+import { EditIcon, PlusIcon, TrashIcon } from 'lucide-react';
+import { saveCostCenter, deleteCostCenter } from './actions';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+
+import { AdminTopbar } from '@/components/admin/AdminTopbar';
+import { NeuInput, NeuTextarea } from '@/components/admin/ui/NeuInput';
+import { NeuButton } from '@/components/admin/ui/NeuButton';
 
 const CostCenterSchema = z.object({
   name: z.string().min(3, 'Nombre requerido'),
@@ -25,7 +29,7 @@ export function CostCenterClientPage({ costCenters }: { costCenters: any[] }) {
   const [errorMsg, setErrorMsg] = useState('');
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormData>({
-    resolver: zodResolver(CostCenterSchema),
+    resolver: zodResolver(CostCenterSchema) as any,
     defaultValues: { is_active: true }
   });
 
@@ -57,39 +61,53 @@ export function CostCenterClientPage({ costCenters }: { costCenters: any[] }) {
     }
   };
 
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`¿Estás seguro de que deseas eliminar el centro de costo "${name}"?`)) return;
+    try {
+      await deleteCostCenter(id);
+    } catch (error: any) {
+      alert(error.message);
+    }
+  };
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-2xl font-[var(--font-display)] text-[#1a2d3d]">Centros de Costo</h1>
-          <p className="text-[#7a99b5] text-sm">Catálogo de categorías para registro de compras y gastos.</p>
-        </div>
-        <button
-          onClick={openNew}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#5ba3d9] text-white rounded-lg font-medium transition-colors hover:bg-[#3b7dbf]"
-        >
-          <PlusIcon className="w-4 h-4" />
-          Nuevo Centro de Costo
-        </button>
-      </div>
+    <div className="main">
+      <AdminTopbar 
+        title="Centros de Costo" 
+        subtitle="Catálogo de categorías para registro de compras y gastos."
+        action={
+          <button onClick={openNew} className="neu-btn-primary">
+            <PlusIcon className="w-4 h-4" /> Nuevo Centro de Costo
+          </button>
+        }
+      />
 
       <DataTable
         data={costCenters}
         keyExtractor={(row) => row.id}
         columns={[
-          { header: 'Nombre', accessor: (row) => <span className="font-medium text-[#1a2d3d]">{row.name}</span> },
-          { header: 'Descripción', accessor: (row) => <span className="text-sm text-[#7a99b5]">{row.description}</span> },
+          { header: 'Nombre', accessor: (row) => <span className="font-semibold text-[var(--fg)]">{row.name}</span> },
+          { header: 'Descripción', accessor: (row) => <span className="text-sm text-[var(--dim)]">{row.description}</span> },
           { header: 'Estado', accessor: (row) => <StatusBadge status={row.is_active ? 'activo' : 'inactivo'} /> },
           {
             header: 'Acciones',
             accessor: (row) => (
-              <button
-                onClick={() => openEdit(row)}
-                className="p-1.5 text-[#5ba3d9] hover:bg-[#e6f2fb] rounded-md transition-colors"
-                title="Editar"
-              >
-                <EditIcon className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => openEdit(row)}
+                  className="neu-btn p-2"
+                  title="Editar"
+                >
+                  <EditIcon className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleDelete(row.id, row.name)}
+                  className="neu-btn p-2 text-rose-500 hover:text-rose-600"
+                  title="Eliminar"
+                >
+                  <TrashIcon className="w-4 h-4" />
+                </button>
+              </div>
             ),
           },
         ]}
@@ -100,27 +118,20 @@ export function CostCenterClientPage({ costCenters }: { costCenters: any[] }) {
         onClose={() => setIsModalOpen(false)}
         title={editingId ? 'Editar Centro de Costo' : 'Nuevo Centro de Costo'}
       >
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 mt-2">
           {errorMsg && <div className="p-3 bg-rose-50 text-rose-800 border border-rose-200 rounded-lg text-sm">{errorMsg}</div>}
           
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-[#3d5a73]">Nombre</label>
-            <input
-              {...register('name')}
-              type="text"
-              className="w-full px-3 py-2 bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9]"
-            />
-            {errors.name && <p className="text-rose-500 text-xs">{errors.name.message}</p>}
-          </div>
+          <NeuInput
+            label="Nombre"
+            {...register('name')}
+            error={errors.name?.message}
+          />
 
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-[#3d5a73]">Descripción</label>
-            <textarea
-              {...register('description')}
-              rows={2}
-              className="w-full px-3 py-2 bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] resize-none"
-            ></textarea>
-          </div>
+          <NeuTextarea
+            label="Descripción"
+            {...register('description')}
+            rows={2}
+          />
 
           <div className="flex items-center gap-2 pt-2">
             <input
@@ -128,20 +139,19 @@ export function CostCenterClientPage({ costCenters }: { costCenters: any[] }) {
               type="checkbox"
               className="w-4 h-4 text-[#5ba3d9] rounded"
             />
-            <label className="text-sm font-medium text-[#3d5a73]">Centro de Costo Activo</label>
+            <label className="text-sm font-semibold text-[var(--fg-soft)] uppercase tracking-wider">Centro de Costo Activo</label>
           </div>
 
-          <div className="pt-4 flex justify-end gap-2">
-            <button
+          <div className="pt-4 flex justify-end gap-3">
+            <NeuButton
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 bg-white text-[#3d5a73] border border-[#a8c4d9]/50 rounded-lg font-medium hover:bg-[#f7fbff]"
             >
               Cancelar
-            </button>
-            <LoadingButton type="submit" isLoading={isSubmitting}>
+            </NeuButton>
+            <NeuButton type="submit" variant="primary" isLoading={isSubmitting}>
               Guardar
-            </LoadingButton>
+            </NeuButton>
           </div>
         </form>
       </Modal>

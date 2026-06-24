@@ -10,7 +10,8 @@ import { LeadAutocomplete } from '@/components/admin/ui/LeadAutocomplete';
 import { createAppointment } from '../actions';
 
 const AppointmentSchema = z.object({
-  lead_id: z.string().min(1, 'Debe seleccionar un cliente'),
+  lead_id: z.string().optional().or(z.literal('')),
+  lead_name: z.string().optional(),
   service_type_id: z.string().optional().or(z.literal('')),
   assigned_advisor_id: z.string().min(1, 'Debe asignar un asesor'),
   scheduled_at: z.string().min(1, 'Fecha y hora requerida'),
@@ -24,10 +25,11 @@ export function NuevaCitaForm({ services, advisors, defaultLeadId, defaultLead }
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState('');
 
-  const { register, handleSubmit, control, formState: { errors, isSubmitting } } = useForm<FormData>({
+  const { register, handleSubmit, control, setValue, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(AppointmentSchema),
     defaultValues: {
       lead_id: defaultLeadId || '',
+      lead_name: '',
       duration_minutes: 60,
     }
   });
@@ -43,12 +45,12 @@ export function NuevaCitaForm({ services, advisors, defaultLeadId, defaultLead }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded-xl shadow-sm border border-[#a8c4d9]/40 space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="panel max-w-4xl space-y-6">
       {errorMsg && <div className="p-4 bg-rose-50 text-rose-800 border border-rose-200 rounded-lg text-sm">{errorMsg}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-1 md:col-span-2">
-          <label className="block text-sm font-medium text-[#3d5a73]">Cliente <span className="text-rose-500">*</span></label>
+          <label className="block text-sm font-medium text-[var(--fg-soft)]">Cliente (Buscar o escribir nombre) <span className="text-rose-500">*</span></label>
           <Controller
             control={control}
             name="lead_id"
@@ -56,6 +58,7 @@ export function NuevaCitaForm({ services, advisors, defaultLeadId, defaultLead }
               <LeadAutocomplete 
                 value={value} 
                 onChange={onChange} 
+                onInputChange={(text) => setValue('lead_name', text)}
                 error={errors.lead_id?.message}
                 defaultLead={defaultLead}
               />
@@ -64,10 +67,10 @@ export function NuevaCitaForm({ services, advisors, defaultLeadId, defaultLead }
         </div>
 
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-[#3d5a73]">Servicio</label>
+          <label className="block text-sm font-medium text-[var(--fg-soft)]">Servicio</label>
           <select
             {...register('service_type_id')}
-            className="w-full px-4 py-2.5 bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] transition-colors text-sm"
+            className="neu-input w-full"
           >
             <option value="">-- Seleccionar Servicio (Opcional) --</option>
             {services.map(s => (
@@ -77,10 +80,10 @@ export function NuevaCitaForm({ services, advisors, defaultLeadId, defaultLead }
         </div>
 
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-[#3d5a73]">Asesor Asignado <span className="text-rose-500">*</span></label>
+          <label className="block text-sm font-medium text-[var(--fg-soft)]">Asesor Asignado <span className="text-rose-500">*</span></label>
           <select
             {...register('assigned_advisor_id')}
-            className="w-full px-4 py-2.5 bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] transition-colors text-sm"
+            className="neu-input w-full"
           >
             <option value="">-- Seleccionar Asesor --</option>
             {advisors.map(a => (
@@ -91,40 +94,40 @@ export function NuevaCitaForm({ services, advisors, defaultLeadId, defaultLead }
         </div>
 
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-[#3d5a73]">Fecha y Hora <span className="text-rose-500">*</span></label>
+          <label className="block text-sm font-medium text-[var(--fg-soft)]">Fecha y Hora <span className="text-rose-500">*</span></label>
           <input
             {...register('scheduled_at')}
             type="datetime-local"
-            className="w-full px-4 py-2.5 bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] transition-colors text-sm"
+            className="neu-input w-full"
           />
           {errors.scheduled_at && <p className="text-rose-500 text-xs mt-1">{errors.scheduled_at.message}</p>}
         </div>
 
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-[#3d5a73]">Duración (minutos)</label>
+          <label className="block text-sm font-medium text-[var(--fg-soft)]">Duración (minutos)</label>
           <input
             {...register('duration_minutes')}
             type="number"
             min="15"
             step="15"
-            className="w-full px-4 py-2.5 bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] transition-colors text-sm"
+            className="neu-input w-full"
           />
         </div>
 
         <div className="space-y-1 md:col-span-2">
-          <label className="block text-sm font-medium text-[#3d5a73]">Notas para la cita</label>
+          <label className="block text-sm font-medium text-[var(--fg-soft)]">Notas para la cita</label>
           <textarea
             {...register('notes')}
             rows={3}
-            className="w-full px-4 py-2.5 bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] transition-colors text-sm resize-none"
+            className="neu-input w-full resize-none"
           ></textarea>
         </div>
       </div>
 
       <div className="pt-4 flex justify-end">
-        <LoadingButton type="submit" isLoading={isSubmitting}>
-          Agendar Cita
-        </LoadingButton>
+        <button type="submit" disabled={isSubmitting} className="neu-btn-primary">
+          {isSubmitting ? 'Guardando...' : 'Agendar Cita'}
+        </button>
       </div>
     </form>
   );

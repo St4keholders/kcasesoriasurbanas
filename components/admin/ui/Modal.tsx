@@ -35,31 +35,31 @@ export function Modal({ isOpen, onClose, title, children, footer, maxWidth = 'md
   }[maxWidth];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-[#1a2d3d]/40 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-[#1a2d3d]/40 backdrop-blur-sm animate-[fadeIn_0.25s_var(--ease)]"
         onClick={onClose}
       />
       
       {/* Modal */}
-      <div className={`relative bg-white rounded-xl shadow-xl w-full ${maxWidthClass} flex flex-col max-h-[90vh]`}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#a8c4d9]/40">
-          <h2 className="text-lg font-medium text-[#1a2d3d] font-[var(--font-display)]">{title}</h2>
+      <div className={`relative bg-[var(--admin-bg)] rounded-[28px] w-full ${maxWidthClass} flex flex-col max-h-[90vh] shadow-[-12px_-12px_30px_var(--shadow-light),12px_12px_30px_var(--shadow-dark),0_30px_60px_rgba(26,45,61,0.2)] animate-[modalSlideUp_0.4s_var(--ease-bounce)]`}>
+        <div className="flex items-start justify-between px-8 pt-8 pb-6">
+          <h2 className="text-2xl text-[var(--fg)] font-[var(--font-display)] leading-tight">{title}</h2>
           <button 
             onClick={onClose}
-            className="p-2 -mr-2 text-[#7a99b5] hover:text-[#1a2d3d] hover:bg-[#f7fbff] rounded-full transition-colors"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-[var(--dim)] neu-raised-sm hover:text-[var(--danger)] transition-all shrink-0"
           >
             <XIcon className="w-5 h-5" />
           </button>
         </div>
         
-        <div className="p-6 overflow-y-auto">
+        <div className="px-8 pb-8 overflow-y-auto">
           {children}
         </div>
         
         {footer && (
-          <div className="px-6 py-4 border-t border-[#a8c4d9]/40 bg-[#f7fbff] rounded-b-xl">
+          <div className="px-8 pb-8 pt-4">
             {footer}
           </div>
         )}

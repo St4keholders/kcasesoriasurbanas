@@ -9,8 +9,9 @@ import { es } from 'date-fns/locale';
 import { registerPayment } from '../actions';
 import { revalidatePath } from 'next/cache';
 
-export default async function DetalleVentaPage({ params }: { params: { id: string } }) {
-  await requireRole(['admin', 'asesor']);
+export default async function DetalleVentaPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  await requireRole(['admin', 'asesor', 'tesoreria']);
   const supabase = await createClient();
 
   const { data: sale, error } = await supabase
@@ -21,7 +22,7 @@ export default async function DetalleVentaPage({ params }: { params: { id: strin
       profiles!sales_closed_by_fkey ( full_name ),
       sale_items ( id, description, quantity, unit_price, subtotal )
     `)
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !sale) notFound();
@@ -32,7 +33,7 @@ export default async function DetalleVentaPage({ params }: { params: { id: strin
   const handlePayment = async (formData: FormData) => {
     'use server';
     const method = formData.get('payment_method') as string;
-    await registerPayment(params.id, method);
+    await registerPayment(id, method);
   };
 
   return (

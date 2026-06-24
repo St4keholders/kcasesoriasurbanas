@@ -13,11 +13,12 @@ interface Lead {
 interface LeadAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
+  onInputChange?: (value: string) => void;
   error?: string;
   defaultLead?: Lead | null;
 }
 
-export function LeadAutocomplete({ value, onChange, error, defaultLead }: LeadAutocompleteProps) {
+export function LeadAutocomplete({ value, onChange, onInputChange, error, defaultLead }: LeadAutocompleteProps) {
   const [query, setQuery] = useState(defaultLead ? defaultLead.full_name : '');
   const [debouncedQuery] = useDebounce(query, 300);
   const [options, setOptions] = useState<Lead[]>([]);
@@ -55,12 +56,8 @@ export function LeadAutocomplete({ value, onChange, error, defaultLead }: LeadAu
       setIsLoading(false);
     }
     
-    // Only search if we are typing (not when we just selected an option)
-    const selectedOption = options.find(o => o.full_name === query);
-    if (!selectedOption) {
-       searchLeads();
-    }
-  }, [debouncedQuery, supabase, options, query]);
+    searchLeads();
+  }, [debouncedQuery, supabase]);
 
   return (
     <div className="relative" ref={wrapperRef}>
@@ -71,10 +68,11 @@ export function LeadAutocomplete({ value, onChange, error, defaultLead }: LeadAu
           setQuery(e.target.value);
           setIsOpen(true);
           onChange(''); // Reset selected ID when typing
+          if (onInputChange) onInputChange(e.target.value);
         }}
         onFocus={() => setIsOpen(true)}
         placeholder="Buscar cliente por nombre..."
-        className={`w-full px-3 py-2 bg-[#f7fbff] border ${error ? 'border-rose-500' : 'border-[#a8c4d9]/50'} rounded-lg focus:outline-none focus:border-[#5ba3d9] text-sm`}
+        className={`neu-input w-full ${error ? 'border-rose-500' : ''}`}
       />
       {error && <p className="text-rose-500 text-xs mt-1">{error}</p>}
       

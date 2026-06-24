@@ -14,12 +14,24 @@ export async function saveCostCenter(id: string | null, data: z.infer<typeof Cos
   const supabase = await createClient();
   
   if (id) {
-    const { error } = await supabase.from('cost_centers').update(data).eq('id', id);
+    const { error } = await (supabase as any).from('cost_centers').update(data).eq('id', id);
     if (error) throw new Error(error.message);
   } else {
-    const { error } = await supabase.from('cost_centers').insert(data);
+    const { error } = await (supabase as any).from('cost_centers').insert(data);
     if (error) throw new Error(error.message);
   }
 
+  revalidatePath('/admin/catalogos/centros-costo');
+}
+
+export async function deleteCostCenter(id: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from('cost_centers').delete().eq('id', id);
+  if (error) {
+    if (error.code === '23503') { // Foreign key violation
+      throw new Error('No se puede eliminar el centro de costo porque tiene compras o gastos asociados.');
+    }
+    throw new Error(error.message);
+  }
   revalidatePath('/admin/catalogos/centros-costo');
 }

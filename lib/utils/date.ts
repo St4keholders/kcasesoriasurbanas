@@ -1,10 +1,11 @@
 import { MESES, DIAS } from '../constants';
 
-export function formatDate(date: Date): string {
-  return `${DIAS[date.getDay()]} ${date.getDate()} de ${MESES[date.getMonth()]}`;
+export function formatDate(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return `${DIAS[d.getDay()]} ${d.getDate()} de ${MESES[d.getMonth()]}`;
 }
 
-export function formatDateLong(date: Date): string {
+export function formatDateLong(date: Date | string): string {
   return formatDate(date);
 }
 

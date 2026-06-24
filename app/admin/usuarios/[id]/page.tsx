@@ -5,14 +5,15 @@ import { EditUserForm } from './EditUserForm';
 import Link from 'next/link';
 import { ArrowLeftIcon } from 'lucide-react';
 
-export default async function EditarUsuarioPage({ params }: { params: { id: string } }) {
+export default async function EditarUsuarioPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   await requireRole(['admin']);
   
   const supabase = await createClient();
   const { data: user, error } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !user) {

@@ -9,7 +9,8 @@ import { es } from 'date-fns/locale';
 import { payPurchase } from '../actions';
 import { revalidatePath } from 'next/cache';
 
-export default async function DetalleCompraPage({ params }: { params: { id: string } }) {
+export default async function DetalleCompraPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   await requireRole(['admin', 'tesoreria']);
   const supabase = await createClient();
 
@@ -21,7 +22,7 @@ export default async function DetalleCompraPage({ params }: { params: { id: stri
       suppliers ( name, document_number, phone ),
       profiles!purchases_created_by_fkey ( full_name )
     `)
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !purchase) notFound();

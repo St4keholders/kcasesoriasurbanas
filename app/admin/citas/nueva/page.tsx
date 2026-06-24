@@ -21,14 +21,14 @@ export default async function NuevaCitaPage({ searchParams }: { searchParams: { 
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="main">
       <div className="mb-6 flex items-center gap-4">
-        <Link href="/admin/citas" className="p-2 bg-white text-[#7a99b5] hover:text-[#1a2d3d] rounded-full shadow-sm border border-[#a8c4d9]/40 transition-colors">
+        <Link href="/admin/citas" className="neu-icon" style={{ width: 40, height: 40 }}>
           <ArrowLeftIcon className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-[var(--font-display)] text-[#1a2d3d]">Agendar Nueva Cita</h1>
-          <p className="text-[#7a99b5] text-sm">Programa una reunión o trámite con un cliente.</p>
+          <h1 className="text-2xl font-[var(--font-display)] text-[var(--fg)]">Agendar Nueva Cita</h1>
+          <p className="text-[var(--dim)] text-sm">Programa una reunión o trámite con un cliente.</p>
         </div>
       </div>
 

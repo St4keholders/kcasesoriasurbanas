@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { PlusIcon, EditIcon, BanIcon, CheckCircleIcon } from 'lucide-react';
 import { deactivateUser, activateUser } from './actions';
 
+import { AdminTopbar } from '@/components/admin/AdminTopbar';
+
 export default async function UsuariosPage() {
   await requireRole(['admin']);
   
@@ -22,20 +24,18 @@ export default async function UsuariosPage() {
   const users = profiles || [];
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-2xl font-[var(--font-display)] text-[#1a2d3d] mb-1">Usuarios</h1>
-          <p className="text-[#7a99b5] text-sm">Gestiona el acceso y roles de los miembros del equipo.</p>
-        </div>
-        <Link
-          href="/admin/usuarios/nuevo"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#5ba3d9] text-white rounded-lg font-medium transition-colors hover:bg-[#3b7dbf]"
-        >
-          <PlusIcon className="w-4 h-4" />
-          Nuevo Usuario
-        </Link>
-      </div>
+    <>
+      <AdminTopbar 
+        eyebrow="— SISTEMA"
+        title={<span>Directorio de <em>usuarios</em></span>}
+        subtitle="Gestiona el acceso y roles de los miembros del equipo."
+        searchPlaceholder="Buscar por nombre o correo..."
+        action={
+          <Link href="/admin/usuarios/nuevo" className="btn btn-primary">
+            <PlusIcon className="w-4 h-4" /> Nuevo usuario
+          </Link>
+        }
+      />
 
       <DataTable
         data={users}
@@ -44,15 +44,22 @@ export default async function UsuariosPage() {
           {
             header: 'Nombre Completo',
             accessor: (row) => (
-              <div className="font-medium text-[#1a2d3d]">
-                {row.full_name || 'Sin nombre'}
-                <div className="text-xs text-[#7a99b5] font-normal">{row.email}</div>
+              <div className="flex items-center gap-3">
+                <div className="avatar">
+                  {(row.full_name || 'U').charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <div className="font-semibold text-[var(--fg)]">
+                    {row.full_name || 'Sin nombre'}
+                  </div>
+                  <div className="text-xs text-[var(--dim)] font-normal">{row.email}</div>
+                </div>
               </div>
             ),
           },
           {
             header: 'Rol',
-            accessor: (row) => <span className="uppercase text-xs font-semibold tracking-wider text-[#3d5a73]">{row.role}</span>,
+            accessor: (row) => <span className="uppercase text-xs font-semibold tracking-wider text-[var(--fg-soft)]">{row.role}</span>,
           },
           {
             header: 'Estado',
@@ -64,7 +71,7 @@ export default async function UsuariosPage() {
               <div className="flex items-center gap-2">
                 <Link
                   href={`/admin/usuarios/${row.id}`}
-                  className="p-1.5 text-[#5ba3d9] hover:bg-[#e6f2fb] rounded-md transition-colors"
+                  className="btn btn-ghost p-2"
                   title="Editar"
                 >
                   <EditIcon className="w-4 h-4" />
@@ -73,7 +80,7 @@ export default async function UsuariosPage() {
                   <form action={deactivateUser.bind(null, row.id)}>
                     <button
                       type="submit"
-                      className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-md transition-colors"
+                      className="btn btn-ghost p-2 text-rose-500 hover:text-rose-600"
                       title="Desactivar"
                     >
                       <BanIcon className="w-4 h-4" />
@@ -83,7 +90,7 @@ export default async function UsuariosPage() {
                   <form action={activateUser.bind(null, row.id)}>
                     <button
                       type="submit"
-                      className="p-1.5 text-emerald-500 hover:bg-emerald-50 rounded-md transition-colors"
+                      className="btn btn-ghost p-2 text-emerald-500 hover:text-emerald-600"
                       title="Activar"
                     >
                       <CheckCircleIcon className="w-4 h-4" />
@@ -95,6 +102,6 @@ export default async function UsuariosPage() {
           },
         ]}
       />
-    </div>
+    </>
   );
 }

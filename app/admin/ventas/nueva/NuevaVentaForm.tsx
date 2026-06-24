@@ -18,7 +18,8 @@ const SaleItemSchema = z.object({
 });
 
 const SaleSchema = z.object({
-  lead_id: z.string().min(1, 'Debe seleccionar un cliente'),
+  lead_id: z.string().optional().or(z.literal('')),
+  lead_name: z.string().optional(),
   appointment_id: z.string().optional().or(z.literal('')),
   status: z.enum(['cotizacion', 'pendiente_pago', 'pagada']),
   items: z.array(SaleItemSchema).min(1, 'Agregue al menos un servicio'),
@@ -37,6 +38,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
     resolver: zodResolver(SaleSchema),
     defaultValues: {
       lead_id: defaultLeadId || '',
+      lead_name: '',
       status: 'cotizacion',
       tax: 0,
       discount: 0,
@@ -79,14 +81,14 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
     new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-5xl">
       {errorMsg && <div className="p-4 bg-rose-50 text-rose-800 border border-rose-200 rounded-lg text-sm">{errorMsg}</div>}
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-[#a8c4d9]/40 space-y-4">
-        <h2 className="font-medium text-[#1a2d3d] border-b border-[#a8c4d9]/40 pb-2">Datos Generales</h2>
+      <div className="panel space-y-4">
+        <h2 className="font-medium text-[var(--fg)] border-b border-[var(--shadow-dark)] pb-2">Datos Generales</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-1">
-            <label className="block text-sm font-medium text-[#3d5a73]">Cliente <span className="text-rose-500">*</span></label>
+            <label className="block text-sm font-medium text-[var(--fg-soft)]">Cliente (Buscar o escribir nombre) <span className="text-rose-500">*</span></label>
             <Controller
               control={control}
               name="lead_id"
@@ -94,6 +96,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
                 <LeadAutocomplete 
                   value={value} 
                   onChange={onChange} 
+                  onInputChange={(text) => setValue('lead_name', text)}
                   error={errors.lead_id?.message}
                   defaultLead={defaultLead}
                 />
@@ -102,10 +105,10 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
           </div>
 
           <div className="space-y-1">
-            <label className="block text-sm font-medium text-[#3d5a73]">Estado Inicial</label>
+            <label className="block text-sm font-medium text-[var(--fg-soft)]">Estado Inicial</label>
             <select
               {...register('status')}
-              className="w-full px-4 py-2.5 bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] text-sm"
+              className="neu-input w-full"
             >
               <option value="cotizacion">Cotización (Borrador)</option>
               <option value="pendiente_pago">Venta Confirmada (Pendiente Pago)</option>
@@ -114,13 +117,13 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-[#a8c4d9]/40 space-y-4">
-        <div className="flex justify-between items-center border-b border-[#a8c4d9]/40 pb-2">
-          <h2 className="font-medium text-[#1a2d3d]">Detalle de Servicios</h2>
+      <div className="panel space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--shadow-dark)] pb-2">
+          <h2 className="font-medium text-[var(--fg)]">Detalle de Servicios</h2>
           <button
             type="button"
             onClick={() => append({ service_type_id: '', description: '', quantity: 1, unit_price: 0 })}
-            className="text-sm font-medium text-[#5ba3d9] hover:text-[#3b7dbf] flex items-center gap-1"
+            className="text-sm font-medium text-[var(--sky-deep)] hover:text-[var(--sky)] flex items-center gap-1"
           >
             <PlusIcon className="w-4 h-4" /> Agregar Ítem
           </button>
@@ -128,16 +131,16 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
 
         <div className="space-y-4">
           {fields.map((field, index) => (
-            <div key={field.id} className="grid grid-cols-12 gap-4 items-end bg-[#f7fbff] p-4 rounded-lg border border-[#a8c4d9]/30">
+            <div key={field.id} className="grid grid-cols-12 gap-4 items-end bg-[var(--admin-bg)] p-4 rounded-xl shadow-inner border border-[var(--shadow-dark)]">
               <div className="col-span-12 md:col-span-3 space-y-1">
-                <label className="block text-xs font-medium text-[#3d5a73]">Catálogo</label>
+                <label className="block text-xs font-medium text-[var(--fg-soft)]">Catálogo</label>
                 <select
                   {...register(`items.${index}.service_type_id`)}
                   onChange={(e) => {
                     register(`items.${index}.service_type_id`).onChange(e);
                     handleServiceChange(index, e.target.value);
                   }}
-                  className="w-full px-3 py-2 bg-white border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] text-sm"
+                  className="neu-input w-full"
                 >
                   <option value="">Manual / Ninguno</option>
                   {services.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -145,31 +148,31 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
               </div>
 
               <div className="col-span-12 md:col-span-4 space-y-1">
-                <label className="block text-xs font-medium text-[#3d5a73]">Descripción <span className="text-rose-500">*</span></label>
+                <label className="block text-xs font-medium text-[var(--fg-soft)]">Descripción <span className="text-rose-500">*</span></label>
                 <input
                   {...register(`items.${index}.description`)}
                   type="text"
-                  className="w-full px-3 py-2 bg-white border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] text-sm"
+                  className="neu-input w-full"
                 />
                 {errors.items?.[index]?.description && <p className="text-rose-500 text-xs">{errors.items[index]?.description?.message}</p>}
               </div>
 
               <div className="col-span-6 md:col-span-2 space-y-1">
-                <label className="block text-xs font-medium text-[#3d5a73]">Cant.</label>
+                <label className="block text-xs font-medium text-[var(--fg-soft)]">Cant.</label>
                 <input
                   {...register(`items.${index}.quantity`)}
                   type="number"
                   step="0.1"
-                  className="w-full px-3 py-2 bg-white border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] text-sm"
+                  className="neu-input w-full"
                 />
               </div>
 
               <div className="col-span-6 md:col-span-2 space-y-1">
-                <label className="block text-xs font-medium text-[#3d5a73]">Precio Un.</label>
+                <label className="block text-xs font-medium text-[var(--fg-soft)]">Precio Un.</label>
                 <input
                   {...register(`items.${index}.unit_price`)}
                   type="number"
-                  className="w-full px-3 py-2 bg-white border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] text-sm"
+                  className="neu-input w-full"
                 />
               </div>
 
@@ -178,9 +181,10 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
                   type="button"
                   onClick={() => remove(index)}
                   disabled={fields.length === 1}
-                  className="p-2 text-rose-500 hover:bg-rose-50 rounded-md disabled:opacity-50"
+                  className="p-2 text-rose-500 hover:text-rose-600 disabled:opacity-50 neu-icon"
+                  style={{width: 40, height: 40}}
                 >
-                  <TrashIcon className="w-4 h-4" />
+                  <TrashIcon className="w-4 h-4 mx-auto" />
                 </button>
               </div>
             </div>
@@ -188,53 +192,53 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
           {errors.items && <p className="text-rose-500 text-sm">{errors.items.root?.message}</p>}
         </div>
 
-        <div className="flex flex-col md:flex-row gap-6 mt-6 border-t border-[#a8c4d9]/40 pt-6">
+        <div className="flex flex-col md:flex-row gap-6 mt-6 border-t border-[var(--shadow-dark)] pt-6">
           <div className="flex-1 space-y-1">
-            <label className="block text-sm font-medium text-[#3d5a73]">Notas Adicionales</label>
+            <label className="block text-sm font-medium text-[var(--fg-soft)]">Notas Adicionales</label>
             <textarea
               {...register('notes')}
               rows={4}
-              className="w-full px-4 py-2.5 bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9] text-sm resize-none"
+              className="neu-input w-full resize-none"
               placeholder="Términos, condiciones, comentarios..."
             ></textarea>
           </div>
 
           <div className="w-full md:w-64 space-y-3">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-[#7a99b5]">Subtotal:</span>
-              <span className="font-medium text-[#1a2d3d]">{formatCurrency(subtotal)}</span>
+              <span className="text-[var(--dim)]">Subtotal:</span>
+              <span className="font-medium text-[var(--fg)]">{formatCurrency(subtotal)}</span>
             </div>
             
             <div className="flex justify-between items-center text-sm">
-              <span className="text-[#7a99b5]">Impuestos (+$):</span>
+              <span className="text-[var(--dim)]">Impuestos (+$):</span>
               <input
                 {...register('tax')}
                 type="number"
-                className="w-24 px-2 py-1 text-right bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9]"
+                className="neu-input w-24 text-right py-1"
               />
             </div>
             
             <div className="flex justify-between items-center text-sm">
-              <span className="text-[#7a99b5]">Descuento (-$):</span>
+              <span className="text-[var(--dim)]">Descuento (-$):</span>
               <input
                 {...register('discount')}
                 type="number"
-                className="w-24 px-2 py-1 text-right bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9]"
+                className="neu-input w-24 text-right py-1"
               />
             </div>
 
-            <div className="flex justify-between items-center pt-2 border-t border-[#a8c4d9]/40">
-              <span className="font-medium text-[#1a2d3d]">Total:</span>
-              <span className="font-bold text-lg text-[#5ba3d9]">{formatCurrency(total)}</span>
+            <div className="flex justify-between items-center pt-2 border-t border-[var(--shadow-dark)]">
+              <span className="font-medium text-[var(--fg)]">Total:</span>
+              <span className="font-bold text-lg text-[var(--sky-deep)]">{formatCurrency(total)}</span>
             </div>
           </div>
         </div>
       </div>
 
       <div className="flex justify-end">
-        <LoadingButton type="submit" isLoading={isSubmitting}>
-          Guardar Documento
-        </LoadingButton>
+        <button type="submit" disabled={isSubmitting} className="neu-btn-primary">
+          {isSubmitting ? 'Guardando...' : 'Guardar Documento'}
+        </button>
       </div>
     </form>
   );

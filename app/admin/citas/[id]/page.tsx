@@ -9,7 +9,8 @@ import { es } from 'date-fns/locale';
 import { updateAppointmentStatus } from '../actions';
 import { revalidatePath } from 'next/cache';
 
-export default async function DetalleCitaPage({ params }: { params: { id: string } }) {
+export default async function DetalleCitaPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   await requireRole(['admin', 'asesor']);
   const supabase = await createClient();
 
@@ -21,7 +22,7 @@ export default async function DetalleCitaPage({ params }: { params: { id: string
       profiles!appointments_assigned_advisor_id_fkey ( full_name ),
       service_types ( name )
     `)
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !appointment) notFound();
@@ -57,6 +58,7 @@ export default async function DetalleCitaPage({ params }: { params: { id: string
               <StatusBadge status={appointment.status} />
             </div>
 
+            <EditCitaForm cita={appointment} id={id} />
             <div className="grid grid-cols-2 gap-4 py-4 border-y border-[#a8c4d9]/30">
               <div>
                 <div className="text-xs text-[#7a99b5] mb-1">Servicio</div>

@@ -7,17 +7,18 @@ import { z } from 'zod';
 const SaleItemSchema = z.object({
   service_type_id: z.string().optional().or(z.literal('')),
   description: z.string().min(1, 'Descripción requerida'),
-  quantity: z.coerce.number().min(0.1, 'Cantidad mayor a 0'),
-  unit_price: z.coerce.number().min(0, 'Precio mayor o igual a 0'),
+  quantity: z.coerce.number().min(0.1, 'Cantidad > 0'),
+  unit_price: z.coerce.number().min(0, 'Precio >= 0'),
 });
 
 const SaleSchema = z.object({
-  lead_id: z.string().min(1, 'Debe seleccionar un cliente'),
+  lead_id: z.string().optional().or(z.literal('')),
+  lead_name: z.string().optional(),
   appointment_id: z.string().optional().or(z.literal('')),
   status: z.enum(['cotizacion', 'pendiente_pago', 'pagada']),
-  items: z.array(SaleItemSchema).min(1, 'Debe agregar al menos un ítem'),
-  tax: z.coerce.number().min(0).default(0),
-  discount: z.coerce.number().min(0).default(0),
+  items: z.array(SaleItemSchema).min(1, 'Agregue al menos un servicio'),
+  tax: z.coerce.number().min(0),
+  discount: z.coerce.number().min(0),
   notes: z.string().optional(),
 });
 
@@ -26,14 +27,32 @@ export async function createSale(data: z.infer<typeof SaleSchema>) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('No autorizado');
 
-  // Calcular totales
+  let finalLeadId = data.lead_id;
+
+  if (!finalLeadId) {
+    const leadNameToCreate = data.lead_name?.trim() || 'Cliente Final';
+    const { data: newLead, error: leadError } = await supabase
+      .from('leads')
+      .insert({
+        full_name: leadNameToCreate,
+        phone: '0000000000',
+        created_by: user.id
+      })
+      .select('id')
+      .single();
+    
+    if (leadError) throw new Error('Error al crear el cliente: ' + leadError.message);
+    finalLeadId = newLead.id;
+  }
+
+  // Insert Sale
   const subtotal = data.items.reduce((acc, item) => acc + (item.quantity * item.unit_price), 0);
   const total = subtotal + data.tax - data.discount;
 
   const { data: sale, error: saleError } = await supabase
     .from('sales')
     .insert({
-      lead_id: data.lead_id,
+      lead_id: finalLeadId,
       appointment_id: data.appointment_id || null,
       closed_by: user.id,
       status: data.status,

@@ -8,7 +8,8 @@ import { DataTable } from '@/components/admin/ui/DataTable';
 import { StatusBadge } from '@/components/admin/ui/StatusBadge';
 import { formatDate } from '@/lib/utils/date';
 
-export default async function DetalleLeadPage({ params }: { params: { id: string } }) {
+export default async function DetalleLeadPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   await requireRole(['admin', 'asesor']);
   
   const supabase = await createClient();
@@ -21,7 +22,7 @@ export default async function DetalleLeadPage({ params }: { params: { id: string
       appointments ( id, scheduled_at, status, service_types(name) ),
       sales ( id, sale_number, total, status, created_at )
     `)
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !lead) {
@@ -66,7 +67,7 @@ export default async function DetalleLeadPage({ params }: { params: { id: string
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Edit Form */}
         <div className="lg:col-span-1">
-          <EditLeadForm lead={lead} id={params.id} />
+          <EditLeadForm lead={lead} id={id} />
         </div>
 
         {/* Right Column: History */}

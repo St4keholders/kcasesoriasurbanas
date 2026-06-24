@@ -18,14 +18,14 @@ export default async function NuevaVentaPage({ searchParams }: { searchParams: {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="main">
       <div className="mb-6 flex items-center gap-4">
-        <Link href="/admin/ventas" className="p-2 bg-white text-[#7a99b5] hover:text-[#1a2d3d] rounded-full shadow-sm border border-[#a8c4d9]/40 transition-colors">
+        <Link href="/admin/ventas" className="neu-icon" style={{ width: 40, height: 40 }}>
           <ArrowLeftIcon className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-[var(--font-display)] text-[#1a2d3d]">Nueva Cotización / Venta</h1>
-          <p className="text-[#7a99b5] text-sm">Crea una propuesta comercial o registra un ingreso directo.</p>
+          <h1 className="text-2xl font-[var(--font-display)] text-[var(--fg)]">Nueva Cotización / Venta</h1>
+          <p className="text-[var(--dim)] text-sm">Crea una propuesta comercial o registra un ingreso directo.</p>
         </div>
       </div>
 

@@ -11,11 +11,13 @@ export async function requireRole(allowed: Role[]) {
     redirect('/admin/login');
   }
 
-  const { data: profile } = await supabase
+  const { data } = await supabase
     .from('profiles')
     .select('role, is_active, full_name, email')
     .eq('id', user.id)
     .single();
+
+  const profile = data as any;
 
   if (!profile?.is_active || !allowed.includes(profile.role)) {
     redirect('/admin'); // Redirect to dashboard if no access to specific route

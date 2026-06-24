@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 
+import { MobileTabBar } from '@/components/admin/MobileTabBar';
+
 export default async function AdminLayout({
   children,
 }: {
@@ -29,16 +31,21 @@ export default async function AdminLayout({
   const role = profile?.role || 'asesor';
 
   return (
-    <div className="flex h-screen bg-[#f7fbff]">
-      {/* Sidebar */}
-      <AdminSidebar role={role} userName={profile?.full_name || user.email} />
+    <>
+      <div className="admin-theme admin-layout-wrapper text-[var(--fg)]">
+        {/* Sidebar */}
+        <AdminSidebar role={role} userName={profile?.full_name || user.email} />
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-8">
-        <div className="max-w-6xl mx-auto">
+        {/* Main Content */}
+        <main className="main pb-24 md:pb-8">
           {children}
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+
+      {/* Mobile Tab Bar */}
+      <div className="admin-theme">
+        <MobileTabBar />
+      </div>
+    </>
   );
 }
