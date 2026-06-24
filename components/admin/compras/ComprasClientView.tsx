@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { DataTable } from '@/components/admin/ui/DataTable';
 import { StatusBadge } from '@/components/admin/ui/StatusBadge';
 import Link from 'next/link';
-import { PlusIcon, EyeIcon, UploadCloudIcon, CalendarIcon, CreditCardIcon, ReceiptIcon, FileTextIcon, WalletIcon } from 'lucide-react';
+import { PlusIcon, EyeIcon, UploadCloudIcon, CalendarIcon, CreditCardIcon, ReceiptIcon, FileTextIcon, WalletIcon, SearchIcon } from 'lucide-react';
 import { AdminTopbar } from '@/components/admin/AdminTopbar';
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -28,6 +28,7 @@ export function ComprasClientView({
   const [dateTo, setDateTo] = useState('');
   const [supplierFilter, setSupplierFilter] = useState('');
   const [costCenterFilter, setCostCenterFilter] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
@@ -56,9 +57,16 @@ export function ComprasClientView({
       if (costCenterFilter) {
         valid = valid && p.cost_center_id === costCenterFilter;
       }
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const invoiceMatch = p.invoice_number && p.invoice_number.toLowerCase().includes(query);
+        const purchaseMatch = p.purchase_number && p.purchase_number.toLowerCase().includes(query);
+        const supplierMatch = (p.suppliers?.name || p.supplier_name || '').toLowerCase().includes(query);
+        valid = valid && (invoiceMatch || purchaseMatch || supplierMatch);
+      }
       return valid;
     });
-  }, [initialPurchases, dateFrom, dateTo, supplierFilter, costCenterFilter]);
+  }, [initialPurchases, dateFrom, dateTo, supplierFilter, costCenterFilter, searchQuery]);
 
   const dynamicKpis = useMemo(() => {
     const validPurchases = filteredPurchases.filter(p => p.status !== 'anulada');
@@ -95,13 +103,10 @@ export function ComprasClientView({
         eyebrow="— TESORERÍA"
         title={<span>Compras y <em>gastos</em></span>}
         subtitle="Gestiona las cuentas por pagar y los egresos de la empresa."
-        searchPlaceholder="Buscar por factura o proveedor..."
-        onSearch={(value) => {
-          // Simple search mock
-        }}
         action={
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-full px-4 py-2 shadow-sm text-sm">
+          <div className="flex flex-col gap-3 items-end">
+            <div className="flex flex-wrap items-center justify-end gap-3">
+              <div className="flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-full px-4 py-2 shadow-sm text-sm">
               <CalendarIcon className="w-4 h-4 text-[var(--dim)]" />
               <input 
                 type="date" 
@@ -142,9 +147,9 @@ export function ComprasClientView({
               ))}
             </select>
 
-            {(dateFrom || dateTo || supplierFilter || costCenterFilter) && (
+            {(dateFrom || dateTo || supplierFilter || costCenterFilter || searchQuery) && (
               <button 
-                onClick={() => { setDateFrom(''); setDateTo(''); setSupplierFilter(''); setCostCenterFilter(''); }} 
+                onClick={() => { setDateFrom(''); setDateTo(''); setSupplierFilter(''); setCostCenterFilter(''); setSearchQuery(''); }} 
                 className="text-xs text-rose-500 hover:text-rose-600 font-medium px-2"
               >
                 Quitar Filtros
@@ -158,6 +163,17 @@ export function ComprasClientView({
             <Link href="/admin/compras/nueva" className="neu-btn-primary py-1.5 text-sm">
               <PlusIcon className="w-4 h-4" /> Nueva compra
             </Link>
+            </div>
+            <div className="w-full max-w-sm relative mt-1">
+               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--dim)]" />
+               <input 
+                 type="text"
+                 placeholder="Buscar por factura o proveedor..."
+                 className="neu-input pl-9 w-full py-1.5 text-sm"
+                 value={searchQuery}
+                 onChange={e => setSearchQuery(e.target.value)}
+               />
+            </div>
           </div>
         }
       />

@@ -129,14 +129,6 @@ export function DataTable<T>({ data, columns, keyExtractor }: DataTableProps<T>)
       </table>
       <div className="table-footer">
         <div>Mostrando {sortedData.length} registros</div>
-        {/* Pagination mock para mantener el diseño visual del panel */}
-        {sortedData.length > 0 && (
-          <div className="pager">
-            <button>&lt;</button>
-            <button className="active">1</button>
-            <button>&gt;</button>
-          </div>
-        )}
       </div>
     </div>
   );
