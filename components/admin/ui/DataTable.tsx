@@ -21,7 +21,7 @@ export function DataTable<T>({ data, columns, keyExtractor }: DataTableProps<T>)
   const [sortDesc, setSortDesc] = useState<boolean>(false);
   
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
 
   const handleSort = (colIndex: number) => {
     if (sortCol === colIndex) {

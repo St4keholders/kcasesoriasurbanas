@@ -104,7 +104,7 @@ export function ComprasClientView({
         title={<span>Compras y <em>gastos</em></span>}
         subtitle="Gestiona las cuentas por pagar y los egresos de la empresa."
         action={
-          <div className="flex flex-col gap-3 items-end w-full max-w-3xl">
+          <div className="flex flex-col gap-3 items-end" style={{ width: '800px', maxWidth: 'calc(100vw - 300px)' }}>
             <div className="flex flex-wrap items-center justify-end gap-3 w-full">
               <div className="flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-full px-4 py-1.5 shadow-sm text-sm">
                 <CalendarIcon className="w-4 h-4 text-[var(--dim)]" />
