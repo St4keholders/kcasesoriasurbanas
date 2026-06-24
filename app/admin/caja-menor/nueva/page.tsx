@@ -1,0 +1,73 @@
+import { requireRole } from '@/lib/auth/require-role';
+import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
+import { AdminTopbar } from '@/components/admin/AdminTopbar';
+import Link from 'next/link';
+
+export default async function NuevaCajaPage() {
+  await requireRole(['admin', 'asesor']);
+  
+  async function createCaja(formData: FormData) {
+    'use server';
+    
+    const name = formData.get('name') as string;
+    const notes = formData.get('notes') as string;
+    
+    const supabase = await createClient();
+    
+    const { data, error } = await (supabase as any)
+      .from('petty_cash_boxes')
+      .insert({ name, notes })
+      .select('id')
+      .single();
+      
+    if (error) {
+      console.error('Error creating box:', error);
+      // Fallback redirection or error handling
+      redirect('/admin/caja-menor?error=true');
+    }
+    
+    redirect(`/admin/caja-menor/${data.id}`);
+  }
+
+  return (
+    <div className="main">
+      <AdminTopbar 
+        title="Nueva Caja Menor" 
+        subtitle="Abre una nueva caja menor para empezar a registrar facturas."
+      />
+      
+      <div className="card max-w-2xl mt-6">
+        <form action={createCaja} className="space-y-6">
+          <div className="form-group">
+            <label className="label">Nombre de la Caja (Opcional)</label>
+            <input 
+              name="name"
+              type="text" 
+              className="input" 
+              placeholder="Ej. Caja Menor Junio Paola" 
+            />
+          </div>
+          
+          <div className="form-group">
+            <label className="label">Notas Adicionales (Opcional)</label>
+            <textarea 
+              name="notes"
+              className="input min-h-[100px]" 
+              placeholder="Cualquier información relevante para esta caja..." 
+            />
+          </div>
+          
+          <div className="flex gap-4 pt-4 border-t border-[var(--shadow-dark)]">
+            <Link href="/admin/caja-menor" className="neu-btn flex-1 text-center justify-center">
+              Cancelar
+            </Link>
+            <button type="submit" className="neu-btn-primary flex-1">
+              Abrir Caja Menor
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

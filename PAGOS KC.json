@@ -1,0 +1,1621 @@
+{
+  "name": "PAGOS KC",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "KC Asesorías urbanas",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Importa el pago aqui",
+              "fieldType": "file",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Concepto ",
+              "placeholder": "¿Qué se esta pagando?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "¿Factura?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Si"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "NIT/IDENTIFICACION",
+              "placeholder": "Si no lo tienes omitir pregunta"
+            },
+            {
+              "fieldLabel": "Tipo de transaccion",
+              "fieldType": "dropdown",
+              "defaultValue": "Costo/Gasto",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Costo/Gasto"
+                  },
+                  {
+                    "option": "Aporte"
+                  },
+                  {
+                    "option": "Ingreso"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Enviar",
+          "path": "pagos",
+          "customCss": ":root {\n  --font-family: 'Open Sans', sans-serif;\n  --font-weight-normal: 400;\n  --font-weight-bold: 600;\n  --font-size-body: 13px;\n  --font-size-label: 13px;\n  --font-size-input: 14px;\n  --font-size-header: 22px;\n  --font-size-subheader: 13px;\n\n  /* Colores */\n  --color-background: #f0f4ff;\n  --color-card-bg: #ffffff;\n  --color-card-border: #c8d8f5;\n  --color-card-shadow: rgba(26, 79, 160, 0.07);\n  --color-header: #0d2b6e;\n  --color-label: #1a3a6b;\n  --color-input-border: #c8d8f5;\n  --color-input-text: #0d2b6e;\n  --color-focus-border: #2d72d2;\n  --color-submit-btn-bg: #2d72d2;\n  --color-submit-btn-text: #ffffff;\n  --color-error: #d63a3a;\n  --color-required: #2d72d2;\n  --color-header-subtext: #6b8ab5;\n  --color-link: #2d72d2;\n\n  /* Radios más modernos */\n  --border-radius-card: 16px;\n  --border-radius-input: 10px;\n  --card-border-radius: 16px;\n\n  /* Espaciado */\n  --padding-container-top: 32px;\n  --padding-card: 28px 24px;\n  --card-padding: 28px 24px;\n  --margin-bottom-card: 16px;\n  --card-margin-bottom: 16px;\n  --padding-form-input: 11px 14px;\n\n  /* Dimensiones */\n  --container-width: 448px;\n  --submit-btn-height: 50px;\n  --checkbox-size: 18px;\n\n  --box-shadow-card: 0px 2px 16px 0px var(--color-card-shadow);\n  --opacity-placeholder: 0.55;\n}"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -2624,
+        1200
+      ],
+      "id": "091e97c0-5e28-4715-9ad7-41de448233a5",
+      "name": "On form submission",
+      "webhookId": "ad4924d8-a0ab-422f-949f-03b53b010653"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Importa el pago aqui'][0].filename }}",
+                    "rightValue": "=.pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "cf06e98d-0a93-462d-8810-a71056d04664"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pdf"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8f979dc6-fa2e-4442-bd5d-06d8746344da",
+                    "leftValue": "={{ $json['Importa el pago aqui'][0].filename }}",
+                    "rightValue": "=.jpg",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "jpg"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f1ebebbc-67d4-4a95-a074-94a35ded0175",
+                    "leftValue": "={{ $json['Importa el pago aqui'][0].filename }}",
+                    "rightValue": "=.jpeg",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "jpeg"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "29edb8d4-c6ca-4d6a-a080-0952e0910c36",
+                    "leftValue": "={{ $json['Importa el pago aqui'][0].filename }}",
+                    "rightValue": "=.png",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "png"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0a6c64dd-b327-4fca-a8d0-7abe8ae9131f",
+                    "leftValue": "={{ $json['Importa el pago aqui'][0].filename }}",
+                    "rightValue": ".xml",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "xml"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -2400,
+        1152
+      ],
+      "id": "e7c6973c-da3c-4737-8f74-4d48efd42b94",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.mistral.ai/v1/files/{{ $json.id }}/url",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "expiry",
+              "value": "24"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -672,
+        224
+      ],
+      "id": "59969037-d5b3-4393-9a22-fd62a3008022",
+      "name": "GET URL",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "6wOFvRVh69U8waOn",
+          "name": "MISTRAL HTTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mistral.ai/v1/files",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "purpose",
+              "value": "ocr"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "Importa_el_pago_aqui"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -960,
+        224
+      ],
+      "id": "2d816017-209b-403a-b465-8ae5494e8d4d",
+      "name": "PDF",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "6wOFvRVh69U8waOn",
+          "name": "MISTRAL HTTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mistral.ai/v1/ocr",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"mistral-ocr-latest\",\n  \"document\": {\n    \"type\": \"document_url\",\n    \"document_url\": \"{{ $json.url }}\"\n  },\n  \"include_image_base64\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        224
+      ],
+      "id": "6413a0f6-aadb-47bd-b1cb-6d25e2352c13",
+      "name": "GET OCR",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "6wOFvRVh69U8waOn",
+          "name": "MISTRAL HTTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.pages[0].markdown }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Nombre Emisor",
+              "description": "Nombre de la persona a la que se le debe pagar o que le cobra a KC ASESORIAS URBANAS",
+              "required": true
+            },
+            {
+              "name": "Total",
+              "type": "number",
+              "description": "Total pagado",
+              "required": true
+            },
+            {
+              "name": "Fecha",
+              "description": "Fecha del pago"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        112
+      ],
+      "id": "e7cbd011-4380-427a-8209-79be7500096b",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        336
+      ],
+      "id": "12881251-ef24-4b3e-8855-854ece215ab3",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Rg2IYEAGtfl7LwdG",
+          "name": "STAKEHOLDERS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Iteramos sobre todos los items recibidos\nreturn items.map(item => {\n  \n  // 1. Obtenemos el valor de \"Forma de Pago\".\n  // Usamos el operador ?. para evitar errores si 'output' no existe.\n  const formaPago = item.json.output?.['Forma de Pago'];\n\n  // 2. Definimos la lógica\n  // Por defecto asignamos 10. Esto cubre el caso de que sea 1, null, undefined o vacío.\n  let resultadoMedioPago = 10; \n\n  // Si el valor es explícitamente 2 (o \"2\" en texto), cambiamos el resultado a 1.\n  if (formaPago == 2) {\n    resultadoMedioPago = 1;\n  }\n\n  // 3. Asignamos el resultado a una nueva propiedad\n  // Si tu estructura usa 'output', guardamos el resultado ahí mismo para mantener el orden.\n  if (item.json.output) {\n    item.json.output['Medio de Pago'] = resultadoMedioPago;\n  } else {\n    // Si no existe output, lo creamos o lo ponemos en la raíz\n    item.json['Medio de Pago'] = resultadoMedioPago;\n  }\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        224
+      ],
+      "id": "0c5b4223-df3f-4996-ba27-f315772229a6",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "xml",
+        "binaryPropertyName": "Importa_el_pago_aqui",
+        "destinationKey": "Importa_el_pago_aqui",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -864,
+        1936
+      ],
+      "id": "3c290eaa-9692-49c0-9cc1-7b92cf1b5828",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.Importa_el_pago_aqui }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Nombre Emisor",
+              "description": "Nombre de la persona a la que se le debe pagar o que le cobra a KC ASESORIAS URBANAS",
+              "required": true
+            },
+            {
+              "name": "Total",
+              "type": "number",
+              "description": "Total pagado",
+              "required": true
+            },
+            {
+              "name": "NIT/IDENTIFICACION",
+              "description": "Identificacion del emisor",
+              "required": true
+            },
+            {
+              "name": "Fecha",
+              "description": "Fecha del pago",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -640,
+        1936
+      ],
+      "id": "0da4b305-e0e8-4840-9936-91b01b95fa8e",
+      "name": "Information Extractor1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -576,
+        2160
+      ],
+      "id": "50375da0-1797-4592-9cea-478507ca390c",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Rg2IYEAGtfl7LwdG",
+          "name": "STAKEHOLDERS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Iteramos sobre todos los items recibidos\nreturn items.map(item => {\n  \n  // 1. Obtenemos el valor de \"Forma de Pago\".\n  // Usamos el operador ?. para evitar errores si 'output' no existe.\n  const formaPago = item.json.output?.['Forma de Pago'];\n\n  // 2. Definimos la lógica\n  // Por defecto asignamos 10. Esto cubre el caso de que sea 1, null, undefined o vacío.\n  let resultadoMedioPago = 10; \n\n  // Si el valor es explícitamente 2 (o \"2\" en texto), cambiamos el resultado a 1.\n  if (formaPago == 2) {\n    resultadoMedioPago = 1;\n  }\n\n  // 3. Asignamos el resultado a una nueva propiedad\n  // Si tu estructura usa 'output', guardamos el resultado ahí mismo para mantener el orden.\n  if (item.json.output) {\n    item.json.output['Medio de Pago'] = resultadoMedioPago;\n  } else {\n    // Si no existe output, lo creamos o lo ponemos en la raíz\n    item.json['Medio de Pago'] = resultadoMedioPago;\n  }\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -288,
+        1936
+      ],
+      "id": "034884de-6751-48ce-a6cb-818a3d53c7a4",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "=Analiza esta imagen de factura. Extrae TODOS los datos visibles (Emisor, Receptor, Fecha, Items, Subtotales, Impuestos, Total, CUFE si existe) y transcríbelos fielmente en formato Markdown estructurado. No añadidas explicaciones, saludos ni texto adicional. Solo el Markdown.",
+        "inputType": "base64",
+        "binaryPropertyName": "Importa_el_pago_aqui",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -944,
+        1472
+      ],
+      "id": "cf6a61c3-7fb5-4bfe-ac65-de1d6a6c93cc",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "LlvJwMs09oFsIQUZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "=Analiza esta imagen de factura. Extrae TODOS los datos visibles (Emisor, Receptor, Fecha, Items, Subtotales, Impuestos, Total, CUFE si existe) y transcríbelos fielmente en formato Markdown estructurado. No añadidas explicaciones, saludos ni texto adicional. Solo el Markdown.",
+        "inputType": "base64",
+        "binaryPropertyName": "Importa_el_pago_aqui",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -944,
+        1088
+      ],
+      "id": "de753671-d920-452e-b0a1-3a1edb6d8023",
+      "name": "OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Rg2IYEAGtfl7LwdG",
+          "name": "STAKEHOLDERS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.choices[0].message.content }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Nombre Emisor",
+              "description": "Nombre de la persona a la que se le debe pagar o que le cobra a KC ASESORIAS URBANAS",
+              "required": true
+            },
+            {
+              "name": "Total",
+              "type": "number",
+              "description": "Total pagado ",
+              "required": true
+            },
+            {
+              "name": "Fecha",
+              "description": "Fecha del pago"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        1472
+      ],
+      "id": "440845d2-54b3-40c8-9968-10fb7cfa46bb",
+      "name": "Information Extractor2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -592,
+        1696
+      ],
+      "id": "20c16ea5-0684-4ee1-b582-078dd1246801",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "Rg2IYEAGtfl7LwdG",
+          "name": "STAKEHOLDERS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Iteramos sobre todos los items recibidos\nreturn items.map(item => {\n  \n  // 1. Obtenemos el valor de \"Forma de Pago\".\n  // Usamos el operador ?. para evitar errores si 'output' no existe.\n  const formaPago = item.json.output?.['Forma de Pago'];\n\n  // 2. Definimos la lógica\n  // Por defecto asignamos 10. Esto cubre el caso de que sea 1, null, undefined o vacío.\n  let resultadoMedioPago = 10; \n\n  // Si el valor es explícitamente 2 (o \"2\" en texto), cambiamos el resultado a 1.\n  if (formaPago == 2) {\n    resultadoMedioPago = 1;\n  }\n\n  // 3. Asignamos el resultado a una nueva propiedad\n  // Si tu estructura usa 'output', guardamos el resultado ahí mismo para mantener el orden.\n  if (item.json.output) {\n    item.json.output['Medio de Pago'] = resultadoMedioPago;\n  } else {\n    // Si no existe output, lo creamos o lo ponemos en la raíz\n    item.json['Medio de Pago'] = resultadoMedioPago;\n  }\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -288,
+        1472
+      ],
+      "id": "dba6d2e3-1c9b-4cc8-b881-45f5f9cb92de",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.choices[0].message.content }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Nombre Emisor",
+              "description": "Nombre de la persona a la que se le debe pagar o que le cobra a KC ASESORIAS URBANAS",
+              "required": true
+            },
+            {
+              "name": "Total",
+              "type": "number",
+              "description": "Total pagado",
+              "required": true
+            },
+            {
+              "name": "Fecha",
+              "description": "Fecha del pago",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -592,
+        1088
+      ],
+      "id": "0ca45db2-a8cc-4ae5-ad74-79ca3c2618d4",
+      "name": "Information Extractor3"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Yy3pf4awwdXfKljmZMD-qcc7tKdVTtYPB-7waLAWbyo",
+          "mode": "list",
+          "cachedResultName": "LIBRO DIARIO JUNIO - PAGOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Yy3pf4awwdXfKljmZMD-qcc7tKdVTtYPB-7waLAWbyo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "KC ASESORIAS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hcwbzztMhDESXeJe5W-RCKFVv15gPF1CTIbYTjInB-4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fecha": "={{ $json.output.Fecha }}",
+            "Tipo de transaccion": "={{ $('On form submission').item.json['Tipo de transaccion'] }}",
+            "Nombre": "={{ $json.output['Nombre Emisor'] }}",
+            "NIT": "={{ $('On form submission').item.json['NIT/IDENTIFICACION'] }}",
+            "Nota": "={{ $('On form submission').item.json['Concepto '] }}",
+            "Valor": "={{ $json.output.Total }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tipo de transaccion",
+              "displayName": "Tipo de transaccion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NIT",
+              "displayName": "NIT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nota",
+              "displayName": "Nota",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Valor",
+              "displayName": "Valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        32,
+        1088
+      ],
+      "id": "7cd8da48-80ea-40eb-bf17-ec84c4eb8590",
+      "name": "Append row in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tJkkTHe8ua5or2oc",
+          "name": "STAKEHOLDERS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Iteramos sobre todos los items recibidos\nreturn items.map(item => {\n  \n  // 1. Obtenemos el valor de \"Forma de Pago\".\n  // Usamos el operador ?. para evitar errores si 'output' no existe.\n  const formaPago = item.json.output?.['Forma de Pago'];\n\n  // 2. Definimos la lógica\n  // Por defecto asignamos 10. Esto cubre el caso de que sea 1, null, undefined o vacío.\n  let resultadoMedioPago = 10; \n\n  // Si el valor es explícitamente 2 (o \"2\" en texto), cambiamos el resultado a 1.\n  if (formaPago == 2) {\n    resultadoMedioPago = 1;\n  }\n\n  // 3. Asignamos el resultado a una nueva propiedad\n  // Si tu estructura usa 'output', guardamos el resultado ahí mismo para mantener el orden.\n  if (item.json.output) {\n    item.json.output['Medio de Pago'] = resultadoMedioPago;\n  } else {\n    // Si no existe output, lo creamos o lo ponemos en la raíz\n    item.json['Medio de Pago'] = resultadoMedioPago;\n  }\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        1088
+      ],
+      "id": "772267f4-2096-40c8-b28e-da9085dd483c",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -592,
+        1280
+      ],
+      "id": "b40d9c19-118a-468e-8b82-829dfc559585",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "Rg2IYEAGtfl7LwdG",
+          "name": "STAKEHOLDERS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "=Analiza esta imagen de factura. Extrae TODOS los datos visibles (Emisor, Receptor, Fecha, Items, Subtotales, Impuestos, Total, CUFE si existe) y transcríbelos fielmente en formato Markdown estructurado. No añadidas explicaciones, saludos ni texto adicional. Solo el Markdown.",
+        "inputType": "base64",
+        "binaryPropertyName": "Importa_el_pago_aqui",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -944,
+        592
+      ],
+      "id": "73c1f678-0b13-4670-9091-41ff60825570",
+      "name": "OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "LlvJwMs09oFsIQUZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.choices[0].message.content }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Total",
+              "type": "number",
+              "description": "Total pagado",
+              "required": true
+            },
+            {
+              "name": "Nombre completo",
+              "description": "Nombre de la persona a la que se le debe pagar o que le cobra a KC ASESORIAS URBANAS",
+              "required": true
+            },
+            {
+              "name": "Fecha",
+              "description": "Fecha del pago"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -736,
+        592
+      ],
+      "id": "6b117b73-a32e-42b4-80ac-0bef8e972e9c",
+      "name": "Information Extractor4"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -672,
+        816
+      ],
+      "id": "938e6088-1343-4a71-8511-32ee2061cb4d",
+      "name": "OpenAI Chat Model4",
+      "credentials": {
+        "openAiApi": {
+          "id": "Rg2IYEAGtfl7LwdG",
+          "name": "STAKEHOLDERS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Iteramos sobre todos los items recibidos\nreturn items.map(item => {\n  \n  // 1. Obtenemos el valor de \"Forma de Pago\".\n  // Usamos el operador ?. para evitar errores si 'output' no existe.\n  const formaPago = item.json.output?.['Forma de Pago'];\n\n  // 2. Definimos la lógica\n  // Por defecto asignamos 10. Esto cubre el caso de que sea 1, null, undefined o vacío.\n  let resultadoMedioPago = 10; \n\n  // Si el valor es explícitamente 2 (o \"2\" en texto), cambiamos el resultado a 1.\n  if (formaPago == 2) {\n    resultadoMedioPago = 1;\n  }\n\n  // 3. Asignamos el resultado a una nueva propiedad\n  // Si tu estructura usa 'output', guardamos el resultado ahí mismo para mantener el orden.\n  if (item.json.output) {\n    item.json.output['Medio de Pago'] = resultadoMedioPago;\n  } else {\n    // Si no existe output, lo creamos o lo ponemos en la raíz\n    item.json['Medio de Pago'] = resultadoMedioPago;\n  }\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        592
+      ],
+      "id": "21cb111b-54f4-4aa3-a8e5-5a0370da9840",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Yy3pf4awwdXfKljmZMD-qcc7tKdVTtYPB-7waLAWbyo",
+          "mode": "list",
+          "cachedResultName": "LIBRO DIARIO JUNIO - PAGOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Yy3pf4awwdXfKljmZMD-qcc7tKdVTtYPB-7waLAWbyo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "KC ASESORIAS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BYmwqnmz4zB_aJvWCcnlZxV2yVNJ3qYF4t__kxa9XNY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nombre": "={{ $json.output['Nombre Emisor'] }}",
+            "Valor": "={{ $json.output.Total }}",
+            "Fecha": "={{ $json.output.Fecha }}",
+            "Tipo de transaccion": "={{ $('On form submission').item.json['Tipo de transaccion'] }}",
+            "NIT": "={{ $('On form submission').item.json['NIT/IDENTIFICACION'] }}",
+            "Nota": "={{ $('On form submission').item.json['Concepto '] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tipo de transaccion",
+              "displayName": "Tipo de transaccion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NIT",
+              "displayName": "NIT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nota",
+              "displayName": "Nota",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Valor",
+              "displayName": "Valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        32,
+        1472
+      ],
+      "id": "3143615b-e7f5-4374-8afd-bc6552af7cc4",
+      "name": "Append row in sheet5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tJkkTHe8ua5or2oc",
+          "name": "STAKEHOLDERS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Yy3pf4awwdXfKljmZMD-qcc7tKdVTtYPB-7waLAWbyo",
+          "mode": "list",
+          "cachedResultName": "LIBRO DIARIO JUNIO - PAGOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Yy3pf4awwdXfKljmZMD-qcc7tKdVTtYPB-7waLAWbyo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "KC ASESORIAS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BYmwqnmz4zB_aJvWCcnlZxV2yVNJ3qYF4t__kxa9XNY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nombre": "={{ $json.output['Nombre Emisor'] }}",
+            "Valor": "={{ $json.output.Total }}",
+            "Fecha": "={{ $json.output.Fecha }}",
+            "Tipo de transaccion": "={{ $('On form submission').item.json['Tipo de transaccion'] }}",
+            "NIT": "={{ $json.output['NIT/IDENTIFICACION'] }}",
+            "Nota": "={{ $('On form submission').item.json['Concepto '] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tipo de transaccion",
+              "displayName": "Tipo de transaccion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NIT",
+              "displayName": "NIT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nota",
+              "displayName": "Nota",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Valor",
+              "displayName": "Valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        1936
+      ],
+      "id": "423d0e84-d854-4fb9-9921-061c9b36b77f",
+      "name": "Append row in sheet6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tJkkTHe8ua5or2oc",
+          "name": "STAKEHOLDERS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Yy3pf4awwdXfKljmZMD-qcc7tKdVTtYPB-7waLAWbyo",
+          "mode": "list",
+          "cachedResultName": "LIBRO DIARIO JUNIO - PAGOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Yy3pf4awwdXfKljmZMD-qcc7tKdVTtYPB-7waLAWbyo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "KC ASESORIAS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hcwbzztMhDESXeJe5W-RCKFVv15gPF1CTIbYTjInB-4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fecha": "={{ $json.output.Fecha }}",
+            "Tipo de transaccion": "={{ $('On form submission').item.json['Tipo de transaccion'] }}",
+            "Nombre": "={{ $('Information Extractor4').item.json.output['Nombre completo'] }}",
+            "Nota": "={{ $('On form submission').item.json['Concepto '] }}",
+            "NIT": "={{ $('On form submission').item.json['NIT/IDENTIFICACION'] }}",
+            "Valor": "={{ $('Information Extractor4').item.json.output.Total }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tipo de transaccion",
+              "displayName": "Tipo de transaccion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NIT",
+              "displayName": "NIT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nota",
+              "displayName": "Nota",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Valor",
+              "displayName": "Valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -128,
+        592
+      ],
+      "id": "8cffb017-2cf4-4dd6-8354-765a2ded74f0",
+      "name": "Append row in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tJkkTHe8ua5or2oc",
+          "name": "STAKEHOLDERS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Yy3pf4awwdXfKljmZMD-qcc7tKdVTtYPB-7waLAWbyo",
+          "mode": "list",
+          "cachedResultName": "LIBRO DIARIO JUNIO - PAGOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Yy3pf4awwdXfKljmZMD-qcc7tKdVTtYPB-7waLAWbyo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "KC ASESORIAS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hcwbzztMhDESXeJe5W-RCKFVv15gPF1CTIbYTjInB-4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fecha": "={{ $json.output.Fecha }}",
+            "Valor": "={{ $json.output.Total }}",
+            "Nombre": "={{ $('Information Extractor').item.json.output['Nombre Emisor'] }}",
+            "Nota": "={{ $('On form submission').item.json['Concepto '] }}",
+            "NIT": "={{ $('On form submission').item.json['NIT/IDENTIFICACION'] }}",
+            "Tipo de transaccion": "={{ $('On form submission').item.json['Tipo de transaccion'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tipo de transaccion",
+              "displayName": "Tipo de transaccion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NIT",
+              "displayName": "NIT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nota",
+              "displayName": "Nota",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Valor",
+              "displayName": "Valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        224
+      ],
+      "id": "40eb4e9c-dc97-4d50-b294-c2c7d12cfad2",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tJkkTHe8ua5or2oc",
+          "name": "STAKEHOLDERS"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenAI2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenAI1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET URL": {
+      "main": [
+        [
+          {
+            "node": "GET OCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF": {
+      "main": [
+        [
+          {
+            "node": "GET URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET OCR": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI1": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor3": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI2": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor4": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor4",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7d9891eb-c16b-4cce-95a4-c59d5263df85",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2a47582652714b2bd792b2e814267f64cba5d12637c7ef29fab4b3ec12371787"
+  },
+  "id": "8gA0ko7rdjdSYbKd",
+  "tags": [
+    {
+      "updatedAt": "2026-05-03T19:49:57.509Z",
+      "createdAt": "2026-05-03T19:49:57.509Z",
+      "id": "1IG1k2bFcb6V4vdb",
+      "name": "KC ASESORIAS"
+    }
+  ]
+}

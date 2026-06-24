@@ -1,0 +1,406 @@
+<!--
+  ============================================================
+  SKY DESIGN — PATRONES REUTILIZABLES
+  Cada bloque tiene su CSS + HTML listo para componer.
+  Asume que ya cargaste tokens.css en el :root.
+  ============================================================
+-->
+
+<!-- ============================================================
+     1. HEADER FIJO CON EFECTO GLASS AL HACER SCROLL
+     ============================================================ -->
+<style>
+  .site-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 3rem;
+    transition: background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease, box-shadow 0.4s ease;
+    border-bottom: 1px solid transparent;
+  }
+  .site-header.scrolled {
+    background: var(--bg-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom-color: var(--line);
+    box-shadow: var(--shadow-sm);
+  }
+  .brand {
+    font-family: var(--display);
+    font-size: 1.05rem;
+    color: var(--sky-deep);
+    text-decoration: none;
+  }
+  .brand-sub {
+    font-family: var(--mono);
+    font-size: 0.52rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .nav { display: flex; align-items: center; gap: 2rem; }
+  .nav a {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-soft);
+    text-decoration: none;
+    transition: color 0.25s ease;
+  }
+  .nav a:hover { color: var(--sky-deep); }
+  .nav .nav-cta {
+    color: #fff;
+    background: var(--sky);
+    padding: 0.55rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+  .nav .nav-cta:hover {
+    background: var(--sky-deep);
+    box-shadow: 0 4px 16px var(--sky-glow);
+  }
+</style>
+<header class="site-header" id="siteHeader">
+  <a class="brand" href="#top">Marca</a>
+  <nav class="nav">
+    <a href="#servicios">Servicios</a>
+    <a href="#agenda">Agenda</a>
+    <a class="nav-cta" href="#contacto">Contacto</a>
+  </nav>
+</header>
+<script>
+  const header = document.getElementById('siteHeader');
+  const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 40);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+
+<!-- ============================================================
+     2. SECTION EYEBROW (etiqueta arriba del título)
+     ============================================================ -->
+<style>
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.26em;
+    color: var(--dim);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .section-eyebrow::before {
+    content: '';
+    width: 24px;
+    height: 2px;
+    background: var(--sky);
+    border-radius: 2px;
+  }
+</style>
+<div class="section-eyebrow">Servicios</div>
+
+
+<!-- ============================================================
+     3. TÍTULO DE SECCIÓN CON ACENTO ITÁLICO
+     ============================================================ -->
+<style>
+  .section-title {
+    font-family: var(--display);
+    font-size: clamp(1.8rem, 3.8vw, 2.8rem);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.12;
+    color: var(--fg);
+  }
+  .section-title em { font-style: italic; color: var(--sky-deep); }
+  .section-lead {
+    margin-top: 1.2rem;
+    font-size: 0.95rem;
+    color: var(--fg-soft);
+    max-width: 520px;
+    line-height: 1.7;
+  }
+</style>
+<h2 class="section-title">Soluciones <em>a tu medida</em></h2>
+<p class="section-lead">Texto introductorio breve…</p>
+
+
+<!-- ============================================================
+     4. BADGE / PILL (chip pequeño con icono opcional)
+     ============================================================ -->
+<style>
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    color: var(--sky-deep);
+    background: rgba(91,163,217,0.10);
+    border: 1px solid rgba(91,163,217,0.20);
+    border-radius: 99px;
+    padding: 0.4rem 1rem;
+  }
+</style>
+<span class="hero-badge">Desde 2018</span>
+
+
+<!-- ============================================================
+     5. BOTÓN PRINCIPAL (.btn .btn-sky)
+     ============================================================ -->
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    padding: 0.85rem 1.6rem;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-sky {
+    background: var(--sky);
+    color: #fff;
+    border-color: var(--sky);
+  }
+  .btn-sky:hover {
+    background: var(--sky-deep);
+    box-shadow: 0 6px 24px var(--sky-glow);
+    transform: translateY(-1px);
+  }
+  .btn-sky:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+</style>
+<a class="btn btn-sky" href="#">Agendar consulta</a>
+
+
+<!-- ============================================================
+     6. TARJETA DE SERVICIO (con franja superior en hover)
+     ============================================================ -->
+<style>
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  @media (max-width: 720px) { .services-grid { grid-template-columns: 1fr; } }
+
+  .service-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 2rem 2rem 2.2rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--sky), var(--sky-light));
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--sky-light);
+  }
+  .service-card:hover::before { opacity: 1; }
+
+  .service-icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 1.2rem;
+    background: var(--sky-dim);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.35s ease;
+  }
+  .service-card:hover .service-icon { background: rgba(91,163,217,0.18); }
+  .service-icon svg { width: 28px; height: 28px; fill: none; stroke: var(--sky-deep); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  .service-number {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 0.4rem;
+  }
+  .service-title {
+    font-family: var(--display);
+    font-size: 1.25rem;
+    font-weight: 400;
+    margin-bottom: 0.6rem;
+    color: var(--fg);
+  }
+  .service-desc { color: var(--fg-soft); font-size: 0.92rem; line-height: 1.7; }
+</style>
+<div class="services-grid">
+  <article class="service-card">
+    <div class="service-icon">
+      <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+    </div>
+    <div class="service-number">01</div>
+    <h3 class="service-title">Título del servicio</h3>
+    <p class="service-desc">Descripción breve de 1-2 líneas.</p>
+  </article>
+  <!-- repetir tarjeta -->
+</div>
+
+
+<!-- ============================================================
+     7. DIVISOR SKY (línea decorativa de 48×3px)
+     ============================================================ -->
+<style>
+  .sky-divider {
+    width: 48px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--sky), var(--sky-light));
+    border-radius: 3px;
+    margin: 1.2rem 0;
+  }
+</style>
+<div class="sky-divider"></div>
+
+
+<!-- ============================================================
+     8. AMBIENT — NUBES FLOTANTES DE FONDO
+     ============================================================ -->
+<style>
+  .ambient {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .cloud {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(91,163,217,0.08), transparent 70%);
+    animation: cloudDrift linear infinite;
+  }
+  @keyframes cloudDrift {
+    0%   { transform: translateX(0) translateY(0); }
+    25%  { transform: translateX(30px) translateY(-15px); }
+    50%  { transform: translateX(0) translateY(-25px); }
+    75%  { transform: translateX(-30px) translateY(-15px); }
+    100% { transform: translateX(0) translateY(0); }
+  }
+  .dot-pattern {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.35;
+    background-image: radial-gradient(circle, rgba(91,163,217,0.15) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+</style>
+<div class="ambient" id="ambient"></div>
+<div class="dot-pattern"></div>
+<script>
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reducedMotion) {
+    const ambient = document.getElementById('ambient');
+    for (let i = 0; i < 6; i++) {
+      const c = document.createElement('div');
+      c.className = 'cloud';
+      const size = 200 + Math.random() * 400;
+      c.style.width = c.style.height = size + 'px';
+      c.style.left = (Math.random() * 100) + '%';
+      c.style.top = (Math.random() * 100) + '%';
+      c.style.animationDuration = (40 + Math.random() * 40) + 's';
+      c.style.animationDelay = (Math.random() * -40) + 's';
+      ambient.appendChild(c);
+    }
+  }
+</script>
+
+
+<!-- ============================================================
+     9. REVEAL ON SCROLL (JS — usa la clase .reveal de tokens.css)
+     ============================================================ -->
+<script>
+  const reducedMotion2 = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && !reducedMotion2) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -6% 0px' });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+</script>
+
+
+<!-- ============================================================
+     10. HERO COMPLETO (referencia de composición)
+     ============================================================ -->
+<style>
+  .hero {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 35%, rgba(91,163,217,0.12), transparent 70%),
+      linear-gradient(180deg, var(--bg) 0%, var(--sky-pale) 100%);
+  }
+  .hero-content { position: relative; z-index: 2; text-align: center; max-width: 800px; padding: 8rem 2rem 6rem; }
+  .hero-title {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+  }
+  .hero-title em { font-style: italic; color: var(--sky-deep); }
+  .hero-sub {
+    margin-top: 1.4rem;
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1rem;
+    color: var(--fg-soft);
+    line-height: 1.7;
+  }
+</style>
+<section class="hero">
+  <div class="hero-content">
+    <span class="hero-badge">Etiqueta</span>
+    <h1 class="hero-title">Frase principal con <em>palabra clave</em> en cursiva</h1>
+    <p class="hero-sub">Línea de apoyo breve, 1-2 frases.</p>
+    <a class="btn btn-sky" href="#" style="margin-top: 2.2rem;">Llamada a la acción</a>
+  </div>
+</section>

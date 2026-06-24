@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import "./neu-forms.css";
 import { SITE } from "@/lib/constants";
 
 const dmSans = DM_Sans({

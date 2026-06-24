@@ -1,0 +1,91 @@
+/* ============================================================
+   SKY DESIGN — TOKENS + RESET + BODY BASE
+   Copia este bloque tal cual al inicio de <style> en cualquier
+   página que use el sistema Sky.
+   ============================================================ */
+
+/* Fuentes — añade también este <link> en el <head>:
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+*/
+
+:root {
+  /* Fondos */
+  --bg: #f7fbff;
+  --bg-card: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.72);
+
+  /* Texto */
+  --fg: #1a2d3d;
+  --fg-soft: #3d5a73;
+  --dim: #7a99b5;
+  --dim-2: #a8c4d9;
+
+  /* Acentos sky */
+  --sky: #5ba3d9;
+  --sky-deep: #3b7dbf;
+  --sky-light: #a0d0f0;
+  --sky-pale: #dceefb;
+  --sky-glow: rgba(91, 163, 217, 0.25);
+  --sky-dim: rgba(91, 163, 217, 0.10);
+
+  /* Bordes */
+  --line: rgba(91, 163, 217, 0.22);
+  --line-strong: rgba(91, 163, 217, 0.45);
+  --hair: rgba(91, 163, 217, 0.10);
+
+  /* Sombras (siempre difusas, base azul tinta) */
+  --shadow-sm: 0 1px 3px rgba(26, 45, 61, 0.06);
+  --shadow-md: 0 4px 20px rgba(26, 45, 61, 0.08);
+  --shadow-lg: 0 12px 40px rgba(26, 45, 61, 0.10);
+
+  /* Tipografía */
+  --sans: 'DM Sans', system-ui, sans-serif;
+  --display: 'DM Serif Display', 'Georgia', serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--sans);
+  font-weight: 400;
+  overflow-x: hidden;
+  letter-spacing: 0.005em;
+  line-height: 1.6;
+}
+
+::selection { background: var(--sky); color: #fff; }
+button { font-family: inherit; }
+
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--sky);
+  outline-offset: 3px;
+}
+
+/* Reveal on scroll — añade .reveal a elementos, .in se aplica vía JS */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.in { opacity: 1; transform: translateY(0); }
+.reveal.d1 { transition-delay: 0.08s; }
+.reveal.d2 { transition-delay: 0.18s; }
+.reveal.d3 { transition-delay: 0.28s; }
+.reveal.d4 { transition-delay: 0.38s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -43,12 +43,12 @@ export function Modal({ isOpen, onClose, title, children, footer, maxWidth = 'md
       />
       
       {/* Modal */}
-      <div className={`relative bg-[var(--admin-bg)] rounded-[28px] w-full ${maxWidthClass} flex flex-col max-h-[90vh] shadow-[-12px_-12px_30px_var(--shadow-light),12px_12px_30px_var(--shadow-dark),0_30px_60px_rgba(26,45,61,0.2)] animate-[modalSlideUp_0.4s_var(--ease-bounce)]`}>
-        <div className="flex items-start justify-between px-8 pt-8 pb-6">
-          <h2 className="text-2xl text-[var(--fg)] font-[var(--font-display)] leading-tight">{title}</h2>
+      <div className={`relative bg-[var(--bg-card)] rounded-2xl w-full ${maxWidthClass} flex flex-col max-h-[90vh] shadow-2xl border border-[var(--border)] animate-[modalSlideUp_0.4s_var(--ease-bounce)]`}>
+        <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b border-[var(--border)]">
+          <h2 className="text-xl text-[var(--fg)] font-semibold">{title}</h2>
           <button 
             onClick={onClose}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-[var(--dim)] neu-raised-sm hover:text-[var(--danger)] transition-all shrink-0"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--dim)] hover:bg-[var(--bg)] hover:text-rose-500 transition-all shrink-0"
           >
             <XIcon className="w-5 h-5" />
           </button>
