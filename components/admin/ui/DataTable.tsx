@@ -143,23 +143,23 @@ export function DataTable<T>({ data, columns, keyExtractor }: DataTableProps<T>)
       </table>
       <div className="table-footer">
         <div>Mostrando {paginatedData.length} de {sortedData.length} registros</div>
-        {totalPages > 1 && (
-          <div className="pager">
-            <button 
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-            >
-              &lt;
-            </button>
-            <button className="active">{currentPage}</button>
-            <button 
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-            >
-              &gt;
-            </button>
-          </div>
-        )}
+        <div className="pager">
+          <button 
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className={currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}
+          >
+            &lt;
+          </button>
+          <button className="active">{currentPage}</button>
+          <button 
+            onClick={() => setCurrentPage(p => Math.min(Math.max(1, totalPages), p + 1))}
+            disabled={currentPage >= totalPages}
+            className={currentPage >= totalPages ? 'opacity-50 cursor-not-allowed' : ''}
+          >
+            &gt;
+          </button>
+        </div>
       </div>
     </div>
   );
