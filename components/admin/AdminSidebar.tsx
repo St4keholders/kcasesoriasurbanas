@@ -96,7 +96,7 @@ export function AdminSidebar({ role, userName }: { role: string; userName?: stri
           </div>
         </div>
         
-        <nav className="nav">
+        <nav className="sidebar-nav">
           {NAV_SECTIONS.map((section) => {
             const normalizedRole = String(role || 'asesor').toLowerCase().trim();
             const allowedItems = section.items.filter((item) => 
