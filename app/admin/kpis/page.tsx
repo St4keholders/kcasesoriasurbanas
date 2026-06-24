@@ -1,64 +1,87 @@
 import { createClient } from '@/lib/supabase/server';
-
 import { AdminTopbar } from '@/components/admin/AdminTopbar';
-import { ChartBarIcon, UsersIcon, DollarSignIcon, ActivityIcon } from 'lucide-react';
+import { BuildingIcon, MapPinIcon, HomeIcon, CalculatorIcon } from 'lucide-react';
+import { HeatmapCalendar } from '@/components/admin/dashboard/HeatmapCalendar';
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from('kpi_daily')
-    .select('*')
-    .single();
+  const currentDate = new Date();
+  // Set to first day of current month
+  const currentMonthStartStr = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0];
+  // Set to last day of current month
+  const currentMonthEndStr = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0];
 
-  const kpiData = data as any;
+  const { data: purchasesRaw, error } = await supabase
+    .from('purchases')
+    .select('id, total, transaction_date, concept, status, cost_centers(name), suppliers(name)')
+    .gte('transaction_date', currentMonthStartStr)
+    .lte('transaction_date', currentMonthEndStr);
 
-  if (error && error.code !== 'PGRST116') {
-    console.error('Error fetching KPIs:', error);
+  if (error) {
+    console.error('Error fetching purchases for KPIs:', error);
   }
+
+  const purchases = (purchasesRaw || []).filter(p => p.status !== 'anulado');
+
+  let medellinTotal = 0;
+  let toluTotal = 0;
+  let aptoBelloTotal = 0;
+  let generalTotal = 0;
+
+  purchases.forEach(p => {
+    const amount = Number(p.total) || 0;
+    generalTotal += amount;
+    const ccName = p.cost_centers?.name || '';
+    if (ccName === 'KC ASESORÍAS') {
+      medellinTotal += amount;
+    } else if (ccName === 'TOLÚ') {
+      toluTotal += amount;
+    } else if (ccName === 'Apto Bello') {
+      aptoBelloTotal += amount;
+    }
+  });
 
   // Formatters
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
-  
-  const formatPercent = (val: number) => `${val}%`;
 
   const kpis = [
     {
-      name: 'Tasa de Asistencia',
-      value: kpiData ? formatPercent(kpiData.attendance_rate) : '0%',
-      subtext: `${kpiData?.appointments_attended || 0} de ${kpiData?.appointments_scheduled || 0} citas de hoy`,
+      name: 'Costos Medellín',
+      value: formatCurrency(medellinTotal),
+      subtext: 'Acumulado a día de hoy (KC Asesorías)',
       colorClass: 'blue',
-      Icon: UsersIcon
+      Icon: BuildingIcon
     },
     {
-      name: 'Tasa de Conversión',
-      value: kpiData ? formatPercent(kpiData.conversion_rate) : '0%',
-      subtext: `${kpiData?.sales_count || 0} ventas cerradas hoy`,
-      colorClass: 'green',
-      Icon: ChartBarIcon
-    },
-    {
-      name: 'Ticket Promedio',
-      value: kpiData ? formatCurrency(kpiData.average_ticket) : '$0',
-      subtext: 'Valor promedio por venta hoy',
-      colorClass: 'purple',
-      Icon: DollarSignIcon
-    },
-    {
-      name: 'Cashflow Neto',
-      value: kpiData ? formatCurrency(kpiData.net_cashflow) : '$0',
-      subtext: 'Ventas - Compras pagadas hoy',
+      name: 'Costos Tolú',
+      value: formatCurrency(toluTotal),
+      subtext: 'Acumulado a día de hoy (Tolú)',
       colorClass: 'orange',
-      Icon: ActivityIcon
+      Icon: MapPinIcon
+    },
+    {
+      name: 'Costos Apto Bello',
+      value: formatCurrency(aptoBelloTotal),
+      subtext: 'Acumulado a día de hoy (Apto Bello)',
+      colorClass: 'purple',
+      Icon: HomeIcon
+    },
+    {
+      name: 'Total Costo Mes',
+      value: formatCurrency(generalTotal),
+      subtext: 'Suma de todos los centros',
+      colorClass: 'green',
+      Icon: CalculatorIcon
     },
   ];
 
   return (
     <div className="main">
       <AdminTopbar 
-        title="Dashboard General" 
-        subtitle="Indicadores de rendimiento calculados en tiempo real para el día de hoy."
+        title="Dashboard de Gastos" 
+        subtitle="Indicadores de costos calculados en tiempo real para el mes actual."
       />
 
       <div className="kpi-grid">
@@ -82,24 +105,17 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="content-grid mt-8">
-        <div className="panel">
+        <div className="panel lg:col-span-2">
           <div className="panel-header">
             <div>
-              <h2 className="panel-title">Gráfica de Citas y <em>Asistencia</em></h2>
+              <h2 className="panel-title">Calendario de <em>Calor (Gastos)</em></h2>
+              <div className="text-xs text-[var(--dim)] mt-1">
+                La intensidad del color indica el volumen de gastos del día. Haz clic en un día para ver los detalles.
+              </div>
             </div>
           </div>
-          <div className="h-80 w-full flex items-center justify-center text-[var(--dim)] font-medium">
-            Próximamente
-          </div>
-        </div>
-        <div className="panel">
-          <div className="panel-header">
-            <div>
-              <h2 className="panel-title">Flujo de <em>Caja</em></h2>
-            </div>
-          </div>
-          <div className="h-80 w-full flex items-center justify-center text-[var(--dim)] font-medium">
-            Próximamente
+          <div className="p-4 sm:p-6 w-full">
+            <HeatmapCalendar purchases={purchases} currentDateIso={currentDate.toISOString()} />
           </div>
         </div>
       </div>
