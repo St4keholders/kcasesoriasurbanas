@@ -19,6 +19,9 @@ interface DataTableProps<T> {
 export function DataTable<T>({ data, columns, keyExtractor }: DataTableProps<T>) {
   const [sortCol, setSortCol] = useState<number | null>(null);
   const [sortDesc, setSortDesc] = useState<boolean>(false);
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const handleSort = (colIndex: number) => {
     if (sortCol === colIndex) {
@@ -66,6 +69,17 @@ export function DataTable<T>({ data, columns, keyExtractor }: DataTableProps<T>)
     });
   }, [data, columns, sortCol, sortDesc]);
 
+  // Reset page when data changes or sort changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [sortedData.length, sortCol, sortDesc]);
+
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return sortedData.slice(start, start + itemsPerPage);
+  }, [sortedData, currentPage]);
+
   return (
     <div className="data-table-wrap">
       <table className="data-table">
@@ -101,7 +115,7 @@ export function DataTable<T>({ data, columns, keyExtractor }: DataTableProps<T>)
           </tr>
         </thead>
         <tbody>
-          {sortedData.map((row) => (
+          {paginatedData.map((row) => (
             <tr key={keyExtractor(row)}>
               {columns.map((col, i) => (
                 <td key={i}>
@@ -128,7 +142,24 @@ export function DataTable<T>({ data, columns, keyExtractor }: DataTableProps<T>)
         </tbody>
       </table>
       <div className="table-footer">
-        <div>Mostrando {sortedData.length} registros</div>
+        <div>Mostrando {paginatedData.length} de {sortedData.length} registros</div>
+        {totalPages > 1 && (
+          <div className="pager">
+            <button 
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              &lt;
+            </button>
+            <button className="active">{currentPage}</button>
+            <button 
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              &gt;
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
