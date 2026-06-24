@@ -29,30 +29,13 @@ export default async function ComprasPage() {
       .lte('entry_date', currentMonthEnd)
   ]);
 
-  // Calcular KPIs del mes actual
-  const currentMonthPurchases = (purchases || []).filter(p => p.transaction_date >= currentMonthStart && p.transaction_date <= currentMonthEnd && p.status !== 'anulada');
-  
-  const totalComprasMes = currentMonthPurchases.reduce((acc, p) => acc + (Number(p.total) || 0), 0);
-  const totalRetencionesMes = currentMonthPurchases.reduce((acc, p) => acc + (Number(p.withholding_tax) || 0), 0);
-  
-  const totalCajasMenoresMes = (pettyCash || []).reduce((acc, pc) => acc + (Number(pc.total_amount) || 0), 0);
-  
-  const ivaCompras = currentMonthPurchases.reduce((acc, p) => acc + (Number(p.tax_iva) || 0), 0);
-  const ivaCajas = (pettyCash || []).reduce((acc, pc) => acc + (Number(pc.tax_amount) || 0), 0);
-  const totalIvaMes = ivaCompras + ivaCajas;
-
   return (
     <div className="main">
       <ComprasClientView 
         initialPurchases={purchases || []} 
         costCenters={costCenters || []}
         suppliers={suppliers || []}
-        kpis={{
-          totalComprasMes,
-          totalIvaMes,
-          totalRetencionesMes,
-          totalCajasMenoresMes
-        }}
+        pettyCash={pettyCash || []}
       />
     </div>
   );

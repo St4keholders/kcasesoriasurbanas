@@ -15,17 +15,19 @@ export function ComprasClientView({
   initialPurchases, 
   costCenters = [], 
   suppliers = [],
-  kpis = { totalComprasMes: 0, totalIvaMes: 0, totalRetencionesMes: 0, totalCajasMenoresMes: 0 }
+  pettyCash = []
 }: { 
   initialPurchases: any[], 
   costCenters?: any[], 
   suppliers?: any[],
-  kpis?: { totalComprasMes: number, totalIvaMes: number, totalRetencionesMes: number, totalCajasMenoresMes: number }
+  pettyCash?: any[]
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPurchase, setSelectedPurchase] = useState<any>(null);
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
+  const [supplierFilter, setSupplierFilter] = useState('');
+  const [costCenterFilter, setCostCenterFilter] = useState('');
 
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
@@ -48,9 +50,44 @@ export function ComprasClientView({
       if (dateTo && p.transaction_date) {
         valid = valid && !isAfter(parseISO(p.transaction_date), endOfDay(parseISO(dateTo)));
       }
+      if (supplierFilter) {
+        valid = valid && p.supplier_id === supplierFilter;
+      }
+      if (costCenterFilter) {
+        valid = valid && p.cost_center_id === costCenterFilter;
+      }
       return valid;
     });
-  }, [initialPurchases, dateFrom, dateTo]);
+  }, [initialPurchases, dateFrom, dateTo, supplierFilter, costCenterFilter]);
+
+  const dynamicKpis = useMemo(() => {
+    const validPurchases = filteredPurchases.filter(p => p.status !== 'anulada');
+    const totalComprasMes = validPurchases.reduce((acc, p) => acc + (Number(p.total) || 0), 0);
+    const totalRetencionesMes = validPurchases.reduce((acc, p) => acc + (Number(p.withholding_tax) || 0), 0);
+    const ivaCompras = validPurchases.reduce((acc, p) => acc + (Number(p.tax_iva) || 0), 0);
+
+    let filteredPettyCash = pettyCash;
+    if (costCenterFilter) {
+      filteredPettyCash = []; // Cajas menores don't belong directly to a cost center like purchases do
+    } else if (supplierFilter) {
+      const selectedSupplier = suppliers.find(s => s.id === supplierFilter);
+      if (selectedSupplier) {
+        filteredPettyCash = filteredPettyCash.filter(pc => 
+          pc.supplier_name && pc.supplier_name.toLowerCase().includes(selectedSupplier.name.toLowerCase())
+        );
+      }
+    }
+
+    const totalCajasMenoresMes = filteredPettyCash.reduce((acc, pc) => acc + (Number(pc.total_amount) || 0), 0);
+    const ivaCajas = filteredPettyCash.reduce((acc, pc) => acc + (Number(pc.tax_amount) || 0), 0);
+    
+    return {
+      totalComprasMes,
+      totalIvaMes: ivaCompras + ivaCajas,
+      totalRetencionesMes,
+      totalCajasMenoresMes
+    };
+  }, [filteredPurchases, pettyCash, costCenterFilter, supplierFilter, suppliers]);
 
   return (
     <>
@@ -83,24 +120,55 @@ export function ComprasClientView({
               />
             </div>
             
-            <button onClick={() => setIsModalOpen(true)} className="btn">
+            <select 
+              className="neu-input py-1.5 min-w-[140px]"
+              value={costCenterFilter}
+              onChange={(e) => setCostCenterFilter(e.target.value)}
+            >
+              <option value="">Todos los Centros</option>
+              {costCenters.map(cc => (
+                <option key={cc.id} value={cc.id}>{cc.name}</option>
+              ))}
+            </select>
+            
+            <select 
+              className="neu-input py-1.5 min-w-[140px]"
+              value={supplierFilter}
+              onChange={(e) => setSupplierFilter(e.target.value)}
+            >
+              <option value="">Todos los Proveedores</option>
+              {suppliers.map(s => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+
+            {(dateFrom || dateTo || supplierFilter || costCenterFilter) && (
+              <button 
+                onClick={() => { setDateFrom(''); setDateTo(''); setSupplierFilter(''); setCostCenterFilter(''); }} 
+                className="text-xs text-rose-500 hover:text-rose-600 font-medium px-2"
+              >
+                Quitar Filtros
+              </button>
+            )}
+            
+            <button onClick={() => setIsModalOpen(true)} className="neu-btn-secondary py-1.5 text-sm">
               <UploadCloudIcon className="w-4 h-4" /> Masivo
             </button>
             
-            <Link href="/admin/compras/nueva" className="btn btn-primary">
+            <Link href="/admin/compras/nueva" className="neu-btn-primary py-1.5 text-sm">
               <PlusIcon className="w-4 h-4" /> Nueva compra
             </Link>
           </div>
         }
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 mt-6">
         <div className="card flex flex-col justify-center p-5">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-[var(--dim)]">Total Compras (Mes)</span>
             <div className="icon-box sm"><CreditCardIcon /></div>
           </div>
-          <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(kpis.totalComprasMes)}</div>
+          <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(dynamicKpis.totalComprasMes)}</div>
         </div>
 
         <div className="card flex flex-col justify-center p-5">
@@ -108,7 +176,7 @@ export function ComprasClientView({
             <span className="text-sm font-medium text-[var(--dim)]">Total IVA (Mes)</span>
             <div className="icon-box sm amber"><ReceiptIcon /></div>
           </div>
-          <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(kpis.totalIvaMes)}</div>
+          <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(dynamicKpis.totalIvaMes)}</div>
         </div>
 
         <div className="card flex flex-col justify-center p-5">
@@ -116,7 +184,7 @@ export function ComprasClientView({
             <span className="text-sm font-medium text-[var(--dim)]">Total Retenciones</span>
             <div className="icon-box sm purple"><FileTextIcon /></div>
           </div>
-          <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(kpis.totalRetencionesMes)}</div>
+          <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(dynamicKpis.totalRetencionesMes)}</div>
         </div>
 
         <div className="card flex flex-col justify-center p-5">
@@ -124,7 +192,7 @@ export function ComprasClientView({
             <span className="text-sm font-medium text-[var(--dim)]">Cajas Menores (Mes)</span>
             <div className="icon-box sm green"><WalletIcon /></div>
           </div>
-          <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(kpis.totalCajasMenoresMes)}</div>
+          <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(dynamicKpis.totalCajasMenoresMes)}</div>
         </div>
       </div>
 
@@ -134,6 +202,7 @@ export function ComprasClientView({
         columns={[
           {
             header: 'Factura / Doc.',
+            sortAccessor: (row) => row.purchase_number,
             accessor: (row) => (
               <div>
                 <div className="font-semibold text-[var(--fg)]">{row.purchase_number || 'Borrador'}</div>
@@ -143,26 +212,32 @@ export function ComprasClientView({
           },
           {
             header: 'Fecha',
+            sortAccessor: (row) => row.transaction_date,
             accessor: (row) => <span className="text-sm font-mono text-[var(--dim)]">{formatDate(row.transaction_date)}</span>,
           },
           {
             header: 'Proveedor',
+            sortAccessor: (row) => row.suppliers?.name || row.supplier_name || '',
             accessor: (row) => <span className="text-sm font-medium text-[var(--fg-soft)]">{row.suppliers?.name || row.supplier_name || 'Sin Proveedor'}</span>,
           },
           {
             header: 'Centro Costo',
+            sortAccessor: (row) => row.cost_centers?.name || '',
             accessor: (row) => <span className="text-sm text-[var(--dim)]">{row.cost_centers?.name}</span>,
           },
           {
             header: 'Total',
+            sortAccessor: (row) => Number(row.total),
             accessor: (row) => <span className="text-sm font-semibold text-[var(--fg)]">{formatCurrency(row.total)}</span>,
           },
           {
             header: 'Estado',
+            sortAccessor: (row) => row.status,
             accessor: (row) => <StatusBadge status={row.status} />,
           },
           {
             header: 'Acciones',
+            sortable: false,
             accessor: (row) => (
               <button
                 onClick={() => setSelectedPurchase(row)}
