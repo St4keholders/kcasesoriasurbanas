@@ -271,7 +271,11 @@ export function ComprasClientView({
 
       {isModalOpen && (
         <BulkUploadModal 
-          onClose={() => setIsModalOpen(false)} 
+          costCenters={costCenters}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={() => {
+            // refresh or whatever
+          }}
         />
       )}
 

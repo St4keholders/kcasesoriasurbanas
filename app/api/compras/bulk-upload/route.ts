@@ -46,6 +46,7 @@ export async function POST(request: Request) {
     // 2. Parse FormData
     const formData = await request.formData();
     const files = formData.getAll('files') as File[];
+    const selectedCostCenterId = formData.get('costCenterId') as string;
 
     if (!files || files.length === 0) {
       return NextResponse.json({ error: 'No files provided' }, { status: 400 });
@@ -54,9 +55,12 @@ export async function POST(request: Request) {
     // Initialize Supabase
     const supabase = await createClient();
     
-    // Obtener un centro de costos por defecto para que la BD no falle si es obligatorio
-    const { data: costCenters } = await supabase.from('cost_centers').select('id').limit(1);
-    const defaultCostCenterId = costCenters?.[0]?.id || null;
+    // Si no enviaron centro de costo desde el cliente, se usa uno por defecto
+    let finalCostCenterId = selectedCostCenterId;
+    if (!finalCostCenterId) {
+      const { data: costCenters } = await supabase.from('cost_centers').select('id').limit(1);
+      finalCostCenterId = costCenters?.[0]?.id || null;
+    }
 
     // 3. Determine current month folder name (e.g., "junio", "agosto")
     const currentMonthName = format(new Date(), 'MMMM', { locale: es }).toLowerCase();
@@ -190,7 +194,7 @@ export async function POST(request: Request) {
           .insert({
             supplier_id: supplierId,
             supplier_name: supplierName,
-            cost_center_id: defaultCostCenterId,
+            cost_center_id: finalCostCenterId,
             invoice_number: extracted.invoice_number || file.name,
             concept: extracted.concept || 'Factura subida desde Carga Masiva',
             transaction_type: extracted.transaction_type || 'costo_gasto',

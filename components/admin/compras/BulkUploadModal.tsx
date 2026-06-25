@@ -8,10 +8,12 @@ import { Modal } from '@/components/admin/ui/Modal';
 interface BulkUploadModalProps {
   onClose: () => void;
   onSuccess?: () => void;
+  costCenters?: any[];
 }
 
-export function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalProps) {
+export function BulkUploadModal({ onClose, onSuccess, costCenters = [] }: BulkUploadModalProps) {
   const [files, setFiles] = useState<File[]>([]);
+  const [selectedCostCenter, setSelectedCostCenter] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadResults, setUploadResults] = useState<any[]>([]);
@@ -57,6 +59,9 @@ export function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalProps) {
     files.forEach(file => {
       formData.append('files', file);
     });
+    if (selectedCostCenter) {
+      formData.append('costCenterId', selectedCostCenter);
+    }
 
     try {
       const res = await fetch('/api/compras/bulk-upload', {
@@ -221,6 +226,25 @@ export function BulkUploadModal({ onClose, onSuccess }: BulkUploadModalProps) {
                       </div>
                     ))}
                   </div>
+
+                  {costCenters && costCenters.length > 0 && (
+                    <div className="mt-4 border-t border-[var(--border)] pt-4">
+                      <label className="block text-sm font-medium text-[var(--fg)] mb-2">
+                        Centro de Costos (Aplica para todos)
+                      </label>
+                      <select 
+                        className="neu-input w-full text-sm py-2"
+                        value={selectedCostCenter}
+                        onChange={(e) => setSelectedCostCenter(e.target.value)}
+                        required
+                      >
+                        <option value="">-- Seleccionar --</option>
+                        {costCenters.map(cc => (
+                          <option key={cc.id} value={cc.id}>{cc.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
               )}
             </>
