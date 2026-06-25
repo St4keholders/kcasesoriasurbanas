@@ -9,7 +9,7 @@ import { es } from 'date-fns/locale';
 
 import { AdminTopbar } from '@/components/admin/AdminTopbar';
 
-export default async function CitasPage({ searchParams }: { searchParams: { date?: string } }) {
+export default async function CitasPage({ searchParams }: { searchParams: Promise<{ date?: string }> }) {
   await requireRole(['admin', 'asesor']);
   
   const supabase = await createClient();

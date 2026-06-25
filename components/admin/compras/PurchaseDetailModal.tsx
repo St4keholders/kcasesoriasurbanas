@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { XIcon, SaveIcon, DollarSignIcon, ExternalLinkIcon, Loader2Icon } from 'lucide-react';
 import { StatusBadge } from '@/components/admin/ui/StatusBadge';
-import { updatePurchase, payPurchase } from '@/app/admin/compras/actions';
+import { updatePurchase, payPurchase, revertPurchasePayment } from '@/app/admin/compras/actions';
 
 interface PurchaseDetailModalProps {
   purchase: any;
@@ -64,6 +64,16 @@ export function PurchaseDetailModal({ purchase, costCenters, suppliers, onClose,
       onSave();
     } catch (err: any) {
       alert('Error al registrar pago: ' + err.message);
+    }
+  };
+
+  const handleRevertPayment = async () => {
+    if (!confirm('¿Estás seguro de revertir este pago a pendiente?')) return;
+    try {
+      await revertPurchasePayment(purchase.id);
+      onSave();
+    } catch (err: any) {
+      alert('Error al revertir pago: ' + err.message);
     }
   };
 
@@ -201,6 +211,13 @@ export function PurchaseDetailModal({ purchase, costCenters, suppliers, onClose,
                   <div className="text-xs text-[var(--dim)] mt-3">
                     Pagado el {new Date(purchase.paid_at).toLocaleDateString()} mediante {purchase.payment_method}.
                   </div>
+                  <button 
+                    type="button" 
+                    onClick={handleRevertPayment} 
+                    className="mt-4 w-full py-2 bg-transparent border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 font-medium rounded-lg transition-colors text-sm"
+                  >
+                    Desactivar Pago (Revertir)
+                  </button>
                 </div>
               )}
 

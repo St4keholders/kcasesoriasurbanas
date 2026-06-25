@@ -88,6 +88,24 @@ export async function payPurchase(id: string, paymentMethod: string) {
   revalidatePath(`/admin/compras/${id}`);
 }
 
+export async function revertPurchasePayment(id: string) {
+  const supabase = await createClient();
+  
+  const { error } = await supabase
+    .from('purchases')
+    .update({
+      status: 'pendiente_pago',
+      payment_method: null,
+      paid_at: null
+    })
+    .eq('id', id);
+
+  if (error) throw new Error('Error al revertir el pago: ' + error.message);
+
+  revalidatePath('/admin/compras');
+  revalidatePath(`/admin/compras/${id}`);
+}
+
 export async function updatePurchase(id: string, data: any) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
