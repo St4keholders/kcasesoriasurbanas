@@ -32,8 +32,8 @@ export default async function DetalleCompraPage({ params }: { params: Promise<{ 
 
   const handlePayment = async (formData: FormData) => {
     'use server';
-    const method = formData.get('payment_method') as string;
-    await payPurchase(params.id, method);
+    const method = formData.get('method') as string;
+    await payPurchase(id, method);
   };
 
   return (

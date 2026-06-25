@@ -26,7 +26,7 @@ export function ServiceClientPage({ services }: { services: any[] }) {
   const [errorMsg, setErrorMsg] = useState('');
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormData>({
-    resolver: zodResolver(ServiceSchema),
+    resolver: zodResolver(ServiceSchema) as any,
     defaultValues: { is_active: true, base_price: 0 }
   });
 

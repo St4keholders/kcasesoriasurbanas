@@ -31,8 +31,7 @@ export default async function EditarUsuarioPage({ params }: { params: Promise<{ 
           <p className="text-[#7a99b5] text-sm">Actualiza los datos o la contraseña del usuario.</p>
         </div>
       </div>
-
-      <EditUserForm user={user} id={params.id} />
+      <EditUserForm user={user} id={id} />
     </div>
   );
 }

@@ -32,7 +32,7 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
   const handleStatusChange = async (formData: FormData) => {
     'use server';
     const status = formData.get('status') as string;
-    await updateAppointmentStatus(params.id, status);
+    await updateAppointmentStatus(id, status);
   };
 
   return (

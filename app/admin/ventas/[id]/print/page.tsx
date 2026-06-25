@@ -3,7 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import { PrintPOSClient } from './PrintPOSClient';
 
-export default async function PrintPOSPage({ params }: { params: { id: string } }) {
+export default async function PrintPOSPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   await requireRole(['admin', 'asesor']);
   
   const supabase = await createClient();
@@ -21,7 +22,7 @@ export default async function PrintPOSPage({ params }: { params: { id: string } 
         products ( name, description )
       )
     `)
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (!sale) notFound();
