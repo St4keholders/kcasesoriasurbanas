@@ -84,17 +84,15 @@ export function VentasClientView({ sales }: { sales: any[] }) {
                 >
                   <EyeIcon className="w-4 h-4" /> 
                 </Link>
-                {row.status === 'cotizacion' && (
-                  <a
+                <a
                     href={`/admin/ventas/${row.id}/print`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-ghost text-[var(--primary)]"
-                    title="Descargar PDF (POS)"
+                    title="Descargar Cotización PDF"
                   >
                     <PrinterIcon className="w-4 h-4" />
                   </a>
-                )}
               </div>
             ),
           },
