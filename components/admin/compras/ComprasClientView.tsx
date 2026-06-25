@@ -160,7 +160,7 @@ export function ComprasClientView({
                  />
                </div>
 
-               <div className="flex items-center gap-2 shrink-0">
+               <div className="flex items-center gap-2 shrink-0 ml-auto justify-end">
                   {(dateFrom || dateTo || supplierFilter || costCenterFilter || searchQuery) && (
                     <button 
                       onClick={() => { setDateFrom(''); setDateTo(''); setSupplierFilter(''); setCostCenterFilter(''); setSearchQuery(''); }} 
