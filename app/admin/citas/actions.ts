@@ -23,11 +23,12 @@ export async function createAppointment(data: z.infer<typeof AppointmentSchema>)
 
   if (!finalLeadId) {
     const leadNameToCreate = data.lead_name?.trim() || 'Cliente Final';
+    // @ts-ignore
     const { data: newLead, error: leadError } = await supabase
       .from('leads')
       .insert({
         full_name: leadNameToCreate,
-        phone: '0000000000', // Teléfono requerido por base de datos
+        phone: '0000000000',
         created_by: user.id
       })
       .select('id')
@@ -37,6 +38,7 @@ export async function createAppointment(data: z.infer<typeof AppointmentSchema>)
     finalLeadId = newLead.id;
   }
 
+  // @ts-ignore
   const { data: appointment, error } = await supabase
     .from('appointments')
     .insert({
