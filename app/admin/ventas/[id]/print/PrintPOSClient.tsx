@@ -6,7 +6,6 @@ import { es } from 'date-fns/locale';
 
 export function PrintPOSClient({ sale }: { sale: any }) {
   useEffect(() => {
-    // Automatically trigger print dialog once component mounts
     setTimeout(() => {
       window.print();
     }, 500);
@@ -18,82 +17,118 @@ export function PrintPOSClient({ sale }: { sale: any }) {
   const formatDate = (iso: string) => format(new Date(iso), "dd MMM yyyy - hh:mm a", { locale: es });
 
   return (
-    <div className="bg-white min-h-screen text-black font-mono p-4 flex justify-center">
-      <div className="w-[80mm] bg-white border border-gray-200 p-4 print:border-none print:p-0">
-        <div className="text-center mb-6">
-          <h1 className="font-bold text-xl uppercase mb-1">KC ASESORÍAS URBANAS S.A.S</h1>
-          <p className="text-sm">NIT: 902012620-0</p>
-          <p className="text-sm">kcasesoriasurbanas@gmail.com</p>
-          <div className="border-b border-dashed border-gray-400 my-4" />
-          <h2 className="font-bold text-lg uppercase">
-            {sale.status === 'cotizacion' ? 'COTIZACIÓN' : 'COMPROBANTE'} POS
-          </h2>
-          <p className="text-sm font-semibold mt-1">Nº {sale.sale_number || 'Borrador'}</p>
-          <p className="text-xs mt-1">{formatDate(sale.created_at)}</p>
-        </div>
-
-        <div className="mb-4 text-sm">
-          <p><strong>Cliente:</strong> {sale.leads?.full_name}</p>
-          {sale.leads?.document_number && <p><strong>CC/NIT:</strong> {sale.leads.document_number}</p>}
-          {sale.leads?.phone && <p><strong>Tel:</strong> {sale.leads.phone}</p>}
-          <p><strong>Asesor:</strong> {sale.profiles?.full_name}</p>
-        </div>
-
-        <div className="border-b border-dashed border-gray-400 my-2" />
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
-        <table className="w-full text-sm mb-4">
-          <thead>
-            <tr className="border-b border-gray-300">
-              <th className="text-left py-1 w-1/2">Cant x Artículo</th>
-              <th className="text-right py-1">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sale.sale_items?.map((item: any) => (
-              <tr key={item.id}>
-                <td className="py-2 pr-2 align-top">
-                  <div>{item.quantity} x {item.products?.name}</div>
-                  <div className="text-xs text-gray-500">{formatCurrency(item.unit_price)} c/u</div>
-                </td>
-                <td className="py-2 text-right align-top font-medium">
-                  {formatCurrency(item.total_price)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        @media print {
+          .no-print { display: none !important; }
+          body { margin: 0; padding: 0; }
+          .print-container { box-shadow: none !important; border: none !important; }
+        }
+      `}</style>
+      
+      <div style={{ background: '#f0f4f8', minHeight: '100vh', padding: '32px 16px', display: 'flex', justifyContent: 'center', fontFamily: "'Inter', system-ui, sans-serif" }}>
+        <div 
+          className="print-container"
+          style={{
+            width: '380px',
+            background: '#fff',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(26,45,61,0.12)',
+            border: '1px solid #e0ecf5',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Header */}
+          <div style={{ background: 'linear-gradient(135deg, #1a2d3d 0%, #2d4a63 100%)', padding: '28px 24px', textAlign: 'center', color: '#fff' }}>
+            <div style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '1px', marginBottom: '4px' }}>KC ASESORÍAS URBANAS S.A.S</div>
+            <div style={{ fontSize: '12px', opacity: 0.7 }}>NIT: 902012620-0</div>
+            <div style={{ fontSize: '11px', opacity: 0.6, marginTop: '2px' }}>kcasesoriasurbanas@gmail.com</div>
+            
+            <div style={{ marginTop: '16px', padding: '8px 16px', background: 'rgba(91,163,217,0.25)', borderRadius: '8px', display: 'inline-block' }}>
+              <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>
+                {sale.status === 'cotizacion' ? 'Cotización' : 'Comprobante'}
+              </div>
+              <div style={{ fontSize: '20px', fontWeight: 700 }}>Nº {sale.sale_number || 'Borrador'}</div>
+            </div>
+            <div style={{ fontSize: '11px', marginTop: '8px', opacity: 0.6 }}>{formatDate(sale.created_at)}</div>
+          </div>
 
-        <div className="border-b border-dashed border-gray-400 my-2" />
+          {/* Client Info */}
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid #e8f0f8' }}>
+            <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#7a99b5', marginBottom: '8px', fontWeight: 600 }}>Datos del Cliente</div>
+            <div style={{ fontSize: '14px', fontWeight: 600, color: '#1a2d3d' }}>{sale.leads?.full_name}</div>
+            {sale.leads?.document_number && <div style={{ fontSize: '12px', color: '#7a99b5', marginTop: '2px' }}>CC/NIT: {sale.leads.document_number}</div>}
+            {sale.leads?.phone && <div style={{ fontSize: '12px', color: '#7a99b5', marginTop: '2px' }}>Tel: {sale.leads.phone}</div>}
+            <div style={{ fontSize: '12px', color: '#5ba3d9', marginTop: '4px' }}>Asesor: {sale.profiles?.full_name}</div>
+          </div>
 
-        <div className="flex justify-between items-center mb-1 text-sm">
-          <span>Subtotal:</span>
-          <span>{formatCurrency(sale.subtotal)}</span>
-        </div>
-        <div className="flex justify-between items-center mb-2 text-sm">
-          <span>IVA:</span>
-          <span>{formatCurrency(sale.tax_amount)}</span>
-        </div>
-        <div className="flex justify-between items-center font-bold text-lg border-t border-gray-300 pt-2 mb-6">
-          <span>TOTAL:</span>
-          <span>{formatCurrency(sale.total)}</span>
-        </div>
+          {/* Items */}
+          <div style={{ padding: '16px 24px' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'left', padding: '8px 0', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', color: '#7a99b5', borderBottom: '2px solid #e8f0f8', fontWeight: 600 }}>Artículo</th>
+                  <th style={{ textAlign: 'center', padding: '8px 0', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', color: '#7a99b5', borderBottom: '2px solid #e8f0f8', fontWeight: 600 }}>Cant</th>
+                  <th style={{ textAlign: 'right', padding: '8px 0', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', color: '#7a99b5', borderBottom: '2px solid #e8f0f8', fontWeight: 600 }}>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sale.sale_items?.map((item: any) => (
+                  <tr key={item.id}>
+                    <td style={{ padding: '10px 0', borderBottom: '1px solid #f0f5fa', verticalAlign: 'top' }}>
+                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#1a2d3d' }}>{item.products?.name}</div>
+                      <div style={{ fontSize: '11px', color: '#a8c4d9', marginTop: '2px' }}>{formatCurrency(item.unit_price)} c/u</div>
+                    </td>
+                    <td style={{ padding: '10px 0', borderBottom: '1px solid #f0f5fa', textAlign: 'center', fontSize: '13px', color: '#3d5a73' }}>{item.quantity}</td>
+                    <td style={{ padding: '10px 0', borderBottom: '1px solid #f0f5fa', textAlign: 'right', fontSize: '13px', fontWeight: 600, color: '#1a2d3d' }}>{formatCurrency(item.total_price)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-        <div className="text-center text-xs text-gray-600 mt-8 space-y-2">
+          {/* Totals */}
+          <div style={{ padding: '0 24px 20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '13px', color: '#7a99b5' }}>
+              <span>Subtotal</span>
+              <span>{formatCurrency(sale.subtotal)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '13px', color: '#7a99b5' }}>
+              <span>IVA</span>
+              <span>{formatCurrency(sale.tax_amount)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', fontSize: '18px', fontWeight: 700, color: '#1a2d3d', borderTop: '2px solid #5ba3d9', marginTop: '8px' }}>
+              <span>TOTAL</span>
+              <span style={{ color: '#5ba3d9' }}>{formatCurrency(sale.total)}</span>
+            </div>
+          </div>
+
+          {/* Notes */}
           {sale.notes && (
-            <div className="mb-4 text-left p-2 bg-gray-50 border border-gray-200">
+            <div style={{ margin: '0 24px 16px', padding: '12px 16px', background: '#f7fbff', borderRadius: '8px', border: '1px solid #e0ecf5', fontSize: '12px', color: '#3d5a73' }}>
               <strong>Notas:</strong> {sale.notes}
             </div>
           )}
-          <p>Esta cotización no corresponde a factura.</p>
-          <p>Gracias por confiar en nosotros.</p>
-        </div>
-        
-        {/* Helper text for the browser view (hidden in print) */}
-        <div className="print:hidden mt-8 text-center text-xs text-gray-400">
-          <p>Presiona Ctrl+P o Cmd+P si no se abre el diálogo de impresión.</p>
-          <p>Cierra esta pestaña al terminar.</p>
+
+          {/* Footer */}
+          <div style={{ background: '#f7fbff', padding: '16px 24px', textAlign: 'center', borderTop: '1px solid #e8f0f8' }}>
+            <div style={{ fontSize: '11px', color: '#e74c3c', fontWeight: 600, marginBottom: '6px' }}>
+              ⚠ Esta cotización no corresponde a factura.
+            </div>
+            <div style={{ fontSize: '11px', color: '#a8c4d9' }}>
+              Gracias por confiar en KC Asesorías Urbanas S.A.S
+            </div>
+          </div>
+
+          {/* Print helper (hidden in print) */}
+          <div className="no-print" style={{ padding: '16px 24px', textAlign: 'center', fontSize: '12px', color: '#a8c4d9' }}>
+            <p>Presiona Ctrl+P para guardar como PDF.</p>
+            <p>Cierra esta pestaña al terminar.</p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
