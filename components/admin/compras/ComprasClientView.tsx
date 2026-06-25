@@ -10,6 +10,8 @@ import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay } from 'date-
 import { es } from 'date-fns/locale';
 import { BulkUploadModal } from './BulkUploadModal';
 import { PurchaseDetailModal } from './PurchaseDetailModal';
+import { ExportCSVModal } from '@/components/admin/ExportCSVModal';
+import { DownloadIcon } from 'lucide-react';
 
 export function ComprasClientView({ 
   initialPurchases, 
@@ -23,6 +25,7 @@ export function ComprasClientView({
   pettyCash?: any[]
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [selectedPurchase, setSelectedPurchase] = useState<any>(null);
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -74,7 +77,17 @@ export function ComprasClientView({
     const totalRetencionesMes = validPurchases.reduce((acc, p) => acc + (Number(p.withholding_tax) || 0), 0);
     const ivaCompras = validPurchases.reduce((acc, p) => acc + (Number(p.tax_iva) || 0), 0);
 
-    let filteredPettyCash = pettyCash;
+    let filteredPettyCash = pettyCash.filter(pc => {
+      let valid = true;
+      if (dateFrom && pc.entry_date) {
+        valid = valid && !isBefore(parseISO(pc.entry_date), startOfDay(parseISO(dateFrom)));
+      }
+      if (dateTo && pc.entry_date) {
+        valid = valid && !isAfter(parseISO(pc.entry_date), endOfDay(parseISO(dateTo)));
+      }
+      return valid;
+    });
+
     if (costCenterFilter) {
       filteredPettyCash = []; // Cajas menores don't belong directly to a cost center like purchases do
     } else if (supplierFilter) {
@@ -168,6 +181,12 @@ export function ComprasClientView({
                   Quitar Filtros
                 </button>
               )}
+              <button 
+                onClick={() => setIsExportModalOpen(true)}
+                className="neu-btn-secondary py-1.5 px-3 text-sm flex items-center gap-2"
+              >
+                <DownloadIcon className="w-4 h-4" /> Exportar CSV
+              </button>
               <button onClick={() => setIsModalOpen(true)} className="neu-btn-secondary py-1.5 px-3 text-sm flex items-center gap-2">
                 <UploadCloudIcon className="w-4 h-4" /> Masivo
               </button>
@@ -279,7 +298,6 @@ export function ComprasClientView({
         />
       )}
 
-      {selectedPurchase && (
         <PurchaseDetailModal
           purchase={selectedPurchase}
           costCenters={costCenters}
@@ -291,6 +309,27 @@ export function ComprasClientView({
           }}
         />
       )}
+
+      <ExportCSVModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        data={initialPurchases || []}
+        title="Exportar Compras a Excel"
+        filename="compras_kcasesorias"
+        dateField="transaction_date"
+        columnsMap={{
+          invoice_number: 'Nº Factura',
+          transaction_date: 'Fecha',
+          'suppliers.name': 'Proveedor',
+          'cost_centers.name': 'Centro Costo',
+          amount: 'Subtotal',
+          tax_iva: 'IVA',
+          withholding_tax: 'Retenciones',
+          total: 'Total (COP)',
+          status: 'Estado',
+          notes: 'Notas'
+        }}
+      />
     </>
   );
 }

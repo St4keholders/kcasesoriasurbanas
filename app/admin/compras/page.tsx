@@ -23,10 +23,8 @@ export default async function ComprasPage() {
     supabase.from('cost_centers').select('id, name').order('name'),
     supabase.from('suppliers').select('id, name').eq('is_active', true).order('name'),
     supabase
-      .from('petty_cash_entries')
-      .select('tax_amount, total_amount')
-      .gte('entry_date', currentMonthStart)
-      .lte('entry_date', currentMonthEnd)
+      .from('petty_cash_entries_full')
+      .select('tax_amount, total_amount, entry_date, supplier_name')
   ]);
 
   return (
