@@ -298,6 +298,7 @@ export function ComprasClientView({
         />
       )}
 
+      {selectedPurchase && (
         <PurchaseDetailModal
           purchase={selectedPurchase}
           costCenters={costCenters}
