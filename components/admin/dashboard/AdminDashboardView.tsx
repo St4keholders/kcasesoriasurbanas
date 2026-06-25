@@ -26,7 +26,7 @@ export function AdminDashboardView({
       <div className="lg:col-span-7 card interactive flex flex-col h-[500px]">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <div className="display-title text-lg font-semibold">Ingresos y <em>Gastos</em></div>
+            <div className="display-title text-lg font-semibold">Centros de <em>Costos</em></div>
             <div className="text-[var(--dim)] text-xs mt-1">Evolución en los últimos 30 días</div>
           </div>
         </div>
