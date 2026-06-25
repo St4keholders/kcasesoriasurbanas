@@ -59,7 +59,7 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
               <StatusBadge status={appointment.status} />
             </div>
 
-            <EditCitaForm cita={appointment} id={id} />
+
             <div className="grid grid-cols-2 gap-4 py-4 border-y border-[#a8c4d9]/30">
               <div>
                 <div className="text-xs text-[#7a99b5] mb-1">Servicio</div>
