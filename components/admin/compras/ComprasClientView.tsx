@@ -104,7 +104,7 @@ export function ComprasClientView({
         title={<span>Compras y <em>gastos</em></span>}
         subtitle="Gestiona las cuentas por pagar y los egresos de la empresa."
         action={
-          <div className="flex flex-col gap-3 items-end w-full" style={{ minWidth: 'min(100%, calc(100vw - 40px))', width: 'max(800px, calc(100vw - 450px))' }}>
+          <div className="flex flex-col gap-3 items-end w-full max-w-md">
             <div className="flex flex-wrap items-center justify-end gap-3 w-full">
               <div className="flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-full px-4 py-1.5 shadow-sm text-sm">
                 <CalendarIcon className="w-4 h-4 text-[var(--dim)]" />
@@ -148,34 +148,32 @@ export function ComprasClientView({
               ))}
             </select>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
-               <div className="w-full sm:max-w-[400px] relative">
-                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--dim)]" />
-                 <input 
-                   type="text"
-                   placeholder="Buscar por factura o proveedor..."
-                   className="neu-input pl-9 w-full py-1.5 text-sm"
-                   value={searchQuery}
-                   onChange={e => setSearchQuery(e.target.value)}
-                 />
-               </div>
+            <div className="w-full relative">
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--dim)]" />
+              <input 
+                type="text"
+                placeholder="Buscar por factura o proveedor..."
+                className="neu-input pl-9 w-full py-1.5 text-sm"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+            </div>
 
-               <div className="flex items-center gap-2 sm:ml-auto">
-                  {(dateFrom || dateTo || supplierFilter || costCenterFilter || searchQuery) && (
-                    <button 
-                      onClick={() => { setDateFrom(''); setDateTo(''); setSupplierFilter(''); setCostCenterFilter(''); setSearchQuery(''); }} 
-                      className="text-xs text-rose-500 hover:text-rose-600 font-medium px-2 whitespace-nowrap"
-                    >
-                      Quitar Filtros
-                    </button>
-                  )}
-                  <button onClick={() => setIsModalOpen(true)} className="neu-btn-secondary py-1.5 px-3 text-sm flex items-center gap-2">
-                    <UploadCloudIcon className="w-4 h-4" /> Masivo
-                  </button>
-                  <Link href="/admin/compras/nueva" className="neu-btn-primary py-1.5 px-3 text-sm flex items-center gap-2">
-                    <PlusIcon className="w-4 h-4" /> Nueva compra
-                  </Link>
-               </div>
+            <div className="flex items-center justify-end gap-2 w-full mt-1">
+              {(dateFrom || dateTo || supplierFilter || costCenterFilter || searchQuery) && (
+                <button 
+                  onClick={() => { setDateFrom(''); setDateTo(''); setSupplierFilter(''); setCostCenterFilter(''); setSearchQuery(''); }} 
+                  className="text-xs text-rose-500 hover:text-rose-600 font-medium px-2 whitespace-nowrap"
+                >
+                  Quitar Filtros
+                </button>
+              )}
+              <button onClick={() => setIsModalOpen(true)} className="neu-btn-secondary py-1.5 px-3 text-sm flex items-center gap-2">
+                <UploadCloudIcon className="w-4 h-4" /> Masivo
+              </button>
+              <Link href="/admin/compras/nueva" className="neu-btn-primary py-1.5 px-3 text-sm flex items-center gap-2">
+                <PlusIcon className="w-4 h-4" /> Nueva compra
+              </Link>
             </div>
           </div>
         }
@@ -214,8 +212,6 @@ export function ComprasClientView({
           <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(dynamicKpis.totalCajasMenoresMes)}</div>
         </div>
       </div>
-
-      <div className="h-10 w-full mb-6"></div> {/* Spacer explicitly requested by user */}
 
       <DataTable
         data={filteredPurchases}
