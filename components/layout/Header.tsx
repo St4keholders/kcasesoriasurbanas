@@ -67,7 +67,7 @@ export function Header() {
           <span className="brand-sub">{SITE.tagline}</span>
         </div>
       </a>
-      <nav className="header-nav">
+      <nav className="nav">
         <a href="#agenda">Agendar</a>
         <a href="#servicios">Servicios</a>
         <a href="#horarios">Horarios</a>
