@@ -34,9 +34,7 @@ function parseNumber(val: any): number {
   return Number(str) || 0;
 }
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// OpenAI is initialized lazily inside the route handler to prevent build errors on Vercel
 
 export async function POST(request: Request) {
   try {
@@ -99,6 +97,9 @@ export async function POST(request: Request) {
         let extracted: any = {};
         try {
           if (process.env.OPENAI_API_KEY) {
+            const openai = new OpenAI({
+              apiKey: process.env.OPENAI_API_KEY,
+            });
             let messages: any[] = [
               {
                 role: 'system',
