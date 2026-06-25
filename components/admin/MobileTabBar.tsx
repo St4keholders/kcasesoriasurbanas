@@ -22,7 +22,7 @@ export function MobileTabBar() {
   const bubblePositions = ['10%', '30%', '50%', '70%', '90%'];
   
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 w-full" style={{ zIndex: 100 }}>
+    <div className="md:hidden fixed bottom-0 left-0 right-0 w-full print:hidden" style={{ zIndex: 100 }}>
       <div className="relative w-full bg-[var(--bg-card)] border-t border-[var(--border)]" style={{ height: '65px', boxShadow: 'var(--shadow-lg)' }}>
         
         {/* Animated Bubble */}

@@ -62,18 +62,18 @@ export function AdminSidebar({ role, userName }: { role: string; userName?: stri
   return (
     <>
       <button 
-        className="mobile-nav-toggle" 
+        className="mobile-nav-toggle print:hidden" 
         onClick={() => setIsOpen(true)}
       >
         <MenuIcon className="w-5 h-5" />
       </button>
 
       <div 
-        className={`sidebar-overlay ${isOpen ? 'open' : ''}`}
+        className={`sidebar-overlay ${isOpen ? 'open' : ''} print:hidden`}
         onClick={() => setIsOpen(false)}
       ></div>
 
-      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <aside className={`sidebar ${isOpen ? 'open' : ''} print:hidden`}>
         {isOpen && (
           <button 
             className="absolute top-4 right-4 p-2 text-[var(--dim)] hover:text-[var(--danger)] md:hidden z-50 bg-[var(--bg-card)] rounded-full shadow-sm"

@@ -37,13 +37,13 @@ export default async function AdminLayout({
         <AdminSidebar role={role} userName={profile?.full_name || user.email} />
 
         {/* Main Content */}
-        <main className="main pb-24 md:pb-8">
+        <main className="main pb-24 md:pb-8 print:pb-0">
           {children}
         </main>
       </div>
 
       {/* Mobile Tab Bar */}
-      <div className="admin-theme">
+      <div className="admin-theme print:hidden">
         <MobileTabBar />
       </div>
     </>
