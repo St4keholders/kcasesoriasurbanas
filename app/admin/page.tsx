@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { AdminDashboardView } from '@/components/admin/dashboard/AdminDashboardView';
 import { AsesorDashboardView } from '@/components/admin/dashboard/AsesorDashboardView';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboardPage() {
   const { profile } = await requireRole(['admin', 'asesor', 'tesoreria']);
   const supabase = await createClient();
@@ -15,23 +17,32 @@ export default async function AdminDashboardPage() {
   // 1. Total Leads
   const { count: leadsCount } = await supabase.from('leads').select('*', { count: 'exact', head: true });
 
-  // 2. Ventas Pagadas (Ingresos)
-  const { data: salesData } = await supabase.from('sales').select('total').eq('status', 'pagada');
+  // 2. Calcular fechas en zona horaria Colombia (UTC-5)
+  const nowUTC = new Date();
+  const colombiaOffset = -5 * 60; // UTC-5 en minutos
+  const colombiaTime = new Date(nowUTC.getTime() + (colombiaOffset - nowUTC.getTimezoneOffset()) * 60000);
+  const todayStr = colombiaTime.toISOString().split('T')[0];
+  const currentDate = colombiaTime;
+
+  const currentMonthStartISO = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 1)).toISOString();
+  const nextMonthStartISO = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)).toISOString();
+  
+  const currentMonthStartStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-01`;
+  const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+  const currentMonthEndStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+
+  // 3. Ventas Pagadas (Ingresos del mes actual)
+  const { data: salesData } = await supabase
+    .from('sales')
+    .select('total')
+    .eq('status', 'pagada')
+    .gte('created_at', currentMonthStartISO);
   const totalIngresos = salesData?.reduce((acc, sale) => acc + Number(sale.total), 0) || 0;
 
-  // 3. Citas de hoy y del mes
-  const currentDate = new Date();
-  const todayStr = currentDate.toISOString().split('T')[0];
-  
-  const currentMonthStartISO = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString();
-  const nextMonthStartISO = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1).toISOString();
-  
-  const currentMonthStartStr = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0];
-  const currentMonthEndStr = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0];
+  // 4. Citas de hoy
+  const { count: citasHoy } = await supabase.from('appointments').select('*', { count: 'exact', head: true }).gte('scheduled_at', `${todayStr}T00:00:00`).lt('scheduled_at', `${todayStr}T23:59:59`);
 
-  const { count: citasHoy } = await supabase.from('appointments').select('*', { count: 'exact', head: true }).gte('scheduled_at', `${todayStr}T00:00:00Z`).lt('scheduled_at', `${todayStr}T23:59:59Z`);
-
-  // 4. Costos Hoy
+  // 5. Costos Hoy (todas las compras no anuladas con transaction_date = hoy)
   const { data: purchasesHoy } = await supabase
     .from('purchases')
     .select('total')

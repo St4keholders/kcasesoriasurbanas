@@ -1,16 +1,35 @@
 import { createClient } from '@/lib/supabase/server';
 import { AdminTopbar } from '@/components/admin/AdminTopbar';
-import { BuildingIcon, MapPinIcon, HomeIcon, CalculatorIcon } from 'lucide-react';
+import { BuildingIcon, MapPinIcon, HomeIcon, CalculatorIcon, LayersIcon } from 'lucide-react';
 import { HeatmapCalendar } from '@/components/admin/dashboard/HeatmapCalendar';
+
+export const dynamic = 'force-dynamic';
+
+// Iconos por centro de costo (se pueden extender)
+const centerIcons: Record<string, any> = {
+  'KC ASESORÍAS': BuildingIcon,
+  'TOLÚ': MapPinIcon,
+  'Apto Bello': HomeIcon,
+};
+
+const centerColors: Record<string, string> = {
+  'KC ASESORÍAS': 'blue',
+  'TOLÚ': 'orange',
+  'Apto Bello': 'purple',
+};
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
 
-  const currentDate = new Date();
-  // Set to first day of current month
-  const currentMonthStartStr = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0];
-  // Set to last day of current month
-  const currentMonthEndStr = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0];
+  // Zona horaria Colombia (UTC-5)
+  const nowUTC = new Date();
+  const colombiaOffset = -5 * 60;
+  const colombiaTime = new Date(nowUTC.getTime() + (colombiaOffset - nowUTC.getTimezoneOffset()) * 60000);
+  const currentDate = colombiaTime;
+
+  const currentMonthStartStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-01`;
+  const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+  const currentMonthEndStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
 
   const { data: purchasesRaw, error } = await supabase
     .from('purchases')
@@ -24,58 +43,40 @@ export default async function AdminDashboardPage() {
 
   const purchases = (purchasesRaw || []).filter(p => p.status !== 'anulado');
 
-  let medellinTotal = 0;
-  let toluTotal = 0;
-  let aptoBelloTotal = 0;
+  // Agrupar por centro de costo dinámicamente
+  const centerTotals: Record<string, number> = {};
   let generalTotal = 0;
 
   purchases.forEach(p => {
     const amount = Number(p.total) || 0;
     generalTotal += amount;
-    const ccName = p.cost_centers?.name || '';
-    if (ccName === 'KC ASESORÍAS') {
-      medellinTotal += amount;
-    } else if (ccName === 'TOLÚ') {
-      toluTotal += amount;
-    } else if (ccName === 'Apto Bello') {
-      aptoBelloTotal += amount;
-    }
+    const ccName = (p as any).cost_centers?.name || 'Otros';
+    centerTotals[ccName] = (centerTotals[ccName] || 0) + amount;
   });
 
   // Formatters
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
 
-  const kpis = [
-    {
-      name: 'Costos Medellín',
-      value: formatCurrency(medellinTotal),
-      subtext: 'Acumulado a día de hoy (KC Asesorías)',
-      colorClass: 'blue',
-      Icon: BuildingIcon
-    },
-    {
-      name: 'Costos Tolú',
-      value: formatCurrency(toluTotal),
-      subtext: 'Acumulado a día de hoy (Tolú)',
-      colorClass: 'orange',
-      Icon: MapPinIcon
-    },
-    {
-      name: 'Costos Apto Bello',
-      value: formatCurrency(aptoBelloTotal),
-      subtext: 'Acumulado a día de hoy (Apto Bello)',
-      colorClass: 'purple',
-      Icon: HomeIcon
-    },
-    {
-      name: 'Total Costo Mes',
-      value: formatCurrency(generalTotal),
-      subtext: 'Suma de todos los centros',
-      colorClass: 'green',
-      Icon: CalculatorIcon
-    },
-  ];
+  // Construir KPIs dinámicos por cada centro de costo encontrado
+  const kpis = Object.entries(centerTotals)
+    .sort((a, b) => b[1] - a[1]) // Ordenar de mayor a menor
+    .map(([name, total]) => ({
+      name: `Costos ${name}`,
+      value: formatCurrency(total),
+      subtext: `Acumulado a día de hoy (${name})`,
+      colorClass: centerColors[name] || 'blue',
+      Icon: centerIcons[name] || LayersIcon,
+    }));
+
+  // Agregar el total general al final
+  kpis.push({
+    name: 'Total Costo Mes',
+    value: formatCurrency(generalTotal),
+    subtext: 'Suma de todos los centros',
+    colorClass: 'green',
+    Icon: CalculatorIcon,
+  });
 
   return (
     <div className="main">
