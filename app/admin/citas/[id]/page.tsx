@@ -14,7 +14,7 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
   await requireRole(['admin', 'asesor']);
   const supabase = await createClient();
 
-  const { data: appointment, error } = await supabase
+  const { data, error } = await supabase
     .from('appointments')
     .select(`
       *,
@@ -25,6 +25,7 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
     .eq('id', id)
     .single();
 
+  const appointment = data as any;
   if (error || !appointment) notFound();
 
   const formatDateTime = (iso: string) => format(new Date(iso), "dd 'de' MMMM, yyyy - hh:mm a", { locale: es });
