@@ -78,11 +78,11 @@ export function PrintPOSClient({ sale }: { sale: any }) {
                 {sale.sale_items?.map((item: any) => (
                   <tr key={item.id}>
                     <td style={{ padding: '10px 0', borderBottom: '1px solid #f0f5fa', verticalAlign: 'top' }}>
-                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#1a2d3d' }}>{item.products?.name}</div>
+                      <div style={{ fontSize: '13px', fontWeight: 500, color: '#1a2d3d' }}>{item.description}</div>
                       <div style={{ fontSize: '11px', color: '#a8c4d9', marginTop: '2px' }}>{formatCurrency(item.unit_price)} c/u</div>
                     </td>
                     <td style={{ padding: '10px 0', borderBottom: '1px solid #f0f5fa', textAlign: 'center', fontSize: '13px', color: '#3d5a73' }}>{item.quantity}</td>
-                    <td style={{ padding: '10px 0', borderBottom: '1px solid #f0f5fa', textAlign: 'right', fontSize: '13px', fontWeight: 600, color: '#1a2d3d' }}>{formatCurrency(item.total_price)}</td>
+                    <td style={{ padding: '10px 0', borderBottom: '1px solid #f0f5fa', textAlign: 'right', fontSize: '13px', fontWeight: 600, color: '#1a2d3d' }}>{formatCurrency(item.subtotal)}</td>
                   </tr>
                 ))}
               </tbody>

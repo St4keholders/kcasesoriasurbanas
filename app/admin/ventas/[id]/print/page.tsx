@@ -8,23 +8,28 @@ export default async function PrintPOSPage({ params }: { params: Promise<{ id: s
   await requireRole(['admin', 'asesor']);
   
   const supabase = await createClient();
-  const { data: sale } = await supabase
+  const { data, error } = await supabase
     .from('sales')
     .select(`
       *,
-      leads ( full_name, document_number, phone, email, address ),
+      leads ( full_name, document_number, phone, email ),
       profiles!sales_closed_by_fkey ( full_name ),
       sale_items (
         id,
+        description,
         quantity,
         unit_price,
-        total_price,
-        products ( name, description )
+        subtotal
       )
     `)
     .eq('id', id)
     .single();
 
+  if (error) {
+    console.error("Sale query error:", error);
+  }
+
+  const sale = data as any;
   if (!sale) notFound();
 
   return <PrintPOSClient sale={sale} />;

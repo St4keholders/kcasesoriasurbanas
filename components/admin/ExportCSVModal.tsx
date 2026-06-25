@@ -63,7 +63,7 @@ export function ExportCSVModal({ isOpen, onClose, data, title, filename, columns
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Datos");
-    XLSX.writeFile(workbook, `${filename}.csv`);
+    XLSX.writeFile(workbook, `${filename}.xlsx`);
     
     onClose();
   };
@@ -78,7 +78,7 @@ export function ExportCSVModal({ isOpen, onClose, data, title, filename, columns
           <button onClick={onClose} className="neu-btn-secondary">Cancelar</button>
           <button onClick={handleExport} className="neu-btn-primary flex items-center gap-2">
             <DownloadIcon className="w-4 h-4" />
-            Exportar CSV
+            Exportar Excel
           </button>
         </div>
       }

@@ -31,7 +31,7 @@ export function VentasClientView({ sales }: { sales: any[] }) {
               onClick={() => setIsExportModalOpen(true)}
               className="neu-btn-secondary"
             >
-              <DownloadIcon className="w-4 h-4 mr-2" /> Exportar CSV
+              <DownloadIcon className="w-4 h-4 mr-2" /> Exportar Excel
             </button>
             <Link href="/admin/ventas/nueva" className="btn btn-primary">
               <PlusIcon className="w-4 h-4" /> Nueva cotización

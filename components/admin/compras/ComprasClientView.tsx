@@ -182,11 +182,11 @@ export function ComprasClientView({
                 </button>
               )}
               <button 
-                onClick={() => setIsExportModalOpen(true)}
-                className="neu-btn-secondary py-1.5 px-3 text-sm flex items-center gap-2"
-              >
-                <DownloadIcon className="w-4 h-4" /> Exportar CSV
-              </button>
+              onClick={() => setIsExportModalOpen(true)}
+              className="neu-btn-secondary py-1.5 px-3 text-sm flex items-center gap-2"
+            >
+              <DownloadIcon className="w-4 h-4" /> Exportar Excel
+            </button>
               <button onClick={() => setIsModalOpen(true)} className="neu-btn-secondary py-1.5 px-3 text-sm flex items-center gap-2">
                 <UploadCloudIcon className="w-4 h-4" /> Masivo
               </button>
