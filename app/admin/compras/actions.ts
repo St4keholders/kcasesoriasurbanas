@@ -135,7 +135,7 @@ export async function updatePurchase(id: string, data: any) {
       amount: data.amount,
       tax_iva: data.tax_iva,
       withholding_tax: data.withholding_tax,
-      total: data.amount + data.tax_iva - data.withholding_tax,
+      total: data.total !== undefined ? data.total : (data.amount + data.tax_iva - data.withholding_tax),
       transaction_date: data.transaction_date,
       due_date: data.due_date || null,
       notes: data.notes
