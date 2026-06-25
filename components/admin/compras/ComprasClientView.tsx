@@ -104,7 +104,7 @@ export function ComprasClientView({
         title={<span>Compras y <em>gastos</em></span>}
         subtitle="Gestiona las cuentas por pagar y los egresos de la empresa."
         action={
-          <div className="flex flex-col gap-3 items-end" style={{ width: '800px', maxWidth: 'calc(100vw - 300px)' }}>
+          <div className="flex flex-col gap-3 items-end w-full lg:w-[700px] xl:w-[800px]">
             <div className="flex flex-wrap items-center justify-end gap-3 w-full">
               <div className="flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-full px-4 py-1.5 shadow-sm text-sm">
                 <CalendarIcon className="w-4 h-4 text-[var(--dim)]" />
@@ -148,8 +148,8 @@ export function ComprasClientView({
               ))}
             </select>
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 w-full">
-               <div className="w-full relative flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+               <div className="w-full sm:max-w-[400px] relative">
                  <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--dim)]" />
                  <input 
                    type="text"
@@ -160,7 +160,7 @@ export function ComprasClientView({
                  />
                </div>
 
-               <div className="flex items-center gap-2 shrink-0 ml-auto justify-end">
+               <div className="flex items-center gap-2 sm:ml-auto">
                   {(dateFrom || dateTo || supplierFilter || costCenterFilter || searchQuery) && (
                     <button 
                       onClick={() => { setDateFrom(''); setDateTo(''); setSupplierFilter(''); setCostCenterFilter(''); setSearchQuery(''); }} 
