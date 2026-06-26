@@ -1,13 +1,32 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { DataTable } from '@/components/admin/ui/DataTable';
 import Link from 'next/link';
-import { PlusIcon, EyeIcon } from 'lucide-react';
+import { PlusIcon, EyeIcon, Trash2Icon } from 'lucide-react';
 import { formatDate } from '@/lib/utils/date';
 import { AdminTopbar } from '@/components/admin/AdminTopbar';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
 export function LeadsClientView({ leadsWithCounts }: { leadsWithCounts: any[] }) {
+  const router = useRouter();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`¿Eliminar a "${name}"? Esta acción no se puede deshacer.`)) return;
+    setDeletingId(id);
+    try {
+      const supabase = createClient();
+      await (supabase as any).from('leads').delete().eq('id', id);
+      router.refresh();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <>
       <AdminTopbar 
@@ -97,12 +116,22 @@ export function LeadsClientView({ leadsWithCounts }: { leadsWithCounts: any[] })
           {
             header: 'Acciones',
             accessor: (row) => (
-              <Link
-                href={`/admin/leads/${row.id}`}
-                className="btn btn-ghost"
-              >
-                <EyeIcon className="w-4 h-4" /> Detalle
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/admin/leads/${row.id}`}
+                  className="btn btn-ghost"
+                >
+                  <EyeIcon className="w-4 h-4" /> Detalle
+                </Link>
+                <button
+                  onClick={() => handleDelete(row.id, row.full_name)}
+                  disabled={deletingId === row.id}
+                  className="p-1.5 rounded-lg text-[var(--dim)] hover:text-[var(--danger)] hover:bg-red-500/10 transition-colors"
+                  title="Eliminar cliente"
+                >
+                  <Trash2Icon className="w-4 h-4" />
+                </button>
+              </div>
             ),
           },
         ]}

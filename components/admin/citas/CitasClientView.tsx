@@ -1,19 +1,38 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { DataTable } from '@/components/admin/ui/DataTable';
 import { StatusBadge } from '@/components/admin/ui/StatusBadge';
 import Link from 'next/link';
-import { PlusIcon, EyeIcon } from 'lucide-react';
+import { PlusIcon, EyeIcon, Trash2Icon } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { AdminTopbar } from '@/components/admin/AdminTopbar';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
 interface CitasClientViewProps {
   appointments: any[];
 }
 
 export function CitasClientView({ appointments }: CitasClientViewProps) {
+  const router = useRouter();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleDelete = async (id: string, clientName: string) => {
+    if (!confirm(`¿Eliminar la cita de "${clientName}"? Esta acción no se puede deshacer.`)) return;
+    setDeletingId(id);
+    try {
+      const supabase = createClient();
+      await (supabase as any).from('appointments').delete().eq('id', id);
+      router.refresh();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   const formatDateTime = (iso: string | null | undefined) => {
     if (!iso) return 'Por definir';
     try {
@@ -69,13 +88,23 @@ export function CitasClientView({ appointments }: CitasClientViewProps) {
           {
             header: 'Acciones',
             accessor: (row: any) => (
-              <Link
-                href={`/admin/citas/${row.id}`}
-                className="btn btn-ghost"
-              >
-                <EyeIcon className="w-4 h-4" />
-                Gestionar
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/admin/citas/${row.id}`}
+                  className="btn btn-ghost"
+                >
+                  <EyeIcon className="w-4 h-4" />
+                  Gestionar
+                </Link>
+                <button
+                  onClick={() => handleDelete(row.id, row.leads?.full_name || 'esta cita')}
+                  disabled={deletingId === row.id}
+                  className="p-1.5 rounded-lg text-[var(--dim)] hover:text-[var(--danger)] hover:bg-red-500/10 transition-colors"
+                  title="Eliminar cita"
+                >
+                  <Trash2Icon className="w-4 h-4" />
+                </button>
+              </div>
             ),
           },
         ]}
