@@ -2,12 +2,12 @@ import { requireRole } from '@/lib/auth/require-role';
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeftIcon, FileTextIcon, UserIcon } from 'lucide-react';
+import { UserIcon, CalendarIcon, ClockIcon, BriefcaseIcon, MessageSquareIcon } from 'lucide-react';
 import { StatusBadge } from '@/components/admin/ui/StatusBadge';
+import { AdminTopbar } from '@/components/admin/AdminTopbar';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { updateAppointmentStatus } from '../actions';
-import { revalidatePath } from 'next/cache';
 
 export default async function DetalleCitaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -28,7 +28,8 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
   const appointment = data as any;
   if (error || !appointment) notFound();
 
-  const formatDateTime = (iso: string) => format(new Date(iso), "dd 'de' MMMM, yyyy - hh:mm a", { locale: es });
+  const formatDateTime = (iso: string) =>
+    format(new Date(iso), "dd 'de' MMMM, yyyy — hh:mm a", { locale: es });
 
   const handleStatusChange = async (formData: FormData) => {
     'use server';
@@ -37,70 +38,137 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/admin/citas" className="p-2 bg-white text-[#7a99b5] hover:text-[#1a2d3d] rounded-full shadow-sm border border-[#a8c4d9]/40 transition-colors">
-          <ArrowLeftIcon className="w-5 h-5" />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-[var(--font-display)] text-[#1a2d3d]">Detalle de Cita</h1>
-          <p className="text-[#7a99b5] text-sm">Gestiona el estado y seguimiento de esta reunión.</p>
-        </div>
-      </div>
+    <div className="main">
+      <AdminTopbar
+        eyebrow="— CITAS"
+        title={<span>Detalle de <em>cita</em></span>}
+        subtitle="Gestiona el estado y seguimiento de esta reunión."
+        action={
+          <Link href="/admin/citas" className="neu-btn text-sm flex items-center gap-2">
+            ← Volver a Citas
+          </Link>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Main info */}
         <div className="md:col-span-2 space-y-6">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-[#a8c4d9]/40 space-y-4">
-            <div className="flex justify-between items-start">
-              <div>
-                <h2 className="font-medium text-[#1a2d3d] mb-1">Información de la Cita</h2>
-                <div className="text-sm text-[#7a99b5] capitalize">{formatDateTime(appointment.scheduled_at)}</div>
-              </div>
+          {/* Info card */}
+          <div className="card p-6 space-y-5">
+            <div className="flex items-start justify-between">
+              <h2 className="font-semibold text-[var(--fg)] text-lg">Información de la Cita</h2>
               <StatusBadge status={appointment.status} />
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center shrink-0">
+                  <CalendarIcon className="w-4 h-4 text-[var(--primary)]" />
+                </div>
+                <div>
+                  <div className="text-xs text-[var(--dim)] mb-0.5 uppercase tracking-wider">Fecha y Hora</div>
+                  <div className="text-sm font-medium text-[var(--fg)] capitalize">
+                    {formatDateTime(appointment.scheduled_at)}
+                  </div>
+                </div>
+              </div>
 
-            <div className="grid grid-cols-2 gap-4 py-4 border-y border-[#a8c4d9]/30">
-              <div>
-                <div className="text-xs text-[#7a99b5] mb-1">Servicio</div>
-                <div className="text-sm font-medium text-[#3d5a73]">{appointment.service_types?.name || 'General'}</div>
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center shrink-0">
+                  <BriefcaseIcon className="w-4 h-4 text-[var(--primary)]" />
+                </div>
+                <div>
+                  <div className="text-xs text-[var(--dim)] mb-0.5 uppercase tracking-wider">Servicio</div>
+                  <div className="text-sm font-medium text-[var(--fg)]">
+                    {appointment.service_types?.name || 'General'}
+                  </div>
+                </div>
               </div>
-              <div>
-                <div className="text-xs text-[#7a99b5] mb-1">Asesor Asignado</div>
-                <div className="text-sm font-medium text-[#3d5a73]">{appointment.profiles?.full_name}</div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center shrink-0">
+                  <ClockIcon className="w-4 h-4 text-[var(--primary)]" />
+                </div>
+                <div>
+                  <div className="text-xs text-[var(--dim)] mb-0.5 uppercase tracking-wider">Duración</div>
+                  <div className="text-sm font-medium text-[var(--fg)]">
+                    {appointment.duration_minutes ? `${appointment.duration_minutes} minutos` : 'No especificada'}
+                  </div>
+                </div>
               </div>
-              <div>
-                <div className="text-xs text-[#7a99b5] mb-1">Duración</div>
-                <div className="text-sm font-medium text-[#3d5a73]">{appointment.duration_minutes} minutos</div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center shrink-0">
+                  <UserIcon className="w-4 h-4 text-[var(--primary)]" />
+                </div>
+                <div>
+                  <div className="text-xs text-[var(--dim)] mb-0.5 uppercase tracking-wider">Asesor Asignado</div>
+                  <div className="text-sm font-medium text-[var(--fg)]">
+                    {appointment.profiles?.full_name || 'Sin asignar'}
+                  </div>
+                </div>
               </div>
             </div>
 
             {appointment.notes && (
-              <div>
-                <div className="text-xs text-[#7a99b5] mb-1">Notas</div>
-                <p className="text-sm text-[#3d5a73] bg-[#f7fbff] p-3 rounded-lg">{appointment.notes}</p>
+              <div className="flex items-start gap-3 pt-4 border-t border-[var(--shadow-dark)]">
+                <div className="w-9 h-9 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center shrink-0">
+                  <MessageSquareIcon className="w-4 h-4 text-[var(--primary)]" />
+                </div>
+                <div>
+                  <div className="text-xs text-[var(--dim)] mb-1 uppercase tracking-wider">Notas</div>
+                  <p className="text-sm text-[var(--fg)]">{appointment.notes}</p>
+                </div>
               </div>
             )}
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-[#a8c4d9]/40">
-            <h3 className="font-medium text-[#1a2d3d] mb-4">Actualizar Estado</h3>
-            <form action={handleStatusChange} className="flex flex-wrap gap-2">
-              <button name="status" value="agendada" disabled={appointment.status === 'agendada'} className="px-4 py-2 text-sm font-medium rounded-lg border border-[#a8c4d9]/50 hover:bg-[#f7fbff] disabled:opacity-50">Agendada</button>
-              <button name="status" value="en_curso" disabled={appointment.status === 'en_curso'} className="px-4 py-2 text-sm font-medium rounded-lg border border-amber-200 hover:bg-amber-50 text-amber-700 disabled:opacity-50">En Curso</button>
-              <button name="status" value="atendida" disabled={appointment.status === 'atendida'} className="px-4 py-2 text-sm font-medium rounded-lg border border-emerald-200 hover:bg-emerald-50 text-emerald-700 disabled:opacity-50">Marcar como Atendida</button>
-              <button name="status" value="cancelada" disabled={appointment.status === 'cancelada'} className="px-4 py-2 text-sm font-medium rounded-lg border border-rose-200 hover:bg-rose-50 text-rose-700 disabled:opacity-50">Cancelar Cita</button>
+          {/* Status update */}
+          <div className="card p-6">
+            <h3 className="font-semibold text-[var(--fg)] mb-4">Actualizar Estado</h3>
+            <form action={handleStatusChange} className="flex flex-wrap gap-3">
+              <button
+                name="status" value="agendada"
+                disabled={appointment.status === 'agendada'}
+                className="neu-btn text-sm disabled:opacity-40"
+              >
+                Agendada
+              </button>
+              <button
+                name="status" value="en_curso"
+                disabled={appointment.status === 'en_curso'}
+                className="neu-btn text-sm disabled:opacity-40"
+                style={{ borderColor: 'var(--warning)', color: 'var(--warning)' }}
+              >
+                En Curso
+              </button>
+              <button
+                name="status" value="atendida"
+                disabled={appointment.status === 'atendida'}
+                className="neu-btn text-sm disabled:opacity-40"
+                style={{ borderColor: 'var(--success)', color: 'var(--success)' }}
+              >
+                Marcar como Atendida
+              </button>
+              <button
+                name="status" value="cancelada"
+                disabled={appointment.status === 'cancelada'}
+                className="neu-btn text-sm disabled:opacity-40"
+                style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
+              >
+                Cancelar Cita
+              </button>
             </form>
 
             {appointment.status === 'atendida' && (
-              <div className="mt-6 p-4 bg-emerald-50 border border-emerald-100 rounded-lg flex items-center justify-between">
+              <div className="mt-5 p-4 rounded-xl border border-[var(--success)]/30 bg-[var(--success)]/5 flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-medium text-emerald-800">Cita completada</h4>
-                  <p className="text-xs text-emerald-600 mt-1">¿Deseas crear una cotización o venta para este cliente?</p>
+                  <div className="text-sm font-semibold text-[var(--fg)]">Cita completada ✓</div>
+                  <div className="text-xs text-[var(--dim)] mt-0.5">¿Deseas registrar una venta para este cliente?</div>
                 </div>
                 <Link
                   href={`/admin/ventas/nueva?leadId=${appointment.lead_id}&appointmentId=${appointment.id}`}
-                  className="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors"
+                  className="neu-btn-primary text-sm"
                 >
                   Crear Venta
                 </Link>
@@ -109,17 +177,21 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
           </div>
         </div>
 
-        <div className="md:col-span-1 space-y-6">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-[#a8c4d9]/40 text-center">
-            <div className="w-16 h-16 bg-[#e6f2fb] rounded-full flex items-center justify-center mx-auto mb-4 text-[#5ba3d9]">
-              <UserIcon className="w-8 h-8" />
+        {/* Client card */}
+        <div className="md:col-span-1">
+          <div className="card p-6 text-center">
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-[var(--primary)]"
+              style={{ background: 'var(--primary-soft, rgba(91,163,217,0.12))' }}
+            >
+              {appointment.leads?.full_name?.charAt(0)?.toUpperCase() || '?'}
             </div>
-            <h3 className="font-medium text-[#1a2d3d] mb-1">{appointment.leads?.full_name}</h3>
-            <p className="text-sm text-[#7a99b5] mb-4">{appointment.leads?.phone}</p>
-            
+            <h3 className="font-semibold text-[var(--fg)] mb-1">{appointment.leads?.full_name}</h3>
+            <p className="text-sm text-[var(--dim)] mb-5">{appointment.leads?.phone}</p>
+
             <Link
               href={`/admin/leads/${appointment.lead_id}`}
-              className="w-full inline-flex justify-center items-center gap-2 px-4 py-2 bg-white text-[#3d5a73] border border-[#a8c4d9]/50 rounded-lg font-medium transition-colors hover:bg-[#f7fbff] text-sm"
+              className="neu-btn w-full justify-center text-sm"
             >
               Ver Ficha Cliente
             </Link>

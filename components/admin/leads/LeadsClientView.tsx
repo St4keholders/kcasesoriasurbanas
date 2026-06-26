@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { PlusIcon, EyeIcon, Trash2Icon } from 'lucide-react';
 import { formatDate } from '@/lib/utils/date';
 import { AdminTopbar } from '@/components/admin/AdminTopbar';
-import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
 export function LeadsClientView({ leadsWithCounts }: { leadsWithCounts: any[] }) {
@@ -14,11 +13,15 @@ export function LeadsClientView({ leadsWithCounts }: { leadsWithCounts: any[] })
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`¿Eliminar a "${name}"? Esta acción no se puede deshacer.`)) return;
+    if (!confirm(`¿Eliminar a "${name}" y todas sus citas? Esta acción no se puede deshacer.`)) return;
     setDeletingId(id);
     try {
-      const supabase = createClient();
-      await (supabase as any).from('leads').delete().eq('id', id);
+      const res = await fetch(`/api/leads/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        alert(`Error al eliminar: ${data.error}`);
+        return;
+      }
       router.refresh();
     } catch (e) {
       console.error(e);
