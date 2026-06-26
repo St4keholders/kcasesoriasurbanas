@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { DataTable } from '@/components/admin/ui/DataTable';
 import { StatusBadge } from '@/components/admin/ui/StatusBadge';
 import { AdminTopbar } from '@/components/admin/AdminTopbar';
 import { AddInvoiceButton } from '@/app/admin/caja-menor/[id]/AddInvoiceButton';
+import { AddIncomeButton } from '@/app/admin/caja-menor/[id]/AddIncomeButton';
 import { BulkUploadButton } from '@/app/admin/caja-menor/[id]/BulkUploadButton';
-import { ExternalLinkIcon, DownloadIcon } from 'lucide-react';
+import { EditEntryModal } from '@/app/admin/caja-menor/[id]/EditEntryModal';
+import { ExternalLinkIcon, DownloadIcon, PencilIcon, ArrowUpIcon, ArrowDownIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -16,6 +18,8 @@ interface CajaMenorDetailClientViewProps {
 }
 
 export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClientViewProps) {
+  const [editingEntry, setEditingEntry] = useState<any | null>(null);
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(amount);
   };
@@ -25,19 +29,29 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
     return format(new Date(iso), "dd MMM yyyy", { locale: es });
   };
 
+  // Calculate totals
+  const totalIngresos = entries
+    ?.filter((e: any) => e.entry_type === 'ingreso')
+    .reduce((acc: number, curr: any) => acc + Number(curr.total_amount), 0) || 0;
+
+  const totalEgresos = entries
+    ?.filter((e: any) => e.entry_type !== 'ingreso')
+    .reduce((acc: number, curr: any) => acc + Number(curr.total_amount), 0) || 0;
+
+  const saldoDisponible = totalIngresos - totalEgresos;
+
   const handleDownloadPDF = () => {
-    const totalGastado = entries?.reduce((acc: number, curr: any) => acc + Number(curr.total_amount), 0) || 0;
-    
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
     
     const rows = entries.map(e => `
       <tr>
         <td style="padding:10px 12px;border-bottom:1px solid #e8f0f8;font-size:13px;color:#3d5a73">${formatDateTime(e.entry_date)}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #e8f0f8;font-size:13px;color:${e.entry_type === 'ingreso' ? '#22c55e' : '#1a2d3d'};font-weight:600">${e.entry_type === 'ingreso' ? '↑ Ingreso' : '↓ Egreso'}</td>
         <td style="padding:10px 12px;border-bottom:1px solid #e8f0f8;font-size:13px;font-weight:600;color:#1a2d3d">${e.supplier_name || ''}</td>
         <td style="padding:10px 12px;border-bottom:1px solid #e8f0f8;font-size:13px;color:#3d5a73">${e.concept || ''}</td>
         <td style="padding:10px 12px;border-bottom:1px solid #e8f0f8;font-size:13px;color:#7a99b5;text-align:right">${formatCurrency(e.tax_amount || 0)}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #e8f0f8;font-size:13px;font-weight:700;color:#1a2d3d;text-align:right">${formatCurrency(e.total_amount)}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #e8f0f8;font-size:13px;font-weight:700;color:${e.entry_type === 'ingreso' ? '#22c55e' : '#1a2d3d'};text-align:right">${e.entry_type === 'ingreso' ? '+' : '-'}${formatCurrency(e.total_amount)}</td>
       </tr>
     `).join('');
 
@@ -57,9 +71,11 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
           .summary-card { flex:1; background:#f7fbff; border:1px solid #e0ecf5; border-radius:10px; padding:16px 20px; }
           .summary-card .label { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#7a99b5; margin-bottom:4px; }
           .summary-card .value { font-size:20px; font-weight:700; color:#1a2d3d; }
+          .summary-card .value.green { color:#22c55e; }
+          .summary-card .value.red { color:#ef4444; }
           table { width:100%; border-collapse:collapse; }
           thead th { padding:10px 12px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#7a99b5; background:#f7fbff; border-bottom:2px solid #d4e6f3; }
-          thead th:nth-child(4), thead th:nth-child(5) { text-align:right; }
+          thead th:nth-child(5), thead th:nth-child(6) { text-align:right; }
           .footer { margin-top:40px; padding-top:16px; border-top:1px solid #e0ecf5; text-align:center; font-size:11px; color:#a8c4d9; }
           @media print { body { padding:20px; } }
         </style>
@@ -79,12 +95,16 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
         
         <div class="summary">
           <div class="summary-card">
-            <div class="label">Total Gastado</div>
-            <div class="value">${formatCurrency(totalGastado)}</div>
+            <div class="label">Total Ingresos</div>
+            <div class="value green">${formatCurrency(totalIngresos)}</div>
           </div>
           <div class="summary-card">
-            <div class="label">Registros</div>
-            <div class="value">${entries.length}</div>
+            <div class="label">Total Egresos</div>
+            <div class="value red">${formatCurrency(totalEgresos)}</div>
+          </div>
+          <div class="summary-card">
+            <div class="label">Saldo Disponible</div>
+            <div class="value">${formatCurrency(saldoDisponible)}</div>
           </div>
           <div class="summary-card">
             <div class="label">Fecha de Reporte</div>
@@ -96,6 +116,7 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
           <thead>
             <tr>
               <th>Fecha</th>
+              <th>Tipo</th>
               <th>Proveedor</th>
               <th>Concepto</th>
               <th>IVA</th>
@@ -105,8 +126,8 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
           <tbody>${rows}</tbody>
           <tfoot>
             <tr>
-              <td colspan="4" style="padding:14px 12px;text-align:right;font-weight:700;font-size:14px;border-top:2px solid #d4e6f3;color:#1a2d3d">TOTAL:</td>
-              <td style="padding:14px 12px;text-align:right;font-weight:800;font-size:16px;border-top:2px solid #d4e6f3;color:#5ba3d9">${formatCurrency(totalGastado)}</td>
+              <td colspan="5" style="padding:14px 12px;text-align:right;font-weight:700;font-size:14px;border-top:2px solid #d4e6f3;color:#1a2d3d">SALDO DISPONIBLE:</td>
+              <td style="padding:14px 12px;text-align:right;font-weight:800;font-size:16px;border-top:2px solid #d4e6f3;color:#5ba3d9">${formatCurrency(saldoDisponible)}</td>
             </tr>
           </tfoot>
         </table>
@@ -137,6 +158,7 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
             {box.status === 'abierta' && (
               <>
                 <BulkUploadButton boxId={box.id} />
+                <AddIncomeButton boxId={box.id} />
                 <AddInvoiceButton boxId={box.id} />
               </>
             )}
@@ -144,15 +166,32 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
         }
       />
 
-      <div className="mb-6 card p-5 flex justify-between items-center bg-[var(--admin-bg-hover)]">
-        <div>
-          <div className="text-sm text-[var(--dim)] mb-1">Estado Actual</div>
+      {/* Summary Cards */}
+      <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="card p-5">
+          <div className="text-sm text-[var(--dim)] mb-1">Estado</div>
           <StatusBadge status={box.status} />
         </div>
-        <div className="text-right">
-          <div className="text-sm text-[var(--dim)] mb-1">Total Gastado</div>
-          <div className="text-2xl font-bold text-[var(--fg)]">
-            {formatCurrency(entries?.reduce((acc: number, curr: any) => acc + Number(curr.total_amount), 0) || 0)}
+        <div className="card p-5">
+          <div className="text-sm text-[var(--dim)] mb-1 flex items-center gap-1">
+            <ArrowUpIcon className="w-3 h-3" style={{ color: 'var(--success)' }} /> Total Ingresos
+          </div>
+          <div className="text-xl font-bold" style={{ color: 'var(--success)' }}>
+            {formatCurrency(totalIngresos)}
+          </div>
+        </div>
+        <div className="card p-5">
+          <div className="text-sm text-[var(--dim)] mb-1 flex items-center gap-1">
+            <ArrowDownIcon className="w-3 h-3" style={{ color: 'var(--danger)' }} /> Total Egresos
+          </div>
+          <div className="text-xl font-bold" style={{ color: 'var(--danger)' }}>
+            {formatCurrency(totalEgresos)}
+          </div>
+        </div>
+        <div className="card p-5">
+          <div className="text-sm text-[var(--dim)] mb-1">Saldo Disponible</div>
+          <div className={`text-2xl font-bold ${saldoDisponible >= 0 ? 'text-[var(--fg)]' : 'text-[var(--danger)]'}`}>
+            {formatCurrency(saldoDisponible)}
           </div>
         </div>
       </div>
@@ -161,6 +200,21 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
         data={entries || []}
         keyExtractor={(row: any) => row.id}
         columns={[
+          {
+            header: 'Tipo',
+            accessor: (row: any) => (
+              <span
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
+                style={{
+                  background: row.entry_type === 'ingreso' ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.10)',
+                  color: row.entry_type === 'ingreso' ? '#22c55e' : '#ef4444',
+                }}
+              >
+                {row.entry_type === 'ingreso' ? <ArrowUpIcon className="w-3 h-3" /> : <ArrowDownIcon className="w-3 h-3" />}
+                {row.entry_type === 'ingreso' ? 'Ingreso' : 'Egreso'}
+              </span>
+            ),
+          },
           {
             header: 'Fecha',
             accessor: (row: any) => <span className="text-sm">{formatDateTime(row.entry_date)}</span>,
@@ -184,7 +238,14 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
           },
           {
             header: 'Total',
-            accessor: (row: any) => <span className="text-sm font-bold">{formatCurrency(row.total_amount)}</span>,
+            accessor: (row: any) => (
+              <span
+                className="text-sm font-bold"
+                style={{ color: row.entry_type === 'ingreso' ? '#22c55e' : undefined }}
+              >
+                {row.entry_type === 'ingreso' ? '+' : '-'}{formatCurrency(row.total_amount)}
+              </span>
+            ),
           },
           {
             header: 'Soporte',
@@ -194,8 +255,23 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
               </a>
             ) : <span className="text-xs text-[var(--dim)]">N/A</span>,
           },
+          {
+            header: 'Acciones',
+            accessor: (row: any) => (
+              <button
+                onClick={() => setEditingEntry(row)}
+                className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1"
+              >
+                <PencilIcon className="w-3 h-3" /> Editar
+              </button>
+            ),
+          },
         ]}
       />
+
+      {editingEntry && (
+        <EditEntryModal entry={editingEntry} onClose={() => setEditingEntry(null)} />
+      )}
     </>
   );
 }

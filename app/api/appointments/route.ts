@@ -17,18 +17,30 @@ export async function POST(req: NextRequest) {
     { auth: { persistSession: false } }
   );
 
-  // 1) Upsert lead by phone
-  const { data: lead, error: leadErr } = await admin
+  // 1) Find or create lead by phone
+  let leadId;
+  const { data: existingLead } = await admin
     .from('leads')
-    .upsert(
-      { full_name: fullName, phone, source: 'Web' },
-      { onConflict: 'phone' }
-    )
-    .select()
+    .select('id')
+    .eq('phone', phone)
     .single();
 
-  if (leadErr) {
-    return Response.json({ error: leadErr.message }, { status: 500 });
+  if (existingLead) {
+    leadId = existingLead.id;
+    // Update name just in case it's different
+    await admin.from('leads').update({ full_name: fullName }).eq('id', leadId);
+  } else {
+    const { data: newLead, error: leadErr } = await admin
+      .from('leads')
+      .insert({ full_name: fullName, phone, source: 'Web' })
+      .select('id')
+      .single();
+
+    if (leadErr) {
+      console.error('leadErr:', leadErr);
+      return Response.json({ error: leadErr.message }, { status: 500 });
+    }
+    leadId = newLead.id;
   }
 
   // 2) Find the service_type by name
@@ -42,7 +54,7 @@ export async function POST(req: NextRequest) {
   const { data: appt, error: apptErr } = await admin
     .from('appointments')
     .insert({
-      lead_id: lead.id,
+      lead_id: leadId,
       service_type_id: service?.id ?? null,
       scheduled_at: scheduledAt,
       status: 'agendada',
@@ -52,6 +64,7 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (apptErr) {
+    console.error('apptErr:', apptErr);
     return Response.json({ error: apptErr.message }, { status: 500 });
   }
 

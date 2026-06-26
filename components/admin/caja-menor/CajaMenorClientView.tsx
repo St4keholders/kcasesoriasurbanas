@@ -59,6 +59,12 @@ export function CajaMenorClientView({ boxes }: { boxes: any[] }) {
             accessor: (row: any) => <span className="text-sm">{formatDateTime(row.closed_at) || '-'}</span>,
           },
           {
+            header: 'Centro de Costos',
+            accessor: (row: any) => (
+              <span className="text-sm">{row.cost_center_name || <span className="text-xs text-[var(--dim)]">Sin asignar</span>}</span>
+            ),
+          },
+          {
             header: 'Total Gastos',
             accessor: (row: any) => (
               <div>

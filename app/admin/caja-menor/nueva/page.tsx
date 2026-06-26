@@ -7,17 +7,30 @@ import Link from 'next/link';
 export default async function NuevaCajaPage() {
   await requireRole(['admin', 'asesor']);
   
+  const supabase = await createClient();
+
+  // Fetch cost centers for the dropdown
+  const { data: costCenters } = await supabase
+    .from('cost_centers')
+    .select('id, name')
+    .order('name');
+  
   async function createCaja(formData: FormData) {
     'use server';
     
     const name = formData.get('name') as string;
     const notes = formData.get('notes') as string;
+    const cost_center_id = formData.get('cost_center_id') as string;
     
     const supabase = await createClient();
     
     const { data, error } = await (supabase as any)
       .from('petty_cash_boxes')
-      .insert({ name, notes })
+      .insert({ 
+        name, 
+        notes, 
+        cost_center_id: cost_center_id || null 
+      })
       .select('id')
       .single();
       
@@ -40,13 +53,25 @@ export default async function NuevaCajaPage() {
       <div className="card max-w-2xl mt-6">
         <form action={createCaja} className="space-y-6">
           <div className="form-group">
-            <label className="label">Nombre de la Caja (Opcional)</label>
+            <label className="label">Nombre de la Caja</label>
             <input 
               name="name"
               type="text" 
               className="input" 
               placeholder="Ej. Caja Menor Junio Paola" 
             />
+          </div>
+
+          <div className="form-group">
+            <label className="label">Centro de Costos</label>
+            <select name="cost_center_id" className="input" required>
+              <option value="">— Selecciona un centro de costos —</option>
+              {(costCenters || []).map((cc: any) => (
+                <option key={cc.id} value={cc.id}>
+                  {cc.name}
+                </option>
+              ))}
+            </select>
           </div>
           
           <div className="form-group">

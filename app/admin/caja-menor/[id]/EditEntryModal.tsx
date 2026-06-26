@@ -5,10 +5,17 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { XIcon, Loader2 } from 'lucide-react';
 
-export function AddInvoiceModal({ boxId, onClose }: { boxId: string; onClose: () => void }) {
+interface EditEntryModalProps {
+  entry: any;
+  onClose: () => void;
+}
+
+export function EditEntryModal({ entry, onClose }: EditEntryModalProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const isIngreso = entry.entry_type === 'ingreso';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -18,38 +25,32 @@ export function AddInvoiceModal({ boxId, onClose }: { boxId: string; onClose: ()
     try {
       const formData = new FormData(e.currentTarget);
       const entry_date = formData.get('entry_date') as string;
-      const supplier_name = formData.get('supplier_name') as string;
-      const supplier_document = formData.get('supplier_document') as string;
       const concept = formData.get('concept') as string;
-      const tax_amount = parseFloat(formData.get('tax_amount') as string) || 0;
       const total_amount = parseFloat(formData.get('total_amount') as string);
+      
+      const updateData: any = { entry_date, concept, total_amount };
+
+      if (!isIngreso) {
+        updateData.supplier_name = formData.get('supplier_name') as string;
+        updateData.supplier_document = formData.get('supplier_document') as string;
+        updateData.tax_amount = parseFloat(formData.get('tax_amount') as string) || 0;
+      }
       
       const supabase = createClient();
       
-      let receipt_url = null;
-      
-      const { error: insertError } = await (supabase as any)
+      const { error: updateError } = await (supabase as any)
         .from('petty_cash_entries')
-        .insert({
-          box_id: boxId,
-          entry_type: 'egreso',
-          entry_date,
-          supplier_name,
-          supplier_document,
-          concept,
-          tax_amount,
-          total_amount,
-          receipt_url
-        });
+        .update(updateData)
+        .eq('id', entry.id);
         
-      if (insertError) throw insertError;
+      if (updateError) throw updateError;
       
       router.refresh();
       onClose();
       
     } catch (err: any) {
       console.error('Error in handleSubmit:', err);
-      setError(err.message || 'Error al guardar la factura');
+      setError(err.message || 'Error al actualizar el registro');
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +66,10 @@ export function AddInvoiceModal({ boxId, onClose }: { boxId: string; onClose: ()
           <XIcon className="w-5 h-5" />
         </button>
         
-        <h2 className="text-xl font-bold text-[var(--fg)] mb-6">Añadir Factura</h2>
+        <h2 className="text-xl font-bold text-[var(--fg)] mb-1">
+          Editar {isIngreso ? 'Ingreso' : 'Gasto'}
+        </h2>
+        <p className="text-sm text-[var(--dim)] mb-6">Modifica los datos del registro.</p>
         
         {error && (
           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm">
@@ -77,36 +81,38 @@ export function AddInvoiceModal({ boxId, onClose }: { boxId: string; onClose: ()
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="form-group">
               <label className="label">Fecha</label>
-              <input name="entry_date" type="date" required className="input" defaultValue={new Date().toISOString().split('T')[0]} />
+              <input name="entry_date" type="date" required className="input" defaultValue={entry.entry_date} />
             </div>
             
             <div className="form-group">
               <label className="label">Concepto</label>
-              <input name="concept" type="text" required className="input" placeholder="Ej. Impresión de planos" />
+              <input name="concept" type="text" required className="input" defaultValue={entry.concept} />
             </div>
             
-            <div className="form-group">
-              <label className="label">Proveedor</label>
-              <input name="supplier_name" type="text" required className="input" placeholder="Nombre del proveedor" />
-            </div>
-            
-            <div className="form-group">
-              <label className="label">NIT / Documento</label>
-              <input name="supplier_document" type="text" className="input" placeholder="NIT o CC (Opcional)" />
-            </div>
-            
-            <div className="form-group">
-              <label className="label">Valor IVA (COP)</label>
-              <input name="tax_amount" type="number" step="0.01" className="input" defaultValue="0" />
-            </div>
+            {!isIngreso && (
+              <>
+                <div className="form-group">
+                  <label className="label">Proveedor</label>
+                  <input name="supplier_name" type="text" className="input" defaultValue={entry.supplier_name} />
+                </div>
+                
+                <div className="form-group">
+                  <label className="label">NIT / Documento</label>
+                  <input name="supplier_document" type="text" className="input" defaultValue={entry.supplier_document || ''} />
+                </div>
+                
+                <div className="form-group">
+                  <label className="label">Valor IVA (COP)</label>
+                  <input name="tax_amount" type="number" step="0.01" className="input" defaultValue={entry.tax_amount || 0} />
+                </div>
+              </>
+            )}
             
             <div className="form-group">
               <label className="label">Valor Total (COP)</label>
-              <input name="total_amount" type="number" step="0.01" required className="input" placeholder="0.00" />
+              <input name="total_amount" type="number" step="0.01" required className="input" defaultValue={entry.total_amount} />
             </div>
           </div>
-          
-
           
           <div className="flex gap-4 pt-4 border-t border-[var(--shadow-dark)]">
             <button type="button" onClick={onClose} className="neu-btn flex-1 text-center justify-center">
@@ -116,7 +122,7 @@ export function AddInvoiceModal({ boxId, onClose }: { boxId: string; onClose: ()
               {isLoading ? (
                 <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Guardando...</>
               ) : (
-                'Guardar Factura'
+                'Guardar Cambios'
               )}
             </button>
           </div>
