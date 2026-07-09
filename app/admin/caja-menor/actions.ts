@@ -8,6 +8,18 @@ export async function deleteCajaMenor(id: string) {
   await requireRole(['admin', 'tesoreria', 'asesor']);
   
   const supabase = await createClient();
+
+  // Eliminar facturas asociadas primero para evitar error de foreign key (on delete restrict)
+  const { error: entriesError } = await supabase
+    .from('petty_cash_entries')
+    .delete()
+    .eq('box_id', id);
+
+  if (entriesError) {
+    throw new Error('Error al eliminar las facturas asociadas a la caja menor: ' + entriesError.message);
+  }
+
+  // Eliminar la caja menor
   const { error } = await supabase
     .from('petty_cash_boxes')
     .delete()
