@@ -4,8 +4,9 @@ import React from 'react';
 import { DataTable } from '@/components/admin/ui/DataTable';
 import { StatusBadge } from '@/components/admin/ui/StatusBadge';
 import Link from 'next/link';
-import { PlusIcon, EyeIcon } from 'lucide-react';
+import { PlusIcon, EyeIcon, TrashIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import { deleteCajaMenor } from '@/app/admin/caja-menor/actions';
 import { es } from 'date-fns/locale';
 import { AdminTopbar } from '@/components/admin/AdminTopbar';
 
@@ -80,13 +81,30 @@ export function CajaMenorClientView({ boxes }: { boxes: any[] }) {
           {
             header: 'Acciones',
             accessor: (row: any) => (
-              <Link
-                href={`/admin/caja-menor/${row.id}`}
-                className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1"
-              >
-                <EyeIcon className="w-3 h-3" />
-                Detalle
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/admin/caja-menor/${row.id}`}
+                  className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1"
+                >
+                  <EyeIcon className="w-3 h-3" />
+                  Detalle
+                </Link>
+                <button
+                  onClick={async () => {
+                    if (window.confirm('¿Estás seguro de que deseas eliminar esta caja menor? Esta acción no se puede deshacer.')) {
+                      try {
+                        await deleteCajaMenor(row.id);
+                      } catch (err) {
+                        alert('No se pudo eliminar la caja menor.');
+                      }
+                    }
+                  }}
+                  className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1 text-red-500 hover:text-red-600"
+                >
+                  <TrashIcon className="w-3 h-3" />
+                  Eliminar
+                </button>
+              </div>
             ),
           },
         ]}

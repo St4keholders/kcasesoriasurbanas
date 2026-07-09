@@ -3,14 +3,15 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { AdminTopbar } from '@/components/admin/AdminTopbar';
 import Link from 'next/link';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export default async function NuevaCajaPage() {
   await requireRole(['admin', 'asesor']);
   
-  const supabase = await createClient();
+  const supabaseAdmin = createAdminClient();
 
-  // Fetch cost centers for the dropdown
-  const { data: costCenters } = await supabase
+  // Fetch cost centers for the dropdown using admin client to bypass RLS for asesores
+  const { data: costCenters } = await supabaseAdmin
     .from('cost_centers')
     .select('id, name')
     .order('name');

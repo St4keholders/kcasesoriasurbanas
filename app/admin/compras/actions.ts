@@ -164,3 +164,20 @@ export async function updatePurchase(id: string, data: any) {
 
   revalidatePath('/admin/compras');
 }
+
+export async function deletePurchase(id: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('No autorizado');
+
+  const { error } = await supabase
+    .from('purchases')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    throw new Error('Error al eliminar compra: ' + error.message);
+  }
+
+  revalidatePath('/admin/compras');
+}

@@ -103,7 +103,7 @@ export async function POST(request: Request) {
             let messages: any[] = [
               {
                 role: 'system',
-                content: 'Eres un asistente contable analizando facturas o recibos para una caja menor. Extrae los datos y devuelve SOLO un objeto JSON válido con: supplier_name (string), supplier_document (string, NIT/Cedula sin digito de verificacion o guiones, solo numeros, o con guion si es NIT), concept (string, descripción corta), entry_date (YYYY-MM-DD), tax_amount (numero sin formato, 0 si no hay IVA explícito), total_amount (numero sin formato). IMPORTANTE: El NIT de la empresa cliente es 902012620-0 (KC Asesorias Urbanas), NO uses este NIT ni este nombre como proveedor, debes extraer los datos del emisor de la factura.'
+                content: 'Eres un asistente contable analizando facturas o recibos para una caja menor. Extrae los datos y devuelve SOLO un objeto JSON válido con: supplier_name (string), supplier_document (string, NIT/Cedula sin digito de verificacion o guiones, solo numeros, o con guion si es NIT), concept (string, descripción corta), entry_date (YYYY-MM-DD, extrae cuidadosamente la fecha real de la transacción), tax_amount (numero sin formato, 0 si no hay IVA explícito), total_amount (numero sin formato, este debe ser siempre el gran total pagado sin importar si hay desglose o no). IMPORTANTE: El NIT de la empresa cliente es 902012620-0 (KC Asesorias Urbanas), NO uses este NIT ni este nombre como proveedor, debes extraer los datos del emisor de la factura.'
               }
             ];
 

@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { DataTable } from '@/components/admin/ui/DataTable';
 import { StatusBadge } from '@/components/admin/ui/StatusBadge';
 import Link from 'next/link';
-import { PlusIcon, EyeIcon, UploadCloudIcon, CalendarIcon, CreditCardIcon, ReceiptIcon, FileTextIcon, WalletIcon, SearchIcon } from 'lucide-react';
+import { PlusIcon, EyeIcon, UploadCloudIcon, CalendarIcon, CreditCardIcon, ReceiptIcon, FileTextIcon, WalletIcon, SearchIcon, TrashIcon } from 'lucide-react';
 import { AdminTopbar } from '@/components/admin/AdminTopbar';
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -12,6 +12,7 @@ import { BulkUploadModal } from './BulkUploadModal';
 import { PurchaseDetailModal } from './PurchaseDetailModal';
 import { ExportCSVModal } from '@/components/admin/ExportCSVModal';
 import { DownloadIcon } from 'lucide-react';
+import { deletePurchase } from '@/app/admin/compras/actions';
 
 export function ComprasClientView({ 
   initialPurchases, 
@@ -277,12 +278,29 @@ export function ComprasClientView({
             header: 'Acciones',
             sortable: false,
             accessor: (row) => (
-              <button
-                onClick={() => setSelectedPurchase(row)}
-                className="btn btn-ghost"
-              >
-                <EyeIcon className="w-4 h-4" /> Detalle
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setSelectedPurchase(row)}
+                  className="btn btn-ghost text-xs px-2 py-1 flex items-center gap-1"
+                >
+                  <EyeIcon className="w-4 h-4" /> Detalle
+                </button>
+                <button
+                  onClick={async () => {
+                    if (window.confirm('¿Estás seguro de que deseas eliminar esta transacción? Esta acción no se puede deshacer.')) {
+                      try {
+                        await deletePurchase(row.id);
+                        window.location.reload();
+                      } catch (err) {
+                        alert('No se pudo eliminar la transacción.');
+                      }
+                    }
+                  }}
+                  className="btn btn-ghost text-xs px-2 py-1 flex items-center gap-1 !text-red-500 hover:!bg-red-500/10"
+                >
+                  <TrashIcon className="w-4 h-4" /> Eliminar
+                </button>
+              </div>
             ),
           },
         ]}
