@@ -8,9 +8,11 @@ import { AddInvoiceButton } from '@/app/admin/caja-menor/[id]/AddInvoiceButton';
 import { AddIncomeButton } from '@/app/admin/caja-menor/[id]/AddIncomeButton';
 import { BulkUploadButton } from '@/app/admin/caja-menor/[id]/BulkUploadButton';
 import { EditEntryModal } from '@/app/admin/caja-menor/[id]/EditEntryModal';
-import { ExternalLinkIcon, DownloadIcon, PencilIcon, ArrowUpIcon, ArrowDownIcon } from 'lucide-react';
+import { ExternalLinkIcon, DownloadIcon, PencilIcon, ArrowUpIcon, ArrowDownIcon, TrashIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 interface CajaMenorDetailClientViewProps {
   box: any;
@@ -18,6 +20,7 @@ interface CajaMenorDetailClientViewProps {
 }
 
 export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClientViewProps) {
+  const router = useRouter();
   const [editingEntry, setEditingEntry] = useState<any | null>(null);
 
   const formatCurrency = (amount: number) => {
@@ -258,12 +261,36 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
           {
             header: 'Acciones',
             accessor: (row: any) => (
-              <button
-                onClick={() => setEditingEntry(row)}
-                className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1"
-              >
-                <PencilIcon className="w-3 h-3" /> Editar
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setEditingEntry(row)}
+                  className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1"
+                >
+                  <PencilIcon className="w-3 h-3" /> Editar
+                </button>
+                <button
+                  onClick={async () => {
+                    if (window.confirm('¿Estás seguro de que deseas eliminar esta transacción? Esta acción no se puede deshacer.')) {
+                      try {
+                        const supabase = createClient();
+                        const { error } = await supabase
+                          .from('petty_cash_entries')
+                          .delete()
+                          .eq('id', row.id);
+                        
+                        if (error) throw error;
+                        
+                        router.refresh();
+                      } catch (err: any) {
+                        alert('Error al eliminar la transacción: ' + err.message);
+                      }
+                    }
+                  }}
+                  className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1 text-red-500 hover:text-red-600"
+                >
+                  <TrashIcon className="w-3 h-3" /> Eliminar
+                </button>
+              </div>
             ),
           },
         ]}
