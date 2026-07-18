@@ -17,6 +17,7 @@ export function BulkUploadModal({ onClose, onSuccess, costCenters = [] }: BulkUp
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadResults, setUploadResults] = useState<any[]>([]);
+  const [currentProgress, setCurrentProgress] = useState<{ current: number; total: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -53,45 +54,69 @@ export function BulkUploadModal({ onClose, onSuccess, costCenters = [] }: BulkUp
     if (files.length === 0) return;
     
     setIsUploading(true);
+    const results: any[] = [];
     setUploadResults([]);
 
-    const formData = new FormData();
-    files.forEach(file => {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setCurrentProgress({ current: i + 1, total: files.length });
+
+      const formData = new FormData();
       formData.append('files', file);
-    });
-    if (selectedCostCenter) {
-      formData.append('costCenterId', selectedCostCenter);
+      if (selectedCostCenter) {
+        formData.append('costCenterId', selectedCostCenter);
+      }
+
+      try {
+        const res = await fetch('/api/compras/bulk-upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        let data;
+        try {
+          data = await res.json();
+        } catch (e) {
+          console.error('Error parsing JSON for file', file.name);
+          results.push({
+            fileName: file.name,
+            status: 'error',
+            error: 'Respuesta inválida del servidor'
+          });
+          setUploadResults([...results]);
+          continue;
+        }
+
+        if (res.ok && data.results && data.results.length > 0) {
+          results.push(data.results[0]);
+        } else {
+          results.push({
+            fileName: file.name,
+            status: 'error',
+            error: data.error || 'Error en la carga masiva'
+          });
+        }
+      } catch (error) {
+        console.error('Network error for file', file.name, error);
+        results.push({
+          fileName: file.name,
+          status: 'error',
+          error: 'Error de red al intentar conectar'
+        });
+      }
+      setUploadResults([...results]);
     }
 
-    try {
-      const res = await fetch('/api/compras/bulk-upload', {
-        method: 'POST',
-        body: formData,
-      });
+    setCurrentProgress(null);
+    setIsUploading(false);
 
-      let data;
-      try {
-        data = await res.json();
-      } catch (e) {
-        const text = await res.text();
-        console.error('Non-JSON response:', text);
-        alert('Error del servidor: Revisa la terminal (logs) para ver el error exacto.');
-        return;
-      }
-
-      if (res.ok) {
-        setUploadResults(data.results);
-        if (onSuccess) onSuccess();
-        // Recargar la tabla para mostrar las nuevas compras escaneadas por IA
-        window.location.reload(); 
-      } else {
-        alert(data.error || 'Error en la carga masiva');
-      }
-    } catch (error) {
-      console.error(error);
-      alert('Error de red al intentar conectarse');
-    } finally {
-      setIsUploading(false);
+    const hasSuccess = results.some(r => r.status === 'success');
+    if (hasSuccess) {
+      if (onSuccess) onSuccess();
+      // Esperar un momento para recargar la página para que vean los resultados
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     }
   };
 
@@ -127,7 +152,7 @@ export function BulkUploadModal({ onClose, onSuccess, costCenters = [] }: BulkUp
                 {isUploading ? (
                   <>
                     <Loader2Icon className="w-4 h-4 animate-spin" />
-                    Subiendo y analizando con IA...
+                    {currentProgress ? `Analizando (${currentProgress.current}/${currentProgress.total})...` : 'Subiendo y analizando con IA...'}
                   </>
                 ) : (
                   <>

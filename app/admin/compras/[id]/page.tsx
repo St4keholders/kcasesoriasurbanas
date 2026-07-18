@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeftIcon, DollarSignIcon } from 'lucide-react';
 import { StatusBadge } from '@/components/admin/ui/StatusBadge';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { payPurchase } from '../actions';
 import { revalidatePath } from 'next/cache';
@@ -28,7 +28,7 @@ export default async function DetalleCompraPage({ params }: { params: Promise<{ 
   if (error || !purchase) notFound();
 
   const formatCurrency = (val: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
-  const formatDate = (iso: string) => iso ? format(new Date(iso), "dd 'de' MMMM, yyyy", { locale: es }) : 'N/A';
+  const formatDate = (iso: string) => iso ? format(parseISO(iso), "dd 'de' MMMM, yyyy", { locale: es }) : 'N/A';
 
   const handlePayment = async (formData: FormData) => {
     'use server';

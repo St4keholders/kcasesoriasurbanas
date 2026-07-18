@@ -40,7 +40,7 @@ export function ComprasClientView({
   const formatDate = (iso: string) => {
     if (!iso) return 'N/A';
     try {
-      return format(new Date(iso), "dd MMM yyyy", { locale: es });
+      return format(parseISO(iso), "dd MMM yyyy", { locale: es });
     } catch {
       return iso;
     }

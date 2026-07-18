@@ -9,7 +9,7 @@ import { AddIncomeButton } from '@/app/admin/caja-menor/[id]/AddIncomeButton';
 import { BulkUploadButton } from '@/app/admin/caja-menor/[id]/BulkUploadButton';
 import { EditEntryModal } from '@/app/admin/caja-menor/[id]/EditEntryModal';
 import { ExternalLinkIcon, DownloadIcon, PencilIcon, ArrowUpIcon, ArrowDownIcon, TrashIcon } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -29,7 +29,7 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
 
   const formatDateTime = (iso: string) => {
     if (!iso) return '';
-    return format(new Date(iso), "dd MMM yyyy", { locale: es });
+    return format(parseISO(iso), "dd MMM yyyy", { locale: es });
   };
 
   // Calculate totals
