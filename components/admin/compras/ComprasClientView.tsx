@@ -338,6 +338,7 @@ export function ComprasClientView({
         dateField="transaction_date"
         columnsMap={{
           invoice_number: 'Nº Factura',
+          concept: 'Concepto',
           transaction_date: 'Fecha',
           'suppliers.name': 'Proveedor',
           'cost_centers.name': 'Centro Costo',
