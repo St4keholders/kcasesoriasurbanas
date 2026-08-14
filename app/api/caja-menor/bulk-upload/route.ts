@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 export const maxDuration = 60; // Set max duration to 60 seconds to prevent timeouts during OpenAI analysis
-import { requireRole } from '@/lib/auth/require-role';
+import { requireRoleApi, RoleError } from '@/lib/auth/require-role';
 import { getOrCreatePettyCashFolder, uploadFileToDrive } from '@/lib/googleDrive';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -39,7 +39,7 @@ function parseNumber(val: any): number {
 export async function POST(request: Request) {
   try {
     // 1. Verify user permissions
-    const { user } = await requireRole(['admin', 'tesoreria', 'asesor']);
+    const { user } = await requireRoleApi(['admin', 'tesoreria', 'asesor']);
 
     // 2. Parse FormData
     const formData = await request.formData();
@@ -145,49 +145,54 @@ export async function POST(request: Request) {
         const supplierName = extracted.supplier_name || 'Proveedor Ocasional';
         const supplierDocument = extracted.supplier_document || null;
         
-        if (supplierName !== 'Proveedor Ocasional') {
-          let existingSupplier = null;
+        // Envuelto en try/catch aislado: si el usuario no tiene permisos RLS
+        // sobre suppliers, no debe impedir la creación del entry en petty_cash_entries
+        try {
+          if (supplierName !== 'Proveedor Ocasional') {
+            let existingSupplier = null;
 
-          // Buscar por NIT/Cedula primero
-          if (supplierDocument) {
-            const { data } = await (supabase as any)
-              .from('suppliers')
-              .select('id, name, document_number')
-              .eq('document_number', supplierDocument)
-              .limit(1);
-            if (data && data.length > 0) existingSupplier = data[0];
-          }
-
-          // Si no encuentra por NIT, buscar por nombre
-          if (!existingSupplier) {
-            const { data } = await (supabase as any)
-              .from('suppliers')
-              .select('id, name, document_number')
-              .ilike('name', supplierName)
-              .limit(1);
-            if (data && data.length > 0) existingSupplier = data[0];
-          }
-
-          if (existingSupplier) {
-            // Actualizar si hay nuevos datos
-            if (supplierDocument && existingSupplier.document_number !== supplierDocument) {
-              await (supabase as any).from('suppliers').update({ document_number: supplierDocument, name: supplierName }).eq('id', existingSupplier.id);
+            // Buscar por NIT/Cedula primero
+            if (supplierDocument) {
+              const { data } = await (supabase as any)
+                .from('suppliers')
+                .select('id, name, document_number')
+                .eq('document_number', supplierDocument)
+                .limit(1);
+              if (data && data.length > 0) existingSupplier = data[0];
             }
-          } else {
-            const { data: newSupplier, error: supplierError } = await (supabase as any)
-              .from('suppliers')
-              .insert({
-                name: supplierName,
-                document_number: supplierDocument || '000000000',
-                is_active: true
-              })
-              .select()
-              .single();
-              
-            if (supplierError) {
-              console.error('Error creating supplier in caja-menor:', supplierError);
+
+            // Si no encuentra por NIT, buscar por nombre
+            if (!existingSupplier) {
+              const { data } = await (supabase as any)
+                .from('suppliers')
+                .select('id, name, document_number')
+                .ilike('name', supplierName)
+                .limit(1);
+              if (data && data.length > 0) existingSupplier = data[0];
+            }
+
+            if (existingSupplier) {
+              // Actualizar si hay nuevos datos
+              if (supplierDocument && existingSupplier.document_number !== supplierDocument) {
+                await (supabase as any).from('suppliers').update({ document_number: supplierDocument, name: supplierName }).eq('id', existingSupplier.id);
+              }
+            } else {
+              const { error: supplierError } = await (supabase as any)
+                .from('suppliers')
+                .insert({
+                  name: supplierName,
+                  document_number: supplierDocument || '000000000',
+                  is_active: true
+                });
+                
+              if (supplierError) {
+                console.warn('No se pudo crear proveedor (posible RLS):', supplierError.message);
+              }
             }
           }
+        } catch (supplierSyncError) {
+          // No bloquear el flujo principal si la sincronización de suppliers falla
+          console.warn('Error sincronizando proveedor (no bloqueante):', supplierSyncError);
         }
 
         // Insert into Supabase
@@ -233,6 +238,13 @@ export async function POST(request: Request) {
     });
 
   } catch (error: any) {
+    // Devolver error JSON con status code apropiado
+    if (error instanceof RoleError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status }
+      );
+    }
     console.error('Bulk upload error:', error);
     return NextResponse.json(
       { error: error.message || 'Internal server error during bulk upload' },
