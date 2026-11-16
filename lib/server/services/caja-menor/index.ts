@@ -27,6 +27,7 @@ export async function createPettyCashEntryService(userId: string, input: PettyCa
       support_sha256: input.support_sha256 || null,
       support_storage_path: input.support_storage_path || null,
       status: 'activo',
+      category_id: input.category_id || null,
       created_by: userId,
     })
     .select('*')

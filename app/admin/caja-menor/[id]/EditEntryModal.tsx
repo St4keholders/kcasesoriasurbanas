@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { XIcon, Loader2 } from 'lucide-react';
+import { repostPettyCashAction } from '../actions';
 
 interface EditEntryModalProps {
   entry: any;
@@ -44,6 +45,7 @@ export function EditEntryModal({ entry, onClose }: EditEntryModalProps) {
         .eq('id', entry.id);
         
       if (updateError) throw updateError;
+      await repostPettyCashAction(entry.id);
       
       router.refresh();
       onClose();

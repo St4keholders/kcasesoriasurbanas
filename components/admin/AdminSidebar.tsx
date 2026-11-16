@@ -15,15 +15,13 @@ import {
   ChartBarIcon,
   UserCogIcon,
   TagIcon,
-  ListIcon,
   MenuIcon,
   XIcon,
   WalletIcon,
   BookOpenIcon,
   FileCheck2Icon,
-  AlertTriangleIcon,
+  ClockIcon,
   SlidersHorizontalIcon,
-  ScanLineIcon,
 } from 'lucide-react';
 
 const NAV_SECTIONS = [
@@ -42,16 +40,15 @@ const NAV_SECTIONS = [
       { label: 'Tesorería', href: '/admin/compras', roles: ['admin', 'tesoreria'], icon: ReceiptIcon },
       { label: 'Proveedores', href: '/admin/proveedores', roles: ['admin', 'tesoreria'], icon: TruckIcon },
       { label: 'Cajas Menores', href: '/admin/caja-menor', roles: ['admin', 'asesor', 'tesoreria'], icon: WalletIcon },
-      { label: 'Ingesta Soportes', href: '/admin/ingesta', roles: ['admin', 'tesoreria'], icon: ScanLineIcon },
     ]
   },
   {
-    title: 'Contabilidad 2026',
+    title: 'Contabilidad',
     items: [
-      { label: 'Libro Diario y AZ', href: '/admin/contabilidad/libro-diario', roles: ['admin', 'tesoreria'], icon: BookOpenIcon },
-      { label: 'Borradores', href: '/admin/contabilidad/borradores', roles: ['admin', 'tesoreria'], icon: FileCheck2Icon },
-      { label: 'Pendientes Legales', href: '/admin/contabilidad/pendientes', roles: ['admin', 'tesoreria'], icon: AlertTriangleIcon },
-      { label: 'Parametrización PUC', href: '/admin/contabilidad/parametrizacion', roles: ['admin', 'tesoreria'], icon: SlidersHorizontalIcon },
+      { label: 'Auditoría', href: '/admin/contabilidad/auditoria', roles: ['admin', 'tesoreria'], icon: FileCheck2Icon },
+      { label: 'Libro diario y AZ', href: '/admin/contabilidad/libro-diario', roles: ['admin', 'tesoreria'], icon: BookOpenIcon },
+      { label: 'Compras a crédito', href: '/admin/contabilidad/credito', roles: ['admin', 'tesoreria'], icon: ClockIcon },
+      { label: 'Parametrización', href: '/admin/contabilidad/parametrizacion', roles: ['admin', 'tesoreria'], icon: SlidersHorizontalIcon },
     ]
   },
   {
@@ -60,7 +57,6 @@ const NAV_SECTIONS = [
       { label: 'KPIs', href: '/admin/kpis', roles: ['admin'], icon: ChartBarIcon },
       { label: 'Usuarios', href: '/admin/usuarios', roles: ['admin'], icon: UserCogIcon },
       { label: 'Centros de Costos', href: '/admin/catalogos', roles: ['admin'], icon: TagIcon },
-      { label: 'Auditoría', href: '/admin/auditoria', roles: ['admin'], icon: ListIcon },
     ]
   }
 ];

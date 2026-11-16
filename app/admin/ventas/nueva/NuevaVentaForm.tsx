@@ -25,6 +25,8 @@ const SaleSchema = z.object({
   items: z.array(SaleItemSchema).min(1, 'Agregue al menos un servicio'),
   tax: z.number().min(0),
   discount: z.number().min(0),
+  applies_iva: z.boolean(),
+  withholding_tax: z.number().min(0),
   notes: z.string().optional(),
 });
 
@@ -42,6 +44,8 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
       status: 'cotizacion',
       tax: 0,
       discount: 0,
+      applies_iva: false,
+      withholding_tax: 0,
       items: [{ service_type_id: '', description: '', quantity: 1, unit_price: 0 }]
     }
   });
@@ -52,16 +56,19 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
   });
 
   const watchItems = watch('items');
-  const watchTax = watch('tax');
   const watchDiscount = watch('discount');
+  const watchIva = watch('applies_iva');
+  const watchRet = watch('withholding_tax');
 
   const subtotal = watchItems.reduce((acc, item) => acc + (Number(item.quantity) * Number(item.unit_price)), 0);
-  const total = subtotal + Number(watchTax) - Number(watchDiscount);
+  // IVA generado: 19 % automático sobre la base (subtotal − descuento) cuando aplica
+  const ivaAuto = watchIva ? Math.round((subtotal - Number(watchDiscount || 0)) * 0.19) : 0;
+  const total = subtotal + ivaAuto - Number(watchDiscount || 0);
 
   const onSubmit = async (data: FormData) => {
     setErrorMsg('');
     try {
-      const id = await createSale(data);
+      const id = await createSale({ ...data, tax: ivaAuto, withholding_tax: Number(data.withholding_tax || 0) });
       router.push(`/admin/ventas/${id}`);
     } catch (error: any) {
       setErrorMsg(error.message);
@@ -209,10 +216,17 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
               <span className="font-medium text-[var(--fg)]">{formatCurrency(subtotal)}</span>
             </div>
             
+            <label className="flex justify-between items-center text-sm gap-2 cursor-pointer">
+              <span className="text-[var(--dim)] flex items-center gap-2">
+                <input type="checkbox" {...register('applies_iva')} /> IVA 19 %
+              </span>
+              <span className="font-medium text-[var(--fg)]">{formatCurrency(ivaAuto)}</span>
+            </label>
+
             <div className="flex justify-between items-center text-sm">
-              <span className="text-[var(--dim)]">Impuestos (+$):</span>
+              <span className="text-[var(--dim)]" title="Retención en la fuente que nos practicó el cliente (dato de su pago)">Retención aplicada:</span>
               <input
-                {...register('tax', { valueAsNumber: true })}
+                {...register('withholding_tax', { valueAsNumber: true })}
                 type="number"
                 className="input w-24 text-right py-1"
               />

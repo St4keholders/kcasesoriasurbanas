@@ -69,6 +69,8 @@ export const PurchaseInputSchema = z.object({
   invoice_url: z.string().trim().optional().or(z.literal('')),
   support_sha256: z.string().trim().optional().or(z.literal('')),
   support_storage_path: z.string().trim().optional().or(z.literal('')),
+  category_id: z.string().uuid('Escoge una categoría').optional().or(z.literal('')),
+  payment_method: PaymentMethodEnum.optional(),
 });
 
 export const PettyCashEntrySchema = z.object({
@@ -84,6 +86,7 @@ export const PettyCashEntrySchema = z.object({
   receipt_url: z.string().trim().optional().or(z.literal('')),
   support_sha256: z.string().trim().optional().or(z.literal('')),
   support_storage_path: z.string().trim().optional().or(z.literal('')),
+  category_id: z.string().uuid().optional().or(z.literal('')),
 });
 
 export const VoidRecordSchema = z.object({

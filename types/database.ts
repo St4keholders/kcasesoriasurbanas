@@ -526,6 +526,83 @@ export type Database = {
         }
         Relationships: []
       }
+      expense_categories: {
+        Row: {
+          ai_hint: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          is_deductible: boolean
+          name: string
+          obra_account: string | null
+          office_account: string
+          payable_account: string
+          slug: string
+          sort_order: number
+          updated_at: string
+          withholding_account: string
+        }
+        Insert: {
+          ai_hint?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_deductible?: boolean
+          name: string
+          obra_account?: string | null
+          office_account: string
+          payable_account?: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+          withholding_account?: string
+        }
+        Update: {
+          ai_hint?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_deductible?: boolean
+          name?: string
+          obra_account?: string | null
+          office_account?: string
+          payable_account?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+          withholding_account?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_categories_obra_account_fkey"
+            columns: ["obra_account"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "expense_categories_office_account_fkey"
+            columns: ["office_account"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "expense_categories_payable_account_fkey"
+            columns: ["payable_account"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "expense_categories_withholding_account_fkey"
+            columns: ["withholding_account"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       journal_entries: {
         Row: {
           ai_confidence: number
@@ -535,6 +612,7 @@ export type Database = {
           cost_center_id: string | null
           created_at: string
           created_by: string | null
+          duplicate_of: string | null
           elaboro_name: string
           entry_date: string
           entry_number: string
@@ -572,6 +650,7 @@ export type Database = {
           cost_center_id?: string | null
           created_at?: string
           created_by?: string | null
+          duplicate_of?: string | null
           elaboro_name?: string
           entry_date: string
           entry_number: string
@@ -609,6 +688,7 @@ export type Database = {
           cost_center_id?: string | null
           created_at?: string
           created_by?: string | null
+          duplicate_of?: string | null
           elaboro_name?: string
           entry_date?: string
           entry_number?: string
@@ -651,6 +731,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entries_duplicate_of_fkey"
+            columns: ["duplicate_of"]
+            isOneToOne: false
+            referencedRelation: "journal_entries"
             referencedColumns: ["id"]
           },
           {
@@ -928,6 +1015,7 @@ export type Database = {
       petty_cash_entries: {
         Row: {
           box_id: string
+          category_id: string | null
           concept: string
           created_at: string
           created_by: string
@@ -952,6 +1040,7 @@ export type Database = {
         }
         Insert: {
           box_id: string
+          category_id?: string | null
           concept: string
           created_at?: string
           created_by?: string
@@ -976,6 +1065,7 @@ export type Database = {
         }
         Update: {
           box_id?: string
+          category_id?: string | null
           concept?: string
           created_at?: string
           created_by?: string
@@ -1011,6 +1101,13 @@ export type Database = {
             columns: ["box_id"]
             isOneToOne: false
             referencedRelation: "petty_cash_boxes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "petty_cash_entries_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "expense_categories"
             referencedColumns: ["id"]
           },
           {
@@ -1157,6 +1254,7 @@ export type Database = {
       purchases: {
         Row: {
           amount: number
+          category_id: string | null
           concept: string
           cost_center_id: string | null
           created_at: string
@@ -1188,6 +1286,7 @@ export type Database = {
         }
         Insert: {
           amount: number
+          category_id?: string | null
           concept: string
           cost_center_id?: string | null
           created_at?: string
@@ -1219,6 +1318,7 @@ export type Database = {
         }
         Update: {
           amount?: number
+          category_id?: string | null
           concept?: string
           cost_center_id?: string | null
           created_at?: string
@@ -1249,6 +1349,13 @@ export type Database = {
           withholding_tax?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "purchases_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "expense_categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "purchases_cost_center_id_fkey"
             columns: ["cost_center_id"]
@@ -1336,6 +1443,7 @@ export type Database = {
       }
       sales: {
         Row: {
+          applies_iva: boolean
           appointment_id: string | null
           closed_by: string | null
           created_at: string
@@ -1359,8 +1467,10 @@ export type Database = {
           void_reason: string | null
           voided_at: string | null
           voided_by: string | null
+          withholding_tax: number
         }
         Insert: {
+          applies_iva?: boolean
           appointment_id?: string | null
           closed_by?: string | null
           created_at?: string
@@ -1384,8 +1494,10 @@ export type Database = {
           void_reason?: string | null
           voided_at?: string | null
           voided_by?: string | null
+          withholding_tax?: number
         }
         Update: {
+          applies_iva?: boolean
           appointment_id?: string | null
           closed_by?: string | null
           created_at?: string
@@ -1409,6 +1521,7 @@ export type Database = {
           void_reason?: string | null
           voided_at?: string | null
           voided_by?: string | null
+          withholding_tax?: number
         }
         Relationships: [
           {
@@ -1773,6 +1886,40 @@ export type Database = {
           },
         ]
       }
+      v_kc_operaciones: {
+        Row: {
+          aprobado_en: string | null
+          base: number | null
+          categoria: string | null
+          category_id: string | null
+          cc_id: string | null
+          cc_number: string | null
+          ce_id: string | null
+          ce_number: string | null
+          centro_costo: string | null
+          concepto: string | null
+          cost_center_id: string | null
+          descuadrado: boolean | null
+          estado: string | null
+          estado_origen: string | null
+          factura: string | null
+          fecha: string | null
+          fecha_revisar: boolean | null
+          iva: number | null
+          orden: string | null
+          posible_duplicado: boolean | null
+          referencia: string | null
+          retencion: number | null
+          sin_soporte: boolean | null
+          soporte: string | null
+          source_id: string | null
+          source_table: string | null
+          tercero: string | null
+          tipo_caja: string | null
+          total: number | null
+        }
+        Relationships: []
+      }
       v_pendientes_legales: {
         Row: {
           amount: number | null
@@ -1812,6 +1959,41 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      kc_approve_entries: { Args: { p_ids: string[] }; Returns: number }
+      kc_balance_prueba: {
+        Args: { p_from: string; p_only_approved?: boolean; p_to: string }
+        Returns: {
+          account_code: string
+          account_name: string
+          balance: number
+          credit: number
+          debit: number
+        }[]
+      }
+      kc_category_account: {
+        Args: { p_category: string; p_class: number }
+        Returns: string
+      }
+      kc_ensure_third_party: { Args: { p_supplier: string }; Returns: string }
+      kc_next_entry_number: { Args: { p_type: string }; Returns: string }
+      kc_post_petty_cash: { Args: { p_entry: string }; Returns: undefined }
+      kc_post_purchase: { Args: { p_purchase: string }; Returns: undefined }
+      kc_post_sale: { Args: { p_sale: string }; Returns: undefined }
+      kc_upsert_entry: {
+        Args: {
+          p_concept: string
+          p_cost_center: string
+          p_date: string
+          p_lines: Json
+          p_source_id: string
+          p_source_table: string
+          p_support: string
+          p_third_party: string
+          p_type: string
+          p_user: string
+        }
+        Returns: string
+      }
       kpi_for_date: {
         Args: { target_date: string }
         Returns: {
@@ -2020,3 +2202,4 @@ export const Constants = {
     },
   },
 } as const
+

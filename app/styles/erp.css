@@ -1,0 +1,153 @@
+/* =====================================================================
+   ERP KC — pantallas de trabajo (Tesorería, Contabilidad, Auditoría)
+   Orden: barra de título → barra de herramientas → contenido.
+   Paneles secundarios en liquid glass; texto siempre con contraste AA.
+   ===================================================================== */
+
+.erp { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+/* Fondo suave para que el vidrio se perciba */
+.admin-theme .main {
+  background:
+    radial-gradient(1200px 600px at 100% -10%, rgba(168, 209, 240, 0.35), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(220, 238, 251, 0.6), transparent 60%),
+    var(--bg);
+}
+
+.erp-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.erp-head h1 { font-family: var(--display); font-size: 30px; line-height: 1.1; color: var(--fg); font-weight: 400; margin: 0; }
+.erp-head h1 em { color: var(--sky-deep); font-style: italic; }
+.erp-head p { margin: 4px 0 0; color: var(--dim); font-size: 13.5px; max-width: 640px; }
+.erp-head .erp-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Vidrio */
+.glass {
+  background: var(--glass-fallback);
+  border: 1px solid var(--glass-border-outer);
+  border-radius: 16px;
+  box-shadow: var(--glass-inner-glow), var(--glass-shadow);
+}
+@supports (backdrop-filter: blur(1px)) {
+  .glass {
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-color: var(--glass-border);
+  }
+}
+
+/* Barra de herramientas */
+.erp-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 12px; }
+.erp-toolbar .grow { flex: 1 1 auto; }
+.erp-input, .erp-select {
+  height: 34px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.9);
+  padding: 0 10px; font-size: 13px; color: var(--fg); min-width: 0;
+}
+.erp-input:focus, .erp-select:focus { outline: 2px solid var(--sky-glow); border-color: var(--sky); }
+textarea.erp-input { height: auto; padding: 8px 10px; }
+
+.erp-btn {
+  height: 34px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border-radius: 10px;
+  font-size: 13px; font-weight: 600; border: 1px solid var(--border); background: #fff; color: var(--fg);
+  cursor: pointer; white-space: nowrap; transition: background .15s var(--ease), border-color .15s var(--ease);
+}
+.erp-btn:hover { border-color: var(--border-hover); background: var(--bg-hover); }
+.erp-btn:disabled { opacity: .55; cursor: not-allowed; }
+.erp-btn svg { width: 15px; height: 15px; }
+.erp-btn.primary { background: var(--sky-deep); border-color: var(--sky-deep); color: #fff; }
+.erp-btn.primary:hover { background: #1d4f7d; }
+.erp-btn.success { background: var(--success-text); border-color: var(--success-text); color: #fff; }
+.erp-btn.danger { color: var(--danger-text); border-color: #f3c4c4; background: #fff; }
+.erp-btn.danger:hover { background: var(--danger-bg); }
+.erp-btn.ghost { background: transparent; border-color: transparent; }
+.erp-btn.sm { height: 28px; padding: 0 9px; font-size: 12px; }
+
+/* Pestañas / filtros rápidos */
+.erp-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.erp-tab {
+  height: 30px; padding: 0 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: var(--fg-soft);
+  border: 1px solid transparent; background: transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+}
+.erp-tab:hover { background: rgba(255,255,255,.7); }
+.erp-tab.active { background: #fff; border-color: var(--border); color: var(--sky-deep); box-shadow: var(--shadow-xs); }
+.erp-tab .count { font-family: var(--mono); font-size: 11px; color: var(--dim); }
+
+/* KPIs compactos */
+.erp-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.erp-kpi { padding: 12px 14px; }
+.erp-kpi .l { font-size: 11.5px; color: var(--dim); font-weight: 600; }
+.erp-kpi .v { font-size: 20px; font-weight: 700; color: var(--fg); margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+/* Tabla */
+.erp-table-wrap { overflow: auto; border-radius: 14px; }
+.erp-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+.erp-table th {
+  position: sticky; top: 0; z-index: 1; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--dim); background: rgba(247, 251, 253, 0.96); padding: 9px 10px; border-bottom: 1px solid var(--border);
+}
+.erp-table td { padding: 9px 10px; border-bottom: 1px solid var(--border-soft); color: var(--fg); vertical-align: top; }
+.erp-table tr:hover td { background: rgba(238, 246, 252, 0.6); }
+.erp-table tr.selected td { background: var(--sky-pale); }
+.erp-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.erp-table .mono { font-family: var(--mono); font-size: 12px; }
+.erp-table .muted { color: var(--dim); font-size: 12px; }
+.erp-table tfoot td { font-weight: 700; background: rgba(247, 251, 253, 0.96); }
+
+/* Chips de estado */
+.chip { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.chip.pend { background: var(--warning-bg); color: var(--warning-text); }
+.chip.ok { background: var(--success-bg); color: var(--success-text); }
+.chip.void { background: #eceff3; color: #475569; }
+.chip.warn { background: var(--danger-bg); color: var(--danger-text); }
+.chip.info { background: var(--sky-pale); color: var(--sky-deep); }
+
+/* Revisión dividida: lista | documento | datos */
+.erp-split { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 12px; min-height: calc(100vh - 230px); }
+.erp-split > * { min-width: 0; }
+.erp-list { overflow: auto; max-height: calc(100vh - 230px); }
+.erp-list button {
+  width: 100%; text-align: left; display: block; padding: 10px 12px; border-bottom: 1px solid var(--border-soft);
+  background: transparent; cursor: pointer;
+}
+.erp-list button:hover { background: rgba(238, 246, 252, .7); }
+.erp-list button.active { background: var(--sky-pale); box-shadow: inset 3px 0 0 var(--sky-deep); }
+.erp-list .t { font-size: 13px; font-weight: 600; color: var(--fg); }
+.erp-list .s { font-size: 11.5px; color: var(--dim); display: flex; justify-content: space-between; gap: 8px; margin-top: 2px; }
+
+.erp-review { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr); gap: 12px; }
+.erp-doc { min-height: 520px; overflow: hidden; display: flex; flex-direction: column; }
+.erp-doc iframe, .erp-doc img { width: 100%; flex: 1; border: 0; object-fit: contain; background: #f8fafc; min-height: 520px; }
+.erp-doc .empty { flex: 1; display: grid; place-items: center; color: var(--dim); font-size: 13px; padding: 24px; text-align: center; }
+
+.erp-form { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.erp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 10px; }
+.erp-grid .full { grid-column: 1 / -1; }
+.erp-field { display: flex; flex-direction: column; gap: 3px; }
+.erp-field label { font-size: 11px; font-weight: 700; color: var(--dim); letter-spacing: .02em; }
+.erp-section-title { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--sky-deep); margin-top: 4px; }
+
+.erp-lines { width: 100%; font-size: 12px; border-collapse: collapse; }
+.erp-lines td, .erp-lines th { padding: 4px 6px; border-bottom: 1px solid var(--border-soft); }
+.erp-lines th { text-align: left; color: var(--dim); font-size: 10.5px; text-transform: uppercase; }
+.erp-lines .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.erp-alert { border-radius: 10px; padding: 8px 10px; font-size: 12.5px; background: var(--warning-bg); color: var(--warning-text); }
+.erp-alert.error { background: var(--danger-bg); color: var(--danger-text); }
+.erp-alert.ok { background: var(--success-bg); color: var(--success-text); }
+
+.kbd { font-family: var(--mono); font-size: 10.5px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 0 4px; color: var(--fg-soft); background: #fff; }
+
+/* Modal de pantalla completa (carga masiva) */
+.erp-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(20, 36, 51, .35); backdrop-filter: blur(4px); display: flex; padding: 16px; }
+.erp-sheet { margin: auto; width: min(1400px, 100%); height: min(920px, 100%); display: flex; flex-direction: column; overflow: hidden; }
+.erp-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.erp-sheet-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 280px minmax(0, 1fr) minmax(340px, 420px); }
+.erp-sheet-body > * { min-height: 0; overflow: auto; }
+.erp-drop { margin: 12px; border: 2px dashed var(--border-hover); border-radius: 14px; padding: 18px; text-align: center; color: var(--dim); font-size: 13px; cursor: pointer; }
+.erp-drop:hover { border-color: var(--sky); color: var(--sky-deep); background: rgba(255,255,255,.6); }
+
+@media (max-width: 1100px) {
+  .erp-split, .erp-review { grid-template-columns: 1fr; }
+  .erp-sheet-body { grid-template-columns: 1fr; }
+  .erp-list { max-height: 260px; }
+}

@@ -68,13 +68,8 @@ export function PurchaseDetailModal({ purchase, costCenters, suppliers, onClose,
   };
 
   const handleRevertPayment = async () => {
-    if (!confirm('¿Estás seguro de revertir este pago a pendiente?')) return;
-    try {
-      await revertPurchasePayment(purchase.id);
-      onSave();
-    } catch (err: any) {
-      alert('Error al revertir pago: ' + err.message);
-    }
+    const res = await revertPurchasePayment(purchase.id);
+    if (!res.ok) alert(res.error);
   };
 
   return (

@@ -85,7 +85,7 @@ export function ProveedorDetailClientView({
         withholdingTax: Number(p.withholding_tax) || 0,
         total: Number(p.total) || 0,
         supportUrl,
-        pdfUrl: `/api/contabilidad/comprobantes/${id}/pdf?source=purchase`,
+        pdfUrl: `/api/contabilidad/operacion/pdf?source=purchases&id=${id}`,
         status: String(p.status || 'pagado'),
       });
     }
@@ -114,7 +114,7 @@ export function ProveedorDetailClientView({
         withholdingTax: 0,
         total: Number(e.total_amount) || 0,
         supportUrl,
-        pdfUrl: `/api/contabilidad/comprobantes/${id}/pdf?source=petty_cash_entry`,
+        pdfUrl: `/api/contabilidad/operacion/pdf?source=petty_cash_entries&id=${id}`,
         status: String(e.status || 'activo'),
       });
     }
@@ -134,7 +134,7 @@ export function ProveedorDetailClientView({
         withholdingTax: 0,
         total: Number(ce.total_debit) || 0,
         supportUrl: (ce.support_url as string | null) || null,
-        pdfUrl: `/api/contabilidad/comprobantes/${id}/pdf`,
+        pdfUrl: `/api/contabilidad/operacion/pdf?source=purchases&id=${id}`,
         status: String(ce.status || 'borrador'),
       });
     }
@@ -231,7 +231,7 @@ export function ProveedorDetailClientView({
           <div className="flex flex-wrap gap-2">
             {ceEntries[0] && (
               <a
-                href={`/api/contabilidad/comprobantes/${String(ceEntries[0].id)}/pdf`}
+                href={`/api/contabilidad/operacion/pdf?source=purchases&id=${String(ceEntries[0]?.source_id || '')}`}
                 target="_blank"
                 rel="noreferrer"
                 className="btn btn-secondary text-xs flex items-center gap-1.5"
@@ -295,7 +295,7 @@ export function ProveedorDetailClientView({
               Pendientes legales y contables asociados ({pendientes.length})
             </span>
             <Link
-              href={`/admin/contabilidad/pendientes?thirdPartyId=${supplier.id}`}
+              href={`/admin/contabilidad/auditoria`}
               className="text-xs font-semibold text-[var(--sky-deep)] hover:underline"
             >
               Ver en tablero de pendientes →
@@ -321,7 +321,6 @@ export function ProveedorDetailClientView({
             { id: 'todos', label: `Todos los registros (${allPayments.length})` },
             { id: 'tesoreria', label: `Tesorería / Compras (${purchases.length})` },
             { id: 'caja_menor', label: `Cajas Menores (${pettyCashEntries.length})` },
-            { id: 'ce', label: `Comprobantes de Egreso CE (${ceEntries.length})` },
           ].map((tab) => (
             <button
               key={tab.id}

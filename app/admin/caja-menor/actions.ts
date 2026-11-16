@@ -8,6 +8,7 @@ import {
   voidPettyCashEntryService,
 } from '@/lib/server/services/caja-menor';
 import { revalidatePath } from 'next/cache';
+import { postPettyCash } from '@/lib/server/services/contabilidad/kc';
 
 export async function createPettyCashEntryAction(rawInput: unknown) {
   const result = await executeMutation(
@@ -16,6 +17,7 @@ export async function createPettyCashEntryAction(rawInput: unknown) {
     rawInput,
     async ({ userId, input }) => {
       const entry = await createPettyCashEntryService(userId, input);
+      await postPettyCash(entry.id);
       revalidatePath('/admin/caja-menor');
       revalidatePath(`/admin/caja-menor/${input.box_id}`);
       return entry;
@@ -62,6 +64,9 @@ export async function voidCajaMenor(id: string, reason: string) {
     throw new Error('Error al anular la caja menor: ' + error.message);
   }
 
+  const { data: voidedEntries } = await supabase.from('petty_cash_entries').select('id').eq('box_id', parsed.data.id);
+  for (const e of voidedEntries || []) await postPettyCash(e.id);
+
   revalidatePath('/admin/caja-menor');
   revalidatePath(`/admin/caja-menor/${parsed.data.id}`);
   return { ok: true as const, data: { id: parsed.data.id } };
@@ -74,6 +79,7 @@ export async function voidPettyCashEntry(entryId: string, boxId: string, reason:
     { id: entryId, reason },
     async ({ userId, input }) => {
       const updated = await voidPettyCashEntryService(input.id, userId, input.reason);
+      await postPettyCash(input.id);
       revalidatePath('/admin/caja-menor');
       revalidatePath(`/admin/caja-menor/${boxId}`);
       return updated;
@@ -87,4 +93,20 @@ export async function voidPettyCashEntry(entryId: string, boxId: string, reason:
 
 export async function deleteCajaMenor(id: string, reason = 'Anulada desde listado de cajas menores') {
   return voidCajaMenor(id, reason);
+}
+
+/** Regenera el CC/CE de un movimiento de caja menor después de crearlo o editarlo. */
+export async function repostPettyCashAction(entryId: string) {
+  const result = await executeMutation(
+    ['admin', 'tesoreria', 'asesor'],
+    VoidRecordSchema.pick({ id: true }),
+    { id: entryId },
+    async ({ input }) => {
+      await postPettyCash(input.id);
+      revalidatePath('/admin/contabilidad/auditoria');
+      return { ok: true };
+    }
+  );
+  if (!result.ok) throw new Error(result.error);
+  return result;
 }

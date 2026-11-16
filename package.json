@@ -9,8 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "db:types": "tsx scripts/db-types.ts",
-    "eval:clasificador": "tsx scripts/eval-clasificador.ts"
+    "db:types": "tsx scripts/db-types.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

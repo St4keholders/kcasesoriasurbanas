@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { postSale } from '@/lib/server/services/contabilidad/kc';
 
 const SaleItemSchema = z.object({
   service_type_id: z.string().optional().or(z.literal('')),
@@ -19,6 +20,8 @@ const SaleSchema = z.object({
   items: z.array(SaleItemSchema).min(1, 'Agregue al menos un servicio'),
   tax: z.coerce.number().min(0),
   discount: z.coerce.number().min(0),
+  applies_iva: z.boolean().optional(),
+  withholding_tax: z.coerce.number().min(0).optional(),
   notes: z.string().optional(),
 });
 
@@ -59,6 +62,9 @@ export async function createSale(data: z.infer<typeof SaleSchema>) {
       subtotal,
       tax: data.tax,
       discount: data.discount,
+      applies_iva: Boolean(data.applies_iva),
+      withholding_tax: data.withholding_tax || 0,
+      paid_at: data.status === 'pagada' ? new Date().toISOString() : null,
       total,
       notes: data.notes
     })
@@ -79,6 +85,8 @@ export async function createSale(data: z.infer<typeof SaleSchema>) {
   const { error: itemsError } = await supabase.from('sale_items').insert(itemsToInsert);
   
   if (itemsError) throw new Error('Error al guardar los ítems de la venta: ' + itemsError.message);
+
+  if (data.status === 'pagada') await postSale(sale.id);
 
   revalidatePath('/admin/ventas');
   return sale.id;
@@ -104,6 +112,7 @@ export async function registerPayment(saleId: string, paymentMethod: string) {
     .eq('id', saleId);
 
   if (error) throw new Error('Error al registrar el pago: ' + error.message);
+  await postSale(saleId);
 
   revalidatePath('/admin/ventas');
   revalidatePath(`/admin/ventas/${saleId}`);

@@ -27,7 +27,7 @@ export default async function ProveedorDetailPage({
   const entity = thirdParty || fallbackSupplier;
   if (!entity) notFound();
 
-  const [purchasesRes, pettyRes, ceRes, pendientesRes] = await Promise.all([
+  const [purchasesRes, pettyRes] = await Promise.all([
     db
       .from('purchases')
       .select('*, cost_centers(name)')
@@ -40,18 +40,6 @@ export default async function ProveedorDetailPage({
       .eq('third_party_id', id)
       .neq('status', 'anulado')
       .order('entry_date', { ascending: false }),
-    db
-      .from('journal_entries')
-      .select('*, cost_centers(name)')
-      .eq('third_party_id', id)
-      .eq('entry_type', 'CE')
-      .neq('status', 'anulado')
-      .order('entry_date', { ascending: false }),
-    db
-      .from('v_pendientes_legales')
-      .select('*')
-      .eq('third_party_id', id)
-      .limit(100),
   ]);
 
   return (
@@ -72,8 +60,8 @@ export default async function ProveedorDetailPage({
         }}
         purchases={purchasesRes.data || []}
         pettyCashEntries={pettyRes.data || []}
-        ceEntries={ceRes.data || []}
-        pendientes={pendientesRes.data || []}
+        ceEntries={[]}
+        pendientes={[]}
       />
     </div>
   );

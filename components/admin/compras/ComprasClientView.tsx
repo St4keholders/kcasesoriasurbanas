@@ -1,357 +1,217 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { DataTable } from '@/components/admin/ui/DataTable';
-import { StatusBadge } from '@/components/admin/ui/StatusBadge';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { PlusIcon, EyeIcon, UploadCloudIcon, CalendarIcon, CreditCardIcon, ReceiptIcon, FileTextIcon, WalletIcon, SearchIcon, TrashIcon } from 'lucide-react';
-import { AdminTopbar } from '@/components/admin/AdminTopbar';
-import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { BulkUploadModal } from './BulkUploadModal';
+import { PlusIcon, UploadCloudIcon, DownloadIcon, EyeIcon, BanIcon, FileTextIcon, SearchIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { MasivoModal } from './MasivoModal';
 import { PurchaseDetailModal } from './PurchaseDetailModal';
 import { ExportCSVModal } from '@/components/admin/ExportCSVModal';
-import { DownloadIcon } from 'lucide-react';
 import { deletePurchase } from '@/app/admin/compras/actions';
 
-export function ComprasClientView({ 
-  initialPurchases, 
-  costCenters = [], 
-  suppliers = [],
-  pettyCash = []
-}: { 
-  initialPurchases: any[], 
-  costCenters?: any[], 
-  suppliers?: any[],
-  pettyCash?: any[]
+type Option = { id: string; name: string };
+
+const fmt = (n: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n || 0);
+const fdate = (iso?: string) => {
+  if (!iso) return '-';
+  const [y, m, d] = iso.slice(0, 10).split('-');
+  const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  return `${d} ${meses[Number(m) - 1]} ${y}`;
+};
+const STATUS: Record<string, { l: string; c: string }> = {
+  pagado: { l: 'Pagado', c: 'ok' },
+  pendiente_pago: { l: 'Crédito pendiente', c: 'pend' },
+  anulado: { l: 'Anulado', c: 'void' },
+};
+const PAGE = 50;
+
+export function ComprasClientView({
+  initialPurchases,
+  costCenters,
+  categories,
+}: {
+  initialPurchases: any[];
+  costCenters: Option[];
+  categories: Option[];
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [selectedPurchase, setSelectedPurchase] = useState<any>(null);
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
-  const [supplierFilter, setSupplierFilter] = useState('');
-  const [costCenterFilter, setCostCenterFilter] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [showMasivo, setShowMasivo] = useState(false);
+  const [showExport, setShowExport] = useState(false);
+  const [detail, setDetail] = useState<any>(null);
+  const [q, setQ] = useState('');
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
+  const [center, setCenter] = useState('');
+  const [category, setCategory] = useState('');
+  const [status, setStatus] = useState('');
+  const [page, setPage] = useState(0);
 
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
-
-  const formatDate = (iso: string) => {
-    if (!iso) return 'N/A';
-    try {
-      return format(parseISO(iso), "dd MMM yyyy", { locale: es });
-    } catch {
-      return iso;
-    }
-  };
-
-  const filteredPurchases = useMemo(() => {
-    return initialPurchases.filter(p => {
-      let valid = true;
-      if (dateFrom && p.transaction_date) {
-        valid = valid && !isBefore(parseISO(p.transaction_date), startOfDay(parseISO(dateFrom)));
+  const rows = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    return initialPurchases.filter((p) => {
+      if (from && p.transaction_date < from) return false;
+      if (to && p.transaction_date > to) return false;
+      if (center && p.cost_center_id !== center) return false;
+      if (category && p.category_id !== category) return false;
+      if (status && p.status !== status) return false;
+      if (term) {
+        const hay = `${p.purchase_number} ${p.invoice_number || ''} ${p.supplier_name || ''} ${p.concept || ''}`.toLowerCase();
+        if (!hay.includes(term)) return false;
       }
-      if (dateTo && p.transaction_date) {
-        valid = valid && !isAfter(parseISO(p.transaction_date), endOfDay(parseISO(dateTo)));
-      }
-      if (supplierFilter) {
-        valid = valid && p.supplier_id === supplierFilter;
-      }
-      if (costCenterFilter) {
-        valid = valid && p.cost_center_id === costCenterFilter;
-      }
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const invoiceMatch = p.invoice_number && p.invoice_number.toLowerCase().includes(query);
-        const purchaseMatch = p.purchase_number && p.purchase_number.toLowerCase().includes(query);
-        const supplierMatch = (p.suppliers?.name || p.supplier_name || '').toLowerCase().includes(query);
-        valid = valid && (invoiceMatch || purchaseMatch || supplierMatch);
-      }
-      return valid;
+      return true;
     });
-  }, [initialPurchases, dateFrom, dateTo, supplierFilter, costCenterFilter, searchQuery]);
+  }, [initialPurchases, q, from, to, center, category, status]);
 
-  const dynamicKpis = useMemo(() => {
-    const validPurchases = filteredPurchases.filter(p => p.status !== 'anulada');
-    const totalComprasMes = validPurchases.reduce((acc, p) => acc + (Number(p.total) || 0), 0);
-    const totalRetencionesMes = validPurchases.reduce((acc, p) => acc + (Number(p.withholding_tax) || 0), 0);
-    const ivaCompras = validPurchases.reduce((acc, p) => acc + (Number(p.tax_iva) || 0), 0);
-
-    let filteredPettyCash = pettyCash.filter(pc => {
-      let valid = true;
-      if (dateFrom && pc.entry_date) {
-        valid = valid && !isBefore(parseISO(pc.entry_date), startOfDay(parseISO(dateFrom)));
-      }
-      if (dateTo && pc.entry_date) {
-        valid = valid && !isAfter(parseISO(pc.entry_date), endOfDay(parseISO(dateTo)));
-      }
-      return valid;
-    });
-
-    if (costCenterFilter) {
-      filteredPettyCash = []; // Cajas menores don't belong directly to a cost center like purchases do
-    } else if (supplierFilter) {
-      const selectedSupplier = suppliers.find(s => s.id === supplierFilter);
-      if (selectedSupplier) {
-        filteredPettyCash = filteredPettyCash.filter(pc => 
-          pc.supplier_name && pc.supplier_name.toLowerCase().includes(selectedSupplier.name.toLowerCase())
-        );
-      }
-    }
-
-    const totalCajasMenoresMes = filteredPettyCash.reduce((acc, pc) => acc + (Number(pc.total_amount) || 0), 0);
-    const ivaCajas = filteredPettyCash.reduce((acc, pc) => acc + (Number(pc.tax_amount) || 0), 0);
-    
+  const kpi = useMemo(() => {
+    const valid = rows.filter((r) => r.status !== 'anulado');
     return {
-      totalComprasMes,
-      totalIvaMes: ivaCompras + ivaCajas,
-      totalRetencionesMes,
-      totalCajasMenoresMes
+      n: valid.length,
+      total: valid.reduce((a, r) => a + Number(r.total || 0), 0),
+      iva: valid.reduce((a, r) => a + Number(r.tax_iva || 0), 0),
+      ret: valid.reduce((a, r) => a + Number(r.withholding_tax || 0), 0),
+      credito: valid.filter((r) => r.status === 'pendiente_pago').reduce((a, r) => a + Number(r.total || 0), 0),
     };
-  }, [filteredPurchases, pettyCash, costCenterFilter, supplierFilter, suppliers]);
+  }, [rows]);
+
+  const pages = Math.max(1, Math.ceil(rows.length / PAGE));
+  const view = rows.slice(page * PAGE, page * PAGE + PAGE);
+  const hasFilters = q || from || to || center || category || status;
 
   return (
-    <>
-      <AdminTopbar 
-        eyebrow="— TESORERÍA"
-        title={<span>Compras y <em>gastos</em></span>}
-        subtitle="Gestiona las cuentas por pagar y los egresos de la empresa."
-        action={
-          <div className="flex flex-col gap-3 items-end w-full" style={{ minWidth: 'min(800px, 100vw - 60px)' }}>
-            <div className="flex flex-wrap items-center justify-end gap-3 w-full">
-              <div className="flex items-center gap-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-full px-4 py-1.5 shadow-sm text-sm">
-                <CalendarIcon className="w-4 h-4 text-[var(--dim)]" />
-                <input 
-                  type="date" 
-                  value={dateFrom}
-                  onChange={(e) => setDateFrom(e.target.value)}
-                  className="bg-transparent text-[var(--fg)] outline-none cursor-pointer"
-                  title="Fecha desde"
-                />
-                <span className="text-[var(--dim)]">-</span>
-                <input 
-                  type="date" 
-                  value={dateTo}
-                  onChange={(e) => setDateTo(e.target.value)}
-                  className="bg-transparent text-[var(--fg)] outline-none cursor-pointer"
-                  title="Fecha hasta"
-                />
-              </div>
-            </div>
-
-            <select 
-              className="input py-1.5 w-full text-sm"
-              value={costCenterFilter}
-              onChange={(e) => setCostCenterFilter(e.target.value)}
-            >
-              <option value="">Todos los Centros</option>
-              {costCenters.map(cc => (
-                <option key={cc.id} value={cc.id}>{cc.name}</option>
-              ))}
-            </select>
-            
-            <select 
-              className="input py-1.5 w-full text-sm"
-              value={supplierFilter}
-              onChange={(e) => setSupplierFilter(e.target.value)}
-            >
-              <option value="">Todos los Proveedores</option>
-              {suppliers.map(s => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
-
-            <div className="w-full relative">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--dim)]" />
-              <input 
-                type="text"
-                placeholder="Buscar por factura o proveedor..."
-                className="input pl-9 w-full py-1.5 text-sm"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-center gap-2 justify-end w-full mt-1">
-              {(dateFrom || dateTo || supplierFilter || costCenterFilter || searchQuery) && (
-                <button 
-                  onClick={() => { setDateFrom(''); setDateTo(''); setSupplierFilter(''); setCostCenterFilter(''); setSearchQuery(''); }} 
-                  className="text-xs text-rose-500 hover:text-rose-600 font-medium px-2 whitespace-nowrap"
-                >
-                  Quitar Filtros
-                </button>
-              )}
-              <button 
-              onClick={() => setIsExportModalOpen(true)}
-              className="btn btn-secondary py-1.5 px-3 text-sm flex items-center gap-2"
-            >
-              <DownloadIcon className="w-4 h-4" /> Exportar Excel
-            </button>
-              <button onClick={() => setIsModalOpen(true)} className="btn btn-secondary py-1.5 px-3 text-sm flex items-center gap-2">
-                <UploadCloudIcon className="w-4 h-4" /> Masivo
-              </button>
-              <Link href="/admin/compras/nueva" className="btn btn-primary py-1.5 px-3 text-sm flex items-center gap-2">
-                <PlusIcon className="w-4 h-4" /> Nueva compra
-              </Link>
-            </div>
-          </div>
-        }
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 mt-6">
-        <div className="card flex flex-col justify-center p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-[var(--dim)]">Total Compras (Mes)</span>
-            <div className="icon-box sm"><CreditCardIcon /></div>
-          </div>
-          <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(dynamicKpis.totalComprasMes)}</div>
+    <div className="erp">
+      <div className="erp-head">
+        <div>
+          <div className="eyebrow">Tesorería</div>
+          <h1>Compras y <em>pagos</em></h1>
+          <p>Todo lo que se registra aquí ya está pagado: cada compra genera su causación (CC) y su egreso (CE) para revisión del contador.</p>
         </div>
-
-        <div className="card flex flex-col justify-center p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-[var(--dim)]">Total IVA (Mes)</span>
-            <div className="icon-box sm amber"><ReceiptIcon /></div>
-          </div>
-          <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(dynamicKpis.totalIvaMes)}</div>
-        </div>
-
-        <div className="card flex flex-col justify-center p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-[var(--dim)]">Total Retenciones</span>
-            <div className="icon-box sm purple"><FileTextIcon /></div>
-          </div>
-          <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(dynamicKpis.totalRetencionesMes)}</div>
-        </div>
-
-        <div className="card flex flex-col justify-center p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-[var(--dim)]">Cajas Menores (Mes)</span>
-            <div className="icon-box sm green"><WalletIcon /></div>
-          </div>
-          <div className="text-2xl font-bold font-display text-[var(--fg)]">{formatCurrency(dynamicKpis.totalCajasMenoresMes)}</div>
+        <div className="erp-actions">
+          <button className="erp-btn" onClick={() => setShowExport(true)}><DownloadIcon /> Exportar</button>
+          <Link className="erp-btn" href="/admin/compras/nueva"><PlusIcon /> Registro manual</Link>
+          <button className="erp-btn primary" onClick={() => setShowMasivo(true)}><UploadCloudIcon /> Cargar facturas</button>
         </div>
       </div>
 
-      <div className="h-10 w-full mb-6"></div> {/* Spacer explicitly requested by user */}
+      <div className="erp-kpis">
+        <div className="erp-kpi glass"><div className="l">Operaciones</div><div className="v">{kpi.n}</div></div>
+        <div className="erp-kpi glass"><div className="l">Total pagado</div><div className="v">{fmt(kpi.total)}</div></div>
+        <div className="erp-kpi glass"><div className="l">IVA de facturas</div><div className="v">{fmt(kpi.iva)}</div></div>
+        <div className="erp-kpi glass"><div className="l">Retenciones de facturas</div><div className="v">{fmt(kpi.ret)}</div></div>
+        {kpi.credito > 0 && <div className="erp-kpi glass"><div className="l">Crédito por pagar</div><div className="v">{fmt(kpi.credito)}</div></div>}
+      </div>
 
-      <DataTable
-        data={filteredPurchases}
-        keyExtractor={(row) => row.id}
-        columns={[
-          {
-            header: 'Factura / Doc.',
-            sortAccessor: (row) => row.purchase_number,
-            accessor: (row) => (
-              <div>
-                <div className="font-semibold text-[var(--fg)]">{row.purchase_number || 'Borrador'}</div>
-                {row.invoice_number && <div className="text-xs text-[var(--dim)]">Ref: {row.invoice_number}</div>}
-              </div>
-            ),
-          },
-          {
-            header: 'Fecha',
-            sortAccessor: (row) => row.transaction_date,
-            accessor: (row) => <span className="text-sm font-mono text-[var(--dim)]">{formatDate(row.transaction_date)}</span>,
-          },
-          {
-            header: 'Proveedor',
-            sortAccessor: (row) => row.suppliers?.name || row.supplier_name || '',
-            accessor: (row) => <span className="text-sm font-medium text-[var(--fg-soft)]">{row.suppliers?.name || row.supplier_name || 'Sin Proveedor'}</span>,
-          },
-          {
-            header: 'Centro Costo',
-            sortAccessor: (row) => row.cost_centers?.name || '',
-            accessor: (row) => <span className="text-sm text-[var(--dim)]">{row.cost_centers?.name}</span>,
-          },
-          {
-            header: 'Total',
-            sortAccessor: (row) => Number(row.total),
-            accessor: (row) => <span className="text-sm font-semibold text-[var(--fg)]">{formatCurrency(row.total)}</span>,
-          },
-          {
-            header: 'Estado',
-            sortAccessor: (row) => row.status,
-            accessor: (row) => <StatusBadge status={row.status} />,
-          },
-          {
-            header: 'Acciones',
-            sortable: false,
-            accessor: (row) => (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setSelectedPurchase(row)}
-                  className="btn btn-ghost text-xs px-2 py-1 flex items-center gap-1"
-                >
-                  <EyeIcon className="w-4 h-4" /> Detalle
-                </button>
-                {row.status !== 'anulado' && (
-                  <button
-                    onClick={async () => {
-                      const motivo = window.prompt('Indica el motivo para anular esta compra:');
-                      if (!motivo || !motivo.trim()) return;
-                      try {
-                        await deletePurchase(row.id, motivo.trim());
-                        window.location.reload();
-                      } catch {
-                        alert('No se pudo anular la compra.');
-                      }
-                    }}
-                    className="btn btn-ghost text-xs px-2 py-1 flex items-center gap-1 !text-red-500 hover:!bg-red-500/10"
-                  >
-                    <TrashIcon className="w-4 h-4" /> Anular
-                  </button>
-                )}
-              </div>
-            ),
-          },
-        ]}
-      />
+      <div className="erp-toolbar glass">
+        <div style={{ position: 'relative' }} className="grow">
+          <SearchIcon style={{ position: 'absolute', left: 9, top: 9, width: 15, height: 15, color: 'var(--dim)' }} />
+          <input className="erp-input" style={{ width: '100%', paddingLeft: 30 }} placeholder="Buscar proveedor, concepto o número" value={q} onChange={(e) => { setQ(e.target.value); setPage(0); }} />
+        </div>
+        <input type="date" className="erp-input" value={from} onChange={(e) => { setFrom(e.target.value); setPage(0); }} title="Desde" />
+        <input type="date" className="erp-input" value={to} onChange={(e) => { setTo(e.target.value); setPage(0); }} title="Hasta" />
+        <select className="erp-select" value={center} onChange={(e) => { setCenter(e.target.value); setPage(0); }}>
+          <option value="">Todos los centros</option>
+          {costCenters.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+        <select className="erp-select" value={category} onChange={(e) => { setCategory(e.target.value); setPage(0); }}>
+          <option value="">Todas las categorías</option>
+          {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+        <select className="erp-select" value={status} onChange={(e) => { setStatus(e.target.value); setPage(0); }}>
+          <option value="">Todos los estados</option>
+          <option value="pagado">Pagado</option>
+          <option value="pendiente_pago">Crédito pendiente</option>
+          <option value="anulado">Anulado</option>
+        </select>
+        {hasFilters && <button className="erp-btn ghost sm" onClick={() => { setQ(''); setFrom(''); setTo(''); setCenter(''); setCategory(''); setStatus(''); }}>Limpiar</button>}
+      </div>
 
-      {isModalOpen && (
-        <BulkUploadModal 
-          costCenters={costCenters}
-          onClose={() => setIsModalOpen(false)}
-          onSuccess={() => {
-            // refresh or whatever
-          }}
-        />
+      <div className="glass erp-table-wrap">
+        <table className="erp-table">
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Fecha</th>
+              <th>Proveedor / concepto</th>
+              <th>Categoría</th>
+              <th>Centro</th>
+              <th className="num">Total</th>
+              <th>Estado</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {view.map((p) => (
+              <tr key={p.id}>
+                <td className="mono">{p.purchase_number}<div className="muted">{p.invoice_number ? `Fact. ${p.invoice_number}` : ''}</div></td>
+                <td className="mono" style={{ whiteSpace: 'nowrap' }}>{fdate(p.transaction_date)}</td>
+                <td style={{ maxWidth: 340 }}>
+                  <div style={{ fontWeight: 600 }}>{p.supplier_name || 'Sin proveedor'}</div>
+                  <div className="muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.concept}</div>
+                </td>
+                <td className="muted">{p.expense_categories?.name || '-'}</td>
+                <td className="muted">{p.cost_centers?.name || '-'}</td>
+                <td className="num" style={{ fontWeight: 700 }}>{fmt(p.total)}</td>
+                <td><span className={`chip ${STATUS[p.status]?.c || 'info'}`}>{STATUS[p.status]?.l || p.status}</span></td>
+                <td style={{ whiteSpace: 'nowrap', textAlign: 'right' }}>
+                  <a className="erp-btn ghost sm" href={`/api/contabilidad/operacion/pdf?source=purchases&id=${p.id}`} target="_blank" rel="noreferrer" title="Comprobante PDF"><FileTextIcon /></a>
+                  <button className="erp-btn ghost sm" onClick={() => setDetail(p)} title="Ver / editar"><EyeIcon /></button>
+                  {p.status !== 'anulado' && (
+                    <button className="erp-btn ghost sm" title="Anular" onClick={async () => {
+                      const motivo = window.prompt('Motivo de la anulación:');
+                      if (!motivo?.trim()) return;
+                      try { await deletePurchase(p.id, motivo.trim()); window.location.reload(); } catch (e) { alert(e instanceof Error ? e.message : 'No se pudo anular'); }
+                    }}><BanIcon style={{ color: 'var(--danger)' }} /></button>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {!view.length && <tr><td colSpan={8} style={{ textAlign: 'center', color: 'var(--dim)', padding: 30 }}>No hay compras con estos filtros.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12.5, color: 'var(--dim)' }}>
+        <span>{rows.length} registros</span>
+        <span style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <button className="erp-btn sm" disabled={page === 0} onClick={() => setPage(page - 1)}><ChevronLeftIcon /></button>
+          Página {page + 1} de {pages}
+          <button className="erp-btn sm" disabled={page + 1 >= pages} onClick={() => setPage(page + 1)}><ChevronRightIcon /></button>
+        </span>
+      </div>
+
+      {showMasivo && (
+        <MasivoModal target="compras" categories={categories} costCenters={costCenters} onClose={() => setShowMasivo(false)} />
       )}
 
-      {selectedPurchase && (
+      {detail && (
         <PurchaseDetailModal
-          purchase={selectedPurchase}
+          purchase={detail}
           costCenters={costCenters}
-          suppliers={suppliers}
-          onClose={() => setSelectedPurchase(null)}
-          onSave={() => {
-            setSelectedPurchase(null);
-            window.location.reload();
-          }}
+          suppliers={[]}
+          onClose={() => setDetail(null)}
+          onSave={() => { setDetail(null); window.location.reload(); }}
         />
       )}
 
       <ExportCSVModal
-        isOpen={isExportModalOpen}
-        onClose={() => setIsExportModalOpen(false)}
-        data={initialPurchases || []}
-        title="Exportar Compras a Excel"
-        filename="compras_kcasesorias"
+        isOpen={showExport}
+        onClose={() => setShowExport(false)}
+        data={rows}
+        title="Exportar compras a Excel"
+        filename="tesoreria_kc"
         dateField="transaction_date"
         columnsMap={{
-          invoice_number: 'Nº Factura',
-          concept: 'Concepto',
+          purchase_number: 'Número',
+          invoice_number: 'Factura',
           transaction_date: 'Fecha',
-          'suppliers.name': 'Proveedor',
-          'cost_centers.name': 'Centro Costo',
-          amount: 'Subtotal',
+          supplier_name: 'Proveedor',
+          concept: 'Concepto',
+          'expense_categories.name': 'Categoría',
+          'cost_centers.name': 'Centro de costo',
+          amount: 'Base',
           tax_iva: 'IVA',
-          withholding_tax: 'Retenciones',
-          total: 'Total (COP)',
+          withholding_tax: 'Retención',
+          total: 'Total',
           status: 'Estado',
-          notes: 'Notas'
         }}
       />
-    </>
+    </div>
   );
 }

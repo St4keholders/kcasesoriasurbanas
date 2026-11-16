@@ -7,6 +7,7 @@ import { AdminTopbar } from '@/components/admin/AdminTopbar';
 import { AddInvoiceButton } from '@/app/admin/caja-menor/[id]/AddInvoiceButton';
 import { AddIncomeButton } from '@/app/admin/caja-menor/[id]/AddIncomeButton';
 import { BulkUploadButton } from '@/app/admin/caja-menor/[id]/BulkUploadButton';
+import { repostPettyCashAction } from '@/app/admin/caja-menor/actions';
 import { EditEntryModal } from '@/app/admin/caja-menor/[id]/EditEntryModal';
 import { ExternalLinkIcon, DownloadIcon, PencilIcon, ArrowUpIcon, ArrowDownIcon, TrashIcon } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
@@ -198,6 +199,7 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
                           .eq('id', row.id);
 
                         if (error) throw error;
+                        await repostPettyCashAction(row.id);
 
                         router.refresh();
                       } catch (err: unknown) {

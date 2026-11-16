@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { XIcon, Loader2 } from 'lucide-react';
+import { repostPettyCashAction } from '../actions';
 
 export function AddIncomeModal({ boxId, onClose }: { boxId: string; onClose: () => void }) {
   const router = useRouter();
@@ -23,7 +24,7 @@ export function AddIncomeModal({ boxId, onClose }: { boxId: string; onClose: () 
       
       const supabase = createClient();
       
-      const { error: insertError } = await supabase
+      const { data: inserted, error: insertError } = await supabase
         .from('petty_cash_entries')
         .insert({
           box_id: boxId,
@@ -34,9 +35,12 @@ export function AddIncomeModal({ boxId, onClose }: { boxId: string; onClose: () 
           tax_amount: 0,
           total_amount,
           receipt_url: null
-        });
+        })
+        .select('id')
+        .single();
         
       if (insertError) throw insertError;
+      if (inserted?.id) await repostPettyCashAction(inserted.id);
       
       router.refresh();
       onClose();
