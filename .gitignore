@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# archivos privados y backups
+*.xlsx
+*.docx
+backups/
+datos/
