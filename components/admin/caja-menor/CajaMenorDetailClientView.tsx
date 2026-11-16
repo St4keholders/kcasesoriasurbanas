@@ -164,6 +164,15 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
             header: 'Acciones',
             accessor: (row: any) => (
               <div className="flex items-center gap-2">
+                <a
+                  href={`/api/contabilidad/comprobantes/${row.id}/pdf?source=petty_cash_entry`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1"
+                  title="Descargar comprobante PDF"
+                >
+                  <DownloadIcon className="w-3 h-3" /> Comprobante
+                </a>
                 <button
                   onClick={() => setEditingEntry(row)}
                   className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1"

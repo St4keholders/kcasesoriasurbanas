@@ -232,12 +232,22 @@ export function PurchaseDetailModal({ purchase, costCenters, suppliers, onClose,
           </div>
         </div>
 
-        <div className="p-6 border-t border-[var(--border)] bg-[var(--surface)] shrink-0 flex justify-end gap-3 rounded-b-2xl">
-          <button onClick={onClose} className="neu-btn" disabled={isSaving}>Cancelar</button>
-          <button type="submit" form="purchase-form" className="neu-btn-primary flex items-center gap-2" disabled={isSaving}>
-            {isSaving ? <Loader2Icon className="w-4 h-4 animate-spin" /> : <SaveIcon className="w-4 h-4" />}
-            Guardar Cambios
-          </button>
+        <div className="p-6 border-t border-[var(--border)] bg-[var(--surface)] shrink-0 flex justify-between items-center gap-3 rounded-b-2xl">
+          <a
+            href={`/api/contabilidad/comprobantes/${purchase.id}/pdf?source=purchase`}
+            target="_blank"
+            rel="noreferrer"
+            className="neu-btn text-xs flex items-center gap-1.5"
+          >
+            <ExternalLinkIcon className="w-4 h-4" /> Descargar comprobante
+          </a>
+          <div className="flex gap-3">
+            <button onClick={onClose} className="neu-btn" disabled={isSaving}>Cancelar</button>
+            <button type="submit" form="purchase-form" className="neu-btn-primary flex items-center gap-2" disabled={isSaving}>
+              {isSaving ? <Loader2Icon className="w-4 h-4 animate-spin" /> : <SaveIcon className="w-4 h-4" />}
+              Guardar Cambios
+            </button>
+          </div>
         </div>
       </div>
     </div>

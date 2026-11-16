@@ -149,16 +149,16 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
 - [x] UI `/admin/contabilidad/borradores`: revisar, cambiar cuenta o centro de costo y botón **Contabilizar en bloque** (solo admin; lo usa el contador, no la IA).
 
 ### FASE 5 — Libro diario y comprobante para AZ
-- [ ] `/admin/contabilidad/libro-diario`: filtros (fechas, tipo, tercero, cuenta, centro de costo, estado), orden fecha → tipo → número, totales débito = crédito y paginación en servidor.
-- [ ] Exportar a XLSX (exceljs) y PDF (encabezado con razón social, NIT, rango de fechas y folio).
-- [ ] Libro mayor, auxiliar por tercero y balance de prueba por rango de fechas.
-- [ ] PDF del comprobante (`/api/contabilidad/comprobantes/[id]/pdf`, `@react-pdf/renderer` + `pdf-lib`):
+- [x] `/admin/contabilidad/libro-diario`: filtros (fechas, tipo, tercero, cuenta, centro de costo, estado), orden fecha → tipo → número, totales débito = crédito y paginación en servidor.
+- [x] Exportar a XLSX (exceljs) y PDF (encabezado con razón social, NIT, rango de fechas y folio).
+- [x] Libro mayor, auxiliar por tercero y balance de prueba por rango de fechas.
+- [x] PDF del comprobante (`/api/contabilidad/comprobantes/[id]/pdf`, `@react-pdf/renderer` + `pdf-lib`):
   - tamaño carta, margen izquierdo de 3.5 cm para la AZ;
   - encabezado con razón social, NIT, número (`CE-2026-000123`) y fecha, y marca de agua BORRADOR o ANULADO cuando aplique;
   - tercero, concepto, líneas (código, cuenta, centro de costo, débito, crédito), totales y valor en letras;
   - comprobante enlazado (CC ↔ CE), firmas de la sección B y los soportes anexos como páginas siguientes.
-- [ ] Botón "Descargar comprobante" en el detalle de compra, la entrada de caja menor, el libro diario y el proveedor.
-- [ ] "Descargar AZ" por rango de fechas: un solo PDF con índice, comprobantes en orden y sus soportes, armado por lotes de 50 con barra de progreso.
+- [x] Botón "Descargar comprobante" en el detalle de compra, la entrada de caja menor, el libro diario y el proveedor.
+- [x] "Descargar AZ" por rango de fechas: un solo PDF con índice, comprobantes en orden y sus soportes, armado por lotes de 50 con barra de progreso.
 
 ### FASE 6 — IA optimizada
 **6A. Clasificador de cuenta** (`lib/server/services/ia/clasificador.ts`), en este orden:
