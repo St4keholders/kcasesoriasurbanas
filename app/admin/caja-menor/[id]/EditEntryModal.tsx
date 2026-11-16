@@ -38,7 +38,7 @@ export function EditEntryModal({ entry, onClose }: EditEntryModalProps) {
       
       const supabase = createClient();
       
-      const { error: updateError } = await (supabase as any)
+      const { error: updateError } = await supabase
         .from('petty_cash_entries')
         .update(updateData)
         .eq('id', entry.id);

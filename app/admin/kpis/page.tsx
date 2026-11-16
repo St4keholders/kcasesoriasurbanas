@@ -50,7 +50,7 @@ export default async function AdminDashboardPage() {
   purchases.forEach(p => {
     const amount = Number(p.total) || 0;
     generalTotal += amount;
-    const ccName = (p as any).cost_centers?.name || 'Otros';
+    const ccName = p.cost_centers?.name || 'Otros';
     centerTotals[ccName] = (centerTotals[ccName] || 0) + amount;
   });
 

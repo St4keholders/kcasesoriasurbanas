@@ -56,7 +56,7 @@ export function DashboardLineChart({ data }: { data: any[] }) {
         <Tooltip 
           cursor={{ fill: '#f7fbff' }}
           contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-          formatter={(value: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value)}
+          formatter={(value) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(Number(value) || 0)}
         />
         <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
         

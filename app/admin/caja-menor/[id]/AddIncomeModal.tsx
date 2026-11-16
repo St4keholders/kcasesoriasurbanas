@@ -23,7 +23,7 @@ export function AddIncomeModal({ boxId, onClose }: { boxId: string; onClose: () 
       
       const supabase = createClient();
       
-      const { error: insertError } = await (supabase as any)
+      const { error: insertError } = await supabase
         .from('petty_cash_entries')
         .insert({
           box_id: boxId,

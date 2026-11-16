@@ -111,12 +111,12 @@ export default async function AdminDashboardPage() {
     }
     chartData = Object.values(chartDataMap);
 
-    const { data: pcb } = await (supabase as any).from('petty_cash_box_summary').select('name, total_spent, status').eq('status', 'abierta');
+    const { data: pcb } = await supabase.from('petty_cash_box_summary').select('name, total_spent, status').eq('status', 'abierta');
     pettyCashBoxes = pcb || [];
     
     const { data: ts } = await supabase
       .from('sales')
-      .select('client_name, total, invoice_number')
+      .select('total, sale_number, leads(full_name)')
       .gte('created_at', currentMonthStartISO)
       .order('total', { ascending: false })
       .limit(5);
@@ -148,7 +148,7 @@ export default async function AdminDashboardPage() {
     const { data: ua } = await supabase.from('appointments').select('*').gte('scheduled_at', currentDate.toISOString()).order('scheduled_at', { ascending: true }).limit(10);
     upcomingAppointments = ua || [];
 
-    const { data: pqRaw } = await supabase.from('sales').select('*').in('status', ['borrador', 'pendiente_pago', 'pendiente']).order('created_at', { ascending: false }).limit(15);
+    const { data: pqRaw } = await supabase.from('sales').select('*').in('status', ['cotizacion', 'pendiente_pago']).order('created_at', { ascending: false }).limit(15);
     pendingQuotes = pqRaw || [];
   }
 

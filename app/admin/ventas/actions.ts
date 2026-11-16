@@ -86,12 +86,19 @@ export async function createSale(data: z.infer<typeof SaleSchema>) {
 
 export async function registerPayment(saleId: string, paymentMethod: string) {
   const supabase = await createClient();
-  
+  const validMethod = (
+    ['efectivo', 'transferencia', 'tarjeta', 'nequi', 'daviplata', 'pse', 'otro'].includes(
+      paymentMethod
+    )
+      ? paymentMethod
+      : 'transferencia'
+  ) as 'efectivo' | 'transferencia' | 'tarjeta' | 'nequi' | 'daviplata' | 'pse' | 'otro';
+
   const { error } = await supabase
     .from('sales')
     .update({
       status: 'pagada',
-      payment_method: paymentMethod,
+      payment_method: validMethod,
       paid_at: new Date().toISOString()
     })
     .eq('id', saleId);

@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 const EditUserSchema = z.object({
   full_name: z.string().min(3, 'El nombre debe tener al menos 3 caracteres'),
   phone: z.string().optional(),
-  role: z.enum(['admin', 'asesor', 'tesoreria'], { required_error: 'Debe seleccionar un rol' }),
+  role: z.enum(['admin', 'asesor', 'tesoreria']),
   is_active: z.boolean(),
 });
 

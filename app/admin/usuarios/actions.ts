@@ -35,7 +35,7 @@ export async function activateUser(id: string) {
 
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 
-export async function updateUserData(id: string, data: { full_name: string; phone?: string; role: string; is_active: boolean }) {
+export async function updateUserData(id: string, data: { full_name: string; phone?: string; role: 'admin' | 'asesor' | 'tesoreria'; is_active: boolean }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('No autorizado');

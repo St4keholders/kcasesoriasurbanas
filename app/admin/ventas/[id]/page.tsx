@@ -28,7 +28,7 @@ export default async function DetalleVentaPage({ params }: { params: Promise<{ i
   if (error || !sale) notFound();
 
   const formatCurrency = (val: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
-  const formatDate = (iso: string) => format(new Date(iso), "dd 'de' MMMM, yyyy", { locale: es });
+  const formatDate = (iso: string | null) => iso ? format(new Date(iso), "dd 'de' MMMM, yyyy", { locale: es }) : 'N/A';
 
   const handlePayment = async (formData: FormData) => {
     'use server';

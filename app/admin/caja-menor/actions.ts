@@ -1,14 +1,34 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
-import { requireRole } from '@/lib/auth/require-role';
+import { requireRole, executeMutation } from '@/lib/server/auth';
+import { PettyCashEntrySchema, VoidRecordSchema } from '@/lib/validation';
+import {
+  createPettyCashEntryService,
+  voidPettyCashEntryService,
+} from '@/lib/server/services/caja-menor';
 import { revalidatePath } from 'next/cache';
 
+export async function createPettyCashEntryAction(rawInput: unknown) {
+  const result = await executeMutation(
+    ['admin', 'tesoreria', 'asesor'],
+    PettyCashEntrySchema,
+    rawInput,
+    async ({ userId, input }) => {
+      const entry = await createPettyCashEntryService(userId, input);
+      revalidatePath('/admin/caja-menor');
+      revalidatePath(`/admin/caja-menor/${input.box_id}`);
+      return entry;
+    }
+  );
+  return result;
+}
+
 export async function voidCajaMenor(id: string, reason: string) {
-  const profile = await requireRole(['admin', 'tesoreria', 'asesor']);
-  const trimmedReason = (reason || '').trim();
-  if (!trimmedReason) {
-    throw new Error('Debes indicar el motivo de anulación.');
+  const { profile } = await requireRole(['admin', 'tesoreria', 'asesor']);
+  const parsed = VoidRecordSchema.safeParse({ id, reason });
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0]?.message || 'Datos de anulación inválidos');
   }
 
   const supabase = await createClient();
@@ -18,11 +38,11 @@ export async function voidCajaMenor(id: string, reason: string) {
     .from('petty_cash_entries')
     .update({
       status: 'anulado',
-      void_reason: trimmedReason,
+      void_reason: parsed.data.reason,
       voided_by: profile.id,
       voided_at: nowIso,
     })
-    .eq('box_id', id);
+    .eq('box_id', parsed.data.id);
 
   if (entriesError) {
     throw new Error('Error al anular los movimientos de la caja menor: ' + entriesError.message);
@@ -32,44 +52,37 @@ export async function voidCajaMenor(id: string, reason: string) {
     .from('petty_cash_boxes')
     .update({
       status: 'anulada',
-      void_reason: trimmedReason,
+      void_reason: parsed.data.reason,
       voided_by: profile.id,
       voided_at: nowIso,
     })
-    .eq('id', id);
+    .eq('id', parsed.data.id);
 
   if (error) {
     throw new Error('Error al anular la caja menor: ' + error.message);
   }
 
   revalidatePath('/admin/caja-menor');
-  revalidatePath(`/admin/caja-menor/${id}`);
+  revalidatePath(`/admin/caja-menor/${parsed.data.id}`);
+  return { ok: true as const, data: { id: parsed.data.id } };
 }
 
 export async function voidPettyCashEntry(entryId: string, boxId: string, reason: string) {
-  const profile = await requireRole(['admin', 'tesoreria', 'asesor']);
-  const trimmedReason = (reason || '').trim();
-  if (!trimmedReason) {
-    throw new Error('Debes indicar el motivo de anulación.');
+  const result = await executeMutation(
+    ['admin', 'tesoreria', 'asesor'],
+    VoidRecordSchema,
+    { id: entryId, reason },
+    async ({ userId, input }) => {
+      const updated = await voidPettyCashEntryService(input.id, userId, input.reason);
+      revalidatePath('/admin/caja-menor');
+      revalidatePath(`/admin/caja-menor/${boxId}`);
+      return updated;
+    }
+  );
+  if (!result.ok) {
+    throw new Error(result.error);
   }
-
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from('petty_cash_entries')
-    .update({
-      status: 'anulado',
-      void_reason: trimmedReason,
-      voided_by: profile.id,
-      voided_at: new Date().toISOString(),
-    })
-    .eq('id', entryId);
-
-  if (error) {
-    throw new Error('Error al anular movimiento de caja menor: ' + error.message);
-  }
-
-  revalidatePath('/admin/caja-menor');
-  revalidatePath(`/admin/caja-menor/${boxId}`);
+  return result;
 }
 
 export async function deleteCajaMenor(id: string, reason = 'Anulada desde listado de cajas menores') {

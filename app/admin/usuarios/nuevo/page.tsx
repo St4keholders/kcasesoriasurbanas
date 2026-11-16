@@ -13,7 +13,7 @@ const UserSchema = z.object({
   fullName: z.string().min(3, 'El nombre debe tener al menos 3 caracteres'),
   email: z.string().email('Correo electrónico no válido'),
   phone: z.string().optional(),
-  role: z.enum(['admin', 'asesor', 'tesoreria'], { required_error: 'Debe seleccionar un rol' }),
+  role: z.enum(['admin', 'asesor', 'tesoreria']),
   password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
 });
 

@@ -9,7 +9,7 @@ export default async function CajaMenorDetailPage({ params }: { params: Promise<
   
   const supabase = await createClient();
   
-  const { data: box, error: boxError } = await (supabase as any)
+  const { data: box, error: boxError } = await supabase
     .from('petty_cash_boxes')
     .select('*, profiles!petty_cash_boxes_opened_by_fkey(full_name)')
     .eq('id', id)
@@ -19,7 +19,7 @@ export default async function CajaMenorDetailPage({ params }: { params: Promise<
     redirect('/admin/caja-menor');
   }
 
-  const { data: entries, error: entriesError } = await (supabase as any)
+  const { data: entries, error: entriesError } = await supabase
     .from('petty_cash_entries_full')
     .select('*')
     .eq('box_id', id)

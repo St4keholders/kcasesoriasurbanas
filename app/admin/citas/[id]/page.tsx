@@ -25,7 +25,7 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
     .eq('id', id)
     .single();
 
-  const appointment = data as any;
+  const appointment = data;
   if (error || !appointment) notFound();
 
   const formatDateTime = (iso: string) =>

@@ -7,7 +7,7 @@ export default async function CajaMenorPage() {
   
   const supabase = await createClient();
   
-  const { data: boxes, error } = await (supabase as any)
+  const { data: boxes, error } = await supabase
     .from('petty_cash_box_summary')
     .select('*')
     .order('box_number', { ascending: false });

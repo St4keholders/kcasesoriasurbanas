@@ -36,7 +36,7 @@ export function KpiChart({ data }: { data: any[] }) {
         <Tooltip 
           cursor={{ fill: '#f7fbff' }}
           contentStyle={{ borderRadius: '8px', border: '1px solid #a8c4d9', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-          formatter={(value: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value)}
+          formatter={(value) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(Number(value) || 0)}
         />
         <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
         <Bar dataKey="ingresos" name="Ingresos" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={40} />

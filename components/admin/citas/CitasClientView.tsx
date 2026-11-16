@@ -24,7 +24,7 @@ export function CitasClientView({ appointments }: CitasClientViewProps) {
     setDeletingId(id);
     try {
       const supabase = createClient();
-      await (supabase as any).from('appointments').delete().eq('id', id);
+      await supabase.from('appointments').delete().eq('id', id);
       router.refresh();
     } catch (e) {
       console.error(e);

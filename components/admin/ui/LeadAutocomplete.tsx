@@ -7,7 +7,7 @@ import { useDebounce } from '@/hooks/use-debounce';
 interface Lead {
   id: string;
   full_name: string;
-  document_number: string | null;
+  document_number?: string | null;
 }
 
 interface LeadAutocompleteProps {

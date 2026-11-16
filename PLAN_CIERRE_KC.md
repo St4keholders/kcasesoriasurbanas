@@ -123,17 +123,17 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
 - [x] Regenerar `types/database.ts`.
 
 ### FASE 3 — Backend estándar y soportes
-- [ ] Estructura: `lib/server/{auth,db,storage}.ts`, `lib/server/services/{terceros,compras,caja-menor,ventas,contabilidad,ingesta,ia}/`, `lib/validation/` (zod), `lib/utils/{money,nit,dates}.ts`.
-- [ ] Toda mutación pasa por `requireRole` → zod → servicio, y responde `{ ok, data } | { ok: false, error, code }`.
-- [ ] Corregir los 115 errores de TypeScript, quitar `as any` del dominio y **eliminar `ignoreBuildErrors`**.
-- [ ] Detalle de compra con los nombres de columna correctos (`concept`, `transaction_date`, `tax_iva`).
-- [ ] Usuario inactivo: cerrar sesión y redirigir a `/login` (hoy queda en bucle con `/admin/login`).
-- [ ] Terceros: NIT solo dígitos + DV validado (módulo 11 DIAN); buscar primero por NIT y luego por nombre con `pg_trgm`; un único tercero "Proveedor Ocasional"; eliminar el uso de `000000000`.
-- [ ] Soportes: bucket privado `soportes`; compresión de imágenes en el navegador (máx. 2000 px, JPEG 0.8); subida directa con *signed upload URL* (sin pasar por Vercel); ver con URL firmada; `sha256` para detectar duplicados.
-- [ ] Campo de archivo en "Añadir factura" manual de caja menor (`image/*, pdf, xml, zip`, con cámara en celular).
-- [ ] Script `scripts/migrar-drive-a-storage.ts` (aplicar la sección C si no hay credenciales).
-- [ ] Impresión de caja menor: reemplazar el `document.write` por el PDF de la Fase 5.
-- [ ] Tests: NIT/DV, montos colombianos, totales, permisos por rol (con el método de la sección C).
+- [x] Estructura: `lib/server/{auth,db,storage}.ts`, `lib/server/services/{terceros,compras,caja-menor,ventas,contabilidad,ingesta,ia}/`, `lib/validation/` (zod), `lib/utils/{money,nit,dates}.ts`.
+- [x] Toda mutación pasa por `requireRole` → zod → servicio, y responde `{ ok, data } | { ok: false, error, code }`.
+- [x] Corregir los 115 errores de TypeScript, quitar `as any` del dominio y **eliminar `ignoreBuildErrors`**.
+- [x] Detalle de compra con los nombres de columna correctos (`concept`, `transaction_date`, `tax_iva`).
+- [x] Usuario inactivo: cerrar sesión y redirigir a `/login` (hoy queda en bucle con `/admin/login`).
+- [x] Terceros: NIT solo dígitos + DV validado (módulo 11 DIAN); buscar primero por NIT y luego por nombre con `pg_trgm`; un único tercero "Proveedor Ocasional"; eliminar el uso de `000000000`.
+- [x] Soportes: bucket privado `soportes`; compresión de imágenes en el navegador (máx. 2000 px, JPEG 0.8); subida directa con *signed upload URL* (sin pasar por Vercel); ver con URL firmada; `sha256` para detectar duplicados.
+- [x] Campo de archivo en "Añadir factura" manual de caja menor (`image/*, pdf, xml, zip`, con cámara en celular).
+- [x] Script `scripts/migrar-drive-a-storage.ts` (aplicar la sección C si no hay credenciales).
+- [x] Impresión de caja menor: reemplazar el `document.write` por el PDF de la Fase 5.
+- [x] Tests: NIT/DV, montos colombianos, totales, permisos por rol (con el método de la sección C).
 
 ### FASE 4 — Motor contable (causación + egreso)
 - [ ] Tablas: `chart_of_accounts`, `third_parties` (migrando `suppliers` y fusionando duplicados por NIT; reporte en `docs/FUSION_TERCEROS.md`), `tax_parameters`, `posting_rules` (`source` manual/aprendida), `payment_accounts`, `journal_entries` (tipos CC, CE, RC, NC; estados borrador/contabilizado/anulado; `source_table`/`source_id`; `ai_confidence`; `ai_rationale`), `journal_lines` (débito, crédito, base, `is_deductible`), `classification_feedback`.
@@ -234,6 +234,9 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
   - Se aplicó respaldo de Sección C para `CRON_SECRET`: se generó un valor aleatorio criptográfico de 32 bytes en `.env.local`.
   - Se aplicó respaldo de Sección C para `OPENAI_API_KEY` (ausente en `.env.local`): el clasificador operará con las reglas determinísticas (pasos 1 a 3 de 6A: centro de costo, memoria por NIT, palabras clave de `posting_rules` y `chart_of_accounts`), enviando lo no resuelto a revisión con confianza 0; la ingesta opera con parser determinístico XML/ZIP DIAN, texto PDF/CUFE y carga asistida. Si se agrega `OPENAI_API_KEY` posteriormente, el paso 4 (modelo OpenAI) queda cableado y listo para activarse automáticamente.
   - Se confirmó el proyecto Supabase de KC (`vsqtzfkswfhjlrvnksby` — `SOFTWARE INTERNO`, `ACTIVE_HEALTHY`, `us-west-2`).
+- **Fase 3 — Soportes y migración de Google Drive:**
+  - Se aplicó respaldo de Sección C en `scripts/migrar-drive-a-storage.ts`: al no existir credenciales de API de Google Drive en `.env.local`, los 20 enlaces históricos de Drive en `petty_cash_entries` fueron preservados en `legacy_drive_url` sin alterar `receipt_url`, mientras que toda nueva carga de soportes opera directamente contra el bucket privado `soportes` de Supabase Storage mediante URLs firmadas y hash `sha256`.
+  - Se eliminaron todos los usos del comodín `000000000` (55 registros saneados a `NULL`) y se consolidó un único tercero activo "Proveedor Ocasional".
 
 ---
 

@@ -18,19 +18,19 @@ import { NeuButton } from '@/components/admin/ui/NeuButton';
 const CostCenterSchema = z.object({
   name: z.string().min(3, 'Nombre requerido'),
   description: z.string().optional(),
-  is_active: z.boolean().default(true),
+  is_active: z.boolean(),
 });
 
 type FormData = z.infer<typeof CostCenterSchema>;
 
-export function CostCenterClientPage({ costCenters }: { costCenters: any[] }) {
+export function CostCenterClientPage({ costCenters }: { costCenters: { id: string; name: string; description: string | null; is_active: boolean }[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormData>({
-    resolver: zodResolver(CostCenterSchema) as any,
-    defaultValues: { is_active: true }
+    resolver: zodResolver(CostCenterSchema),
+    defaultValues: { name: '', description: '', is_active: true }
   });
 
   const openNew = () => {

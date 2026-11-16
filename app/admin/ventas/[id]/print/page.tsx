@@ -29,7 +29,7 @@ export default async function PrintPOSPage({ params }: { params: Promise<{ id: s
     console.error("Sale query error:", error);
   }
 
-  const sale = data as any;
+  const sale = data;
   if (!sale) notFound();
 
   return <PrintPOSClient sale={sale} />;

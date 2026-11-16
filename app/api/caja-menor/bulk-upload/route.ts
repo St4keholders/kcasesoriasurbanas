@@ -1,254 +1,179 @@
 import { NextResponse } from 'next/server';
-export const maxDuration = 60; // Set max duration to 60 seconds to prevent timeouts during OpenAI analysis
-import { requireRoleApi, RoleError } from '@/lib/auth/require-role';
-import { getOrCreatePettyCashFolder, uploadFileToDrive } from '@/lib/googleDrive';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+export const maxDuration = 60;
+import { requireRoleApi, RoleError } from '@/lib/server/auth';
+import { getAdminDb, getServerDb } from '@/lib/server/db';
+import { SOPORTES_BUCKET } from '@/lib/server/storage';
+import { resolveOrCreateSupplier } from '@/lib/server/services/terceros';
+import { parseCOP } from '@/lib/utils/money';
+import { isKcNit, parseNitAndDv } from '@/lib/utils/nit';
 import OpenAI from 'openai';
-import { createClient } from '@/lib/supabase/server';
-const PDFParser = require('pdf2json');
+import crypto from 'crypto';
 
-async function extractTextFromPDF(buffer: Buffer): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const pdfParser = new PDFParser(null, 1);
-    pdfParser.on("pdfParser_dataError", (errData: any) => reject(errData.parserError));
-    pdfParser.on("pdfParser_dataReady", () => {
-      resolve(pdfParser.getRawTextContent());
-    });
-    pdfParser.parseBuffer(buffer);
-  });
+interface ExtractedPettyCash {
+  supplier_name?: string;
+  supplier_document?: string;
+  concept?: string;
+  entry_date?: string;
+  tax_amount?: number | string;
+  total_amount?: number | string;
 }
-
-function parseNumber(val: any): number {
-  if (typeof val === 'number') return val;
-  if (!val) return 0;
-  let str = String(val).trim();
-  str = str.replace(/[$€£a-zA-Z\s]/g, '');
-  if (/,(\d{1,2})$/.test(str)) {
-    str = str.replace(/\./g, '').replace(/,/g, '.');
-  } else if (/\.(\d{1,2})$/.test(str)) {
-    str = str.replace(/,/g, '');
-  } else {
-    str = str.replace(/[,.]/g, '');
-  }
-  return Number(str) || 0;
-}
-
-// OpenAI is initialized lazily inside the route handler to prevent build errors on Vercel
 
 export async function POST(request: Request) {
   try {
-    // 1. Verify user permissions
     const { user } = await requireRoleApi(['admin', 'tesoreria', 'asesor']);
 
-    // 2. Parse FormData
     const formData = await request.formData();
-    const boxId = formData.get('boxId') as string;
+    const boxId = (formData.get('boxId') as string | null) || '';
     const files = formData.getAll('files') as File[];
 
     if (!boxId) {
-      return NextResponse.json({ error: 'Falta el ID de la caja menor' }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: 'Falta el ID de la caja menor', code: 'VALIDATION_ERROR' },
+        { status: 400 }
+      );
     }
 
     if (!files || files.length === 0) {
-      return NextResponse.json({ error: 'No files provided' }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: 'No se enviaron archivos', code: 'VALIDATION_ERROR' },
+        { status: 400 }
+      );
     }
 
-    const supabase = await createClient();
+    const supabase = await getServerDb();
+    const adminDb = getAdminDb();
 
-    // 3. Get the box name to construct the folder name
-    const { data: box, error: boxError } = await (supabase as any)
+    const { data: box, error: boxError } = await supabase
       .from('petty_cash_boxes')
-      .select('name, box_number')
+      .select('id, name, box_number')
       .eq('id', boxId)
       .single();
 
     if (boxError || !box) {
-      return NextResponse.json({ error: 'Caja menor no encontrada' }, { status: 404 });
+      return NextResponse.json(
+        { ok: false, error: 'Caja menor no encontrada', code: 'NOT_FOUND' },
+        { status: 404 }
+      );
     }
 
-    // 4. Construct folder name: "mes+nombre de la caja+año"
-    const currentMonthName = format(new Date(), 'MMMM', { locale: es }).toLowerCase();
-    const currentYear = format(new Date(), 'yyyy');
-    const boxNameClean = (box.name || `caja_${box.box_number}`).toLowerCase().replace(/\s+/g, '_');
-    
-    const folderName = `${currentMonthName}_${boxNameClean}_${currentYear}`;
+    const results: Array<{
+      fileName: string;
+      status: 'success' | 'error';
+      link?: string;
+      extractedData?: ExtractedPettyCash;
+      error?: string;
+    }> = [];
 
-    // 5. Get or create the folder in Drive
-    const folderId = await getOrCreatePettyCashFolder(folderName);
-
-    const results = [];
-
-    // 6. Upload and analyze each file
     for (const file of files) {
       try {
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
+        const sha256 = crypto.createHash('sha256').update(buffer).digest('hex');
+        const ext = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const storagePath = `caja-menor/${new Date().toISOString().slice(0, 7)}/${sha256.slice(0, 16)}-${Date.now()}.${ext}`;
 
-        // Upload to Drive
-        const result = await uploadFileToDrive(
-          buffer,
-          file.name,
-          file.type || 'application/octet-stream',
-          folderId
-        );
-
-        // Analyze with OpenAI
-        let extracted: any = {};
-        try {
-          if (process.env.OPENAI_API_KEY) {
-            const openai = new OpenAI({
-              apiKey: process.env.OPENAI_API_KEY,
-            });
-            let messages: any[] = [
-              {
-                role: 'system',
-                content: 'Eres un asistente contable analizando facturas o recibos para una caja menor. Extrae los datos y devuelve SOLO un objeto JSON válido con: supplier_name (string), supplier_document (string, NIT/Cedula sin digito de verificacion o guiones, solo numeros, o con guion si es NIT), concept (string, descripción corta), entry_date (YYYY-MM-DD, extrae cuidadosamente la fecha real de la transacción), tax_amount (numero sin formato, 0 si no hay IVA explícito), total_amount (numero sin formato, este debe ser siempre el gran total pagado sin importar si hay desglose o no). IMPORTANTE: El NIT de la empresa cliente es 902012620-0 (KC Asesorias Urbanas), NO uses este NIT ni este nombre como proveedor, debes extraer los datos del emisor de la factura.'
-              }
-            ];
-
-            if (file.type === 'application/pdf') {
-              const pdfText = await extractTextFromPDF(buffer);
-              messages.push({
-                role: 'user',
-                content: `Aquí está el texto extraído del PDF de la factura:\n\n${pdfText}`
-              });
-            } else {
-              const base64Image = buffer.toString('base64');
-              const dataUri = `data:${file.type || 'image/jpeg'};base64,${base64Image}`;
-              messages.push({
-                role: 'user',
-                content: [
-                  { type: 'image_url', image_url: { url: dataUri } }
-                ]
-              });
-            }
-
-            const completion = await openai.chat.completions.create({
-              model: 'gpt-4o',
-              messages: messages,
-              response_format: { type: 'json_object' }
-            });
-
-            const content = completion.choices[0].message.content;
-            if (content) {
-              extracted = JSON.parse(content);
-            }
-          } else {
-            console.warn('OPENAI_API_KEY no configurada. Saltando análisis de IA.');
-          }
-        } catch (aiError) {
-          console.error('Error analizando con OpenAI:', aiError);
-        }
-
-        // Verificar o crear proveedor en la tabla general de suppliers para que aparezca en el panel
-        const supplierName = extracted.supplier_name || 'Proveedor Ocasional';
-        const supplierDocument = extracted.supplier_document || null;
-        
-        // Envuelto en try/catch aislado: si el usuario no tiene permisos RLS
-        // sobre suppliers, no debe impedir la creación del entry en petty_cash_entries
-        try {
-          if (supplierName !== 'Proveedor Ocasional') {
-            let existingSupplier = null;
-
-            // Buscar por NIT/Cedula primero
-            if (supplierDocument) {
-              const { data } = await (supabase as any)
-                .from('suppliers')
-                .select('id, name, document_number')
-                .eq('document_number', supplierDocument)
-                .limit(1);
-              if (data && data.length > 0) existingSupplier = data[0];
-            }
-
-            // Si no encuentra por NIT, buscar por nombre
-            if (!existingSupplier) {
-              const { data } = await (supabase as any)
-                .from('suppliers')
-                .select('id, name, document_number')
-                .ilike('name', supplierName)
-                .limit(1);
-              if (data && data.length > 0) existingSupplier = data[0];
-            }
-
-            if (existingSupplier) {
-              // Actualizar si hay nuevos datos
-              if (supplierDocument && existingSupplier.document_number !== supplierDocument) {
-                await (supabase as any).from('suppliers').update({ document_number: supplierDocument, name: supplierName }).eq('id', existingSupplier.id);
-              }
-            } else {
-              const { error: supplierError } = await (supabase as any)
-                .from('suppliers')
-                .insert({
-                  name: supplierName,
-                  document_number: supplierDocument || '000000000',
-                  is_active: true
-                });
-                
-              if (supplierError) {
-                console.warn('No se pudo crear proveedor (posible RLS):', supplierError.message);
-              }
-            }
-          }
-        } catch (supplierSyncError) {
-          // No bloquear el flujo principal si la sincronización de suppliers falla
-          console.warn('Error sincronizando proveedor (no bloqueante):', supplierSyncError);
-        }
-
-        // Insert into Supabase
-        const { error: dbError } = await (supabase as any)
-          .from('petty_cash_entries')
-          .insert({
-            box_id: boxId,
-            entry_date: extracted.entry_date || new Date().toISOString().split('T')[0],
-            supplier_name: supplierName,
-            supplier_document: extracted.supplier_document || null,
-            concept: extracted.concept || 'Factura extraída con IA',
-            tax_amount: parseNumber(extracted.tax_amount),
-            total_amount: parseNumber(extracted.total_amount),
-            receipt_url: result.webViewLink,
-            created_by: user?.id
+        const { error: uploadError } = await adminDb.storage
+          .from(SOPORTES_BUCKET)
+          .upload(storagePath, buffer, {
+            contentType: file.type || 'application/octet-stream',
+            upsert: true,
           });
 
+        if (uploadError) {
+          throw new Error(`Error en Storage: ${uploadError.message}`);
+        }
+
+        const fullStoragePath = `${SOPORTES_BUCKET}/${storagePath}`;
+        const viewUrl = `/api/soportes/view?path=${encodeURIComponent(fullStoragePath)}`;
+
+        let extracted: ExtractedPettyCash = {};
+        if (process.env.OPENAI_API_KEY && file.type.startsWith('image/')) {
+          try {
+            const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+            const model = process.env.AI_MODEL_OCR || 'gpt-4o';
+            const dataUri = `data:${file.type || 'image/jpeg'};base64,${buffer.toString('base64')}`;
+            const completion = await openai.chat.completions.create({
+              model,
+              temperature: 0,
+              response_format: { type: 'json_object' },
+              messages: [
+                {
+                  role: 'system',
+                  content:
+                    'Extrae los datos de este recibo o factura de caja menor en JSON: supplier_name, supplier_document, concept, entry_date (YYYY-MM-DD), tax_amount, total_amount. Excluye siempre el NIT 902012620-0 de KC Asesorías Urbanas.',
+                },
+                {
+                  role: 'user',
+                  content: [{ type: 'image_url', image_url: { url: dataUri } }],
+                },
+              ],
+            });
+            const rawContent = completion.choices[0]?.message?.content;
+            if (rawContent) {
+              extracted = JSON.parse(rawContent) as ExtractedPettyCash;
+            }
+          } catch (aiErr) {
+            console.error('Error en OCR OpenAI:', aiErr);
+          }
+        }
+
+        const rawDoc = isKcNit(extracted.supplier_document) ? null : extracted.supplier_document;
+        const supplier = await resolveOrCreateSupplier({
+          name: extracted.supplier_name || 'Proveedor Ocasional',
+          documentNumber: rawDoc,
+        });
+
+        const parsedDoc = parseNitAndDv(rawDoc);
+
+        const { error: dbError } = await supabase.from('petty_cash_entries').insert({
+          box_id: boxId,
+          entry_type: 'egreso',
+          entry_date: extracted.entry_date || new Date().toISOString().split('T')[0],
+          supplier_name: supplier.name,
+          supplier_document: parsedDoc.nit ? parsedDoc.formatted : null,
+          concept: extracted.concept || `Soporte cargado: ${file.name}`,
+          tax_amount: parseCOP(extracted.tax_amount),
+          total_amount: Math.max(1, parseCOP(extracted.total_amount)),
+          receipt_url: viewUrl,
+          support_sha256: sha256,
+          support_storage_path: fullStoragePath,
+          status: 'activo',
+          created_by: user.id,
+        });
+
         if (dbError) {
-          throw new Error('Error BD: ' + dbError.message);
+          throw new Error(`Error BD: ${dbError.message}`);
         }
 
         results.push({
           fileName: file.name,
           status: 'success',
-          driveId: result.id,
-          link: result.webViewLink,
-          extractedData: extracted
+          link: viewUrl,
+          extractedData: extracted,
         });
-      } catch (err: any) {
-        console.error(`Error procesando archivo ${file.name}:`, err);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Error desconocido';
         results.push({
           fileName: file.name,
           status: 'error',
-          error: err.message || 'Unknown error'
+          error: msg,
         });
       }
     }
 
-    return NextResponse.json({ 
-      message: 'Upload and analysis complete',
-      folderName: folderName,
-      results 
+    return NextResponse.json({
+      ok: true,
+      data: { results },
+      results,
     });
-
-  } catch (error: any) {
-    // Devolver error JSON con status code apropiado
+  } catch (error: unknown) {
     if (error instanceof RoleError) {
       return NextResponse.json(
-        { error: error.message },
+        { ok: false, error: error.message, code: error.code },
         { status: error.status }
       );
     }
-    console.error('Bulk upload error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Internal server error during bulk upload' },
-      { status: 500 }
-    );
+    const msg = error instanceof Error ? error.message : 'Error interno en carga masiva';
+    return NextResponse.json({ ok: false, error: msg, code: 'INTERNAL_ERROR' }, { status: 500 });
   }
 }

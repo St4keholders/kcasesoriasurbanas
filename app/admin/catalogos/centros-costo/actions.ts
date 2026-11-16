@@ -14,10 +14,10 @@ export async function saveCostCenter(id: string | null, data: z.infer<typeof Cos
   const supabase = await createClient();
   
   if (id) {
-    const { error } = await (supabase as any).from('cost_centers').update(data).eq('id', id);
+    const { error } = await supabase.from('cost_centers').update(data).eq('id', id);
     if (error) throw new Error(error.message);
   } else {
-    const { error } = await (supabase as any).from('cost_centers').insert(data);
+    const { error } = await supabase.from('cost_centers').insert(data);
     if (error) throw new Error(error.message);
   }
 

@@ -14,20 +14,20 @@ import { z } from 'zod';
 const ServiceSchema = z.object({
   name: z.string().min(3, 'Nombre requerido'),
   description: z.string().optional(),
-  base_price: z.coerce.number().min(0).optional(),
-  is_active: z.boolean().default(true),
+  base_price: z.number().min(0).optional(),
+  is_active: z.boolean(),
 });
 
 type FormData = z.infer<typeof ServiceSchema>;
 
-export function ServiceClientPage({ services }: { services: any[] }) {
+export function ServiceClientPage({ services }: { services: { id: string; name: string; description: string | null; base_price: number | null; is_active: boolean }[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormData>({
-    resolver: zodResolver(ServiceSchema) as any,
-    defaultValues: { is_active: true, base_price: 0 }
+    resolver: zodResolver(ServiceSchema),
+    defaultValues: { name: '', description: '', is_active: true, base_price: 0 }
   });
 
   const openNew = () => {
@@ -131,7 +131,7 @@ export function ServiceClientPage({ services }: { services: any[] }) {
           <div className="space-y-1">
             <label className="block text-sm font-medium text-[#3d5a73]">Precio Base</label>
             <input
-              {...register('base_price')}
+              {...register('base_price', { valueAsNumber: true })}
               type="number"
               className="w-full px-3 py-2 bg-[#f7fbff] border border-[#a8c4d9]/50 rounded-lg focus:outline-none focus:border-[#5ba3d9]"
             />

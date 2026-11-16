@@ -11,20 +11,20 @@ import { PlusIcon, TrashIcon } from 'lucide-react';
 import { createSale } from '../actions';
 
 const SaleItemSchema = z.object({
-  service_type_id: z.string().optional().or(z.literal('')),
+  service_type_id: z.string().optional(),
   description: z.string().min(1, 'Descripción requerida'),
-  quantity: z.coerce.number().min(0.1, 'Cantidad > 0'),
-  unit_price: z.coerce.number().min(0, 'Precio >= 0'),
+  quantity: z.number().min(0.1, 'Cantidad > 0'),
+  unit_price: z.number().min(0, 'Precio >= 0'),
 });
 
 const SaleSchema = z.object({
-  lead_id: z.string().optional().or(z.literal('')),
+  lead_id: z.string().optional(),
   lead_name: z.string().optional(),
-  appointment_id: z.string().optional().or(z.literal('')),
+  appointment_id: z.string().optional(),
   status: z.enum(['cotizacion', 'pendiente_pago', 'pagada']),
   items: z.array(SaleItemSchema).min(1, 'Agregue al menos un servicio'),
-  tax: z.coerce.number().min(0),
-  discount: z.coerce.number().min(0),
+  tax: z.number().min(0),
+  discount: z.number().min(0),
   notes: z.string().optional(),
 });
 
@@ -94,7 +94,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
               name="lead_id"
               render={({ field: { onChange, value } }) => (
                 <LeadAutocomplete 
-                  value={value} 
+                  value={value || ''} 
                   onChange={onChange} 
                   onInputChange={(text) => setValue('lead_name', text)}
                   error={errors.lead_id?.message}
@@ -160,7 +160,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
               <div className="col-span-6 md:col-span-2 space-y-1">
                 <label className="block text-xs font-medium text-[var(--fg-soft)]">Cant.</label>
                 <input
-                  {...register(`items.${index}.quantity`)}
+                  {...register(`items.${index}.quantity`, { valueAsNumber: true })}
                   type="number"
                   step="0.1"
                   className="neu-input w-full"
@@ -170,7 +170,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
               <div className="col-span-6 md:col-span-2 space-y-1">
                 <label className="block text-xs font-medium text-[var(--fg-soft)]">Precio Un.</label>
                 <input
-                  {...register(`items.${index}.unit_price`)}
+                  {...register(`items.${index}.unit_price`, { valueAsNumber: true })}
                   type="number"
                   className="neu-input w-full"
                 />
@@ -212,7 +212,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
             <div className="flex justify-between items-center text-sm">
               <span className="text-[var(--dim)]">Impuestos (+$):</span>
               <input
-                {...register('tax')}
+                {...register('tax', { valueAsNumber: true })}
                 type="number"
                 className="neu-input w-24 text-right py-1"
               />
@@ -221,7 +221,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
             <div className="flex justify-between items-center text-sm">
               <span className="text-[var(--dim)]">Descuento (-$):</span>
               <input
-                {...register('discount')}
+                {...register('discount', { valueAsNumber: true })}
                 type="number"
                 className="neu-input w-24 text-right py-1"
               />

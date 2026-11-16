@@ -313,10 +313,13 @@ export type Database = {
           entry_type: string | null
           id: string
           invoice_number: string | null
+          legacy_drive_url: string | null
           receipt_url: string | null
           status: string
           supplier_document: string | null
           supplier_name: string
+          support_sha256: string | null
+          support_storage_path: string | null
           tax_amount: number
           total_amount: number
           updated_at: string
@@ -333,10 +336,13 @@ export type Database = {
           entry_type?: string | null
           id?: string
           invoice_number?: string | null
+          legacy_drive_url?: string | null
           receipt_url?: string | null
           status?: string
           supplier_document?: string | null
           supplier_name: string
+          support_sha256?: string | null
+          support_storage_path?: string | null
           tax_amount?: number
           total_amount: number
           updated_at?: string
@@ -353,10 +359,13 @@ export type Database = {
           entry_type?: string | null
           id?: string
           invoice_number?: string | null
+          legacy_drive_url?: string | null
           receipt_url?: string | null
           status?: string
           supplier_document?: string | null
           supplier_name?: string
+          support_sha256?: string | null
+          support_storage_path?: string | null
           tax_amount?: number
           total_amount?: number
           updated_at?: string
@@ -442,6 +451,7 @@ export type Database = {
           id: string
           invoice_number: string | null
           invoice_url: string | null
+          legacy_drive_url: string | null
           notes: string | null
           paid_at: string | null
           payment_method: Database["public"]["Enums"]["payment_method"] | null
@@ -449,6 +459,8 @@ export type Database = {
           status: Database["public"]["Enums"]["purchase_status"]
           supplier_id: string | null
           supplier_name: string | null
+          support_sha256: string | null
+          support_storage_path: string | null
           tax_iva: number
           total: number
           transaction_date: string
@@ -469,6 +481,7 @@ export type Database = {
           id?: string
           invoice_number?: string | null
           invoice_url?: string | null
+          legacy_drive_url?: string | null
           notes?: string | null
           paid_at?: string | null
           payment_method?: Database["public"]["Enums"]["payment_method"] | null
@@ -476,6 +489,8 @@ export type Database = {
           status?: Database["public"]["Enums"]["purchase_status"]
           supplier_id?: string | null
           supplier_name?: string | null
+          support_sha256?: string | null
+          support_storage_path?: string | null
           tax_iva?: number
           total: number
           transaction_date: string
@@ -496,6 +511,7 @@ export type Database = {
           id?: string
           invoice_number?: string | null
           invoice_url?: string | null
+          legacy_drive_url?: string | null
           notes?: string | null
           paid_at?: string | null
           payment_method?: Database["public"]["Enums"]["payment_method"] | null
@@ -503,6 +519,8 @@ export type Database = {
           status?: Database["public"]["Enums"]["purchase_status"]
           supplier_id?: string | null
           supplier_name?: string | null
+          support_sha256?: string | null
+          support_storage_path?: string | null
           tax_iva?: number
           total?: number
           transaction_date?: string
@@ -600,6 +618,7 @@ export type Database = {
           discount: number
           id: string
           lead_id: string
+          legacy_drive_url: string | null
           notes: string | null
           paid_at: string | null
           payment_method: Database["public"]["Enums"]["payment_method"] | null
@@ -607,6 +626,8 @@ export type Database = {
           sale_number: string | null
           status: Database["public"]["Enums"]["sale_status"]
           subtotal: number
+          support_sha256: string | null
+          support_storage_path: string | null
           tax: number
           total: number
           updated_at: string
@@ -621,6 +642,7 @@ export type Database = {
           discount?: number
           id?: string
           lead_id: string
+          legacy_drive_url?: string | null
           notes?: string | null
           paid_at?: string | null
           payment_method?: Database["public"]["Enums"]["payment_method"] | null
@@ -628,6 +650,8 @@ export type Database = {
           sale_number?: string | null
           status?: Database["public"]["Enums"]["sale_status"]
           subtotal?: number
+          support_sha256?: string | null
+          support_storage_path?: string | null
           tax?: number
           total?: number
           updated_at?: string
@@ -642,6 +666,7 @@ export type Database = {
           discount?: number
           id?: string
           lead_id?: string
+          legacy_drive_url?: string | null
           notes?: string | null
           paid_at?: string | null
           payment_method?: Database["public"]["Enums"]["payment_method"] | null
@@ -649,6 +674,8 @@ export type Database = {
           sale_number?: string | null
           status?: Database["public"]["Enums"]["sale_status"]
           subtotal?: number
+          support_sha256?: string | null
+          support_storage_path?: string | null
           tax?: number
           total?: number
           updated_at?: string
@@ -719,30 +746,45 @@ export type Database = {
           address: string | null
           created_at: string
           document_number: string | null
+          dv: string | null
           email: string | null
+          has_rut: boolean
           id: string
           is_active: boolean
+          is_billing_obligated: boolean
+          is_occasional: boolean
           name: string
+          nit_normalized: string | null
           phone: string | null
         }
         Insert: {
           address?: string | null
           created_at?: string
           document_number?: string | null
+          dv?: string | null
           email?: string | null
+          has_rut?: boolean
           id?: string
           is_active?: boolean
+          is_billing_obligated?: boolean
+          is_occasional?: boolean
           name: string
+          nit_normalized?: string | null
           phone?: string | null
         }
         Update: {
           address?: string | null
           created_at?: string
           document_number?: string | null
+          dv?: string | null
           email?: string | null
+          has_rut?: boolean
           id?: string
           is_active?: boolean
+          is_billing_obligated?: boolean
+          is_occasional?: boolean
           name?: string
+          nit_normalized?: string | null
           phone?: string | null
         }
         Relationships: []
@@ -815,10 +857,13 @@ export type Database = {
           entry_type: string | null
           id: string | null
           invoice_number: string | null
+          legacy_drive_url: string | null
           receipt_url: string | null
           status: string | null
           supplier_document: string | null
           supplier_name: string | null
+          support_sha256: string | null
+          support_storage_path: string | null
           tax_amount: number | null
           total_amount: number | null
           updated_at: string | null
@@ -866,6 +911,7 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_dian_dv: { Args: { p_nit: string }; Returns: number }
       create_test_user: {
         Args: {
           p_email: string
@@ -903,6 +949,25 @@ export type Database = {
         Args: { p_padding?: number; p_prefix: string; p_year?: number }
         Returns: string
       }
+      search_suppliers_smart: {
+        Args: { p_limit?: number; p_query: string }
+        Returns: {
+          address: string
+          document_number: string
+          dv: string
+          email: string
+          id: string
+          is_active: boolean
+          is_occasional: boolean
+          match_type: string
+          name: string
+          nit_normalized: string
+          phone: string
+          score: number
+        }[]
+      }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       appointment_status:
