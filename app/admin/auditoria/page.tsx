@@ -4,11 +4,11 @@ import { AuditoriaClientView } from '@/components/admin/auditoria/AuditoriaClien
 
 export default async function AuditoriaPage() {
   await requireRole(['admin']);
-  
+
   const supabase = await createClient();
   const { data: logs, error } = await supabase
-    .from('audit_logs')
-    .select('*')
+    .from('audit_log')
+    .select('*, profiles(full_name, role)')
     .order('created_at', { ascending: false })
     .limit(200);
 

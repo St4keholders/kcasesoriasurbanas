@@ -89,21 +89,23 @@ export function CajaMenorClientView({ boxes }: { boxes: any[] }) {
                   <EyeIcon className="w-3 h-3" />
                   Detalle
                 </Link>
-                <button
-                  onClick={async () => {
-                    if (window.confirm('¿Estás seguro de que deseas eliminar esta caja menor? Esta acción no se puede deshacer.')) {
+                {row.status !== 'anulada' && (
+                  <button
+                    onClick={async () => {
+                      const motivo = window.prompt('Indica el motivo para anular esta caja menor:');
+                      if (!motivo || !motivo.trim()) return;
                       try {
-                        await deleteCajaMenor(row.id);
-                      } catch (err) {
-                        alert('No se pudo eliminar la caja menor.');
+                        await deleteCajaMenor(row.id, motivo.trim());
+                      } catch {
+                        alert('No se pudo anular la caja menor.');
                       }
-                    }
-                  }}
-                  className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1 text-red-500 hover:text-red-600"
-                >
-                  <TrashIcon className="w-3 h-3" />
-                  Eliminar
-                </button>
+                    }}
+                    className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1 text-red-500 hover:text-red-600"
+                  >
+                    <TrashIcon className="w-3 h-3" />
+                    Anular
+                  </button>
+                )}
               </div>
             ),
           },

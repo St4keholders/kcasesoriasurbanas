@@ -268,28 +268,41 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
                 >
                   <PencilIcon className="w-3 h-3" /> Editar
                 </button>
-                <button
-                  onClick={async () => {
-                    if (window.confirm('¿Estás seguro de que deseas eliminar esta transacción? Esta acción no se puede deshacer.')) {
+                {row.status !== 'anulado' ? (
+                  <button
+                    onClick={async () => {
+                      const motivo = window.prompt('Indica el motivo para anular este movimiento de caja menor:');
+                      if (!motivo || !motivo.trim()) return;
                       try {
                         const supabase = createClient();
+                        const { data: { user } } = await supabase.auth.getUser();
                         const { error } = await supabase
                           .from('petty_cash_entries')
-                          .delete()
+                          .update({
+                            status: 'anulado',
+                            void_reason: motivo.trim(),
+                            voided_by: user?.id ?? null,
+                            voided_at: new Date().toISOString(),
+                          })
                           .eq('id', row.id);
-                        
+
                         if (error) throw error;
-                        
+
                         router.refresh();
-                      } catch (err: any) {
-                        alert('Error al eliminar la transacción: ' + err.message);
+                      } catch (err: unknown) {
+                        const msg = err instanceof Error ? err.message : 'Error desconocido';
+                        alert('Error al anular el movimiento: ' + msg);
                       }
-                    }
-                  }}
-                  className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1 text-red-500 hover:text-red-600"
-                >
-                  <TrashIcon className="w-3 h-3" /> Eliminar
-                </button>
+                    }}
+                    className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1 text-red-500 hover:text-red-600"
+                  >
+                    <TrashIcon className="w-3 h-3" /> Anular
+                  </button>
+                ) : (
+                  <span className="text-xs text-rose-500 font-semibold" title={row.void_reason || ''}>
+                    Anulado
+                  </span>
+                )}
               </div>
             ),
           },

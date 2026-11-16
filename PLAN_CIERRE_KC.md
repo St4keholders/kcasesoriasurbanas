@@ -100,10 +100,10 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
 - [x] `README.md` real: cómo correrlo, variables, módulos y roles.
 
 ### FASE 2 — Supabase: diagnóstico y saneamiento
-- [ ] Diagnóstico (solo lectura): `list_tables`, `list_migrations`, `get_advisors` (security y performance), y consultas SELECT de políticas, grants de vistas, triggers, funciones `security definer`, buckets, proveedores duplicados, compras en $0, entradas sin soporte y consecutivos duplicados. Guardar en `docs/DIAGNOSTICO_SUPABASE.md`.
-- [ ] Backup de todas las tablas de `public` en `backups/<fecha>/`.
-- [ ] Migración `baseline` del esquema real en `supabase/migrations/`.
-- [ ] Función `public.has_role(variadic public.user_role[])` (security definer, `search_path = public`) y reescritura de las políticas usándola, con esta matriz (aplica a tablas **y** buckets):
+- [x] Diagnóstico (solo lectura): `list_tables`, `list_migrations`, `get_advisors` (security y performance), y consultas SELECT de políticas, grants de vistas, triggers, funciones `security definer`, buckets, proveedores duplicados, compras en $0, entradas sin soporte y consecutivos duplicados. Guardar en `docs/DIAGNOSTICO_SUPABASE.md`.
+- [x] Backup de todas las tablas de `public` en `backups/<fecha>/`.
+- [x] Migración `baseline` del esquema real en `supabase/migrations/`.
+- [x] Función `public.has_role(variadic public.user_role[])` (security definer, `search_path = public`) y reescritura de las políticas usándola, con esta matriz (aplica a tablas **y** buckets):
 
   | Recurso | admin | tesoreria | asesor |
   |---|---|---|---|
@@ -114,13 +114,13 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
   | Contabilidad: ver, borradores, PDF | sí | sí | no |
   | Contabilizar / anular contabilizados | sí | no | no |
 
-- [ ] Corregir la RLS de `petty_cash_entries` y del Storage para que tesorería pueda guardar (hoy la API la deja entrar y la base la rechaza).
-- [ ] `petty_cash_box_summary`: `total_spent` solo egresos, más `total_income` y `balance`.
-- [ ] Vistas con `security_invoker = true` y `revoke` para `anon`.
-- [ ] Consecutivos sin choques: tabla `document_sequences` + función `next_document_number()` (`UPDATE … RETURNING`) para compras, ventas y comprobantes.
-- [ ] Triggers de auditoría hacia `audit_log` en todas las tablas financieras; corregir la página de auditoría (`audit_logs` → `audit_log`).
-- [ ] Prohibir `DELETE` en tablas financieras y cambiarlo por anulación (`status = 'anulado'` + motivo, usuario y fecha) en la UI de compras y de caja menor.
-- [ ] Regenerar `types/database.ts`.
+- [x] Corregir la RLS de `petty_cash_entries` y del Storage para que tesorería pueda guardar (hoy la API la deja entrar y la base la rechaza).
+- [x] `petty_cash_box_summary`: `total_spent` solo egresos, más `total_income` y `balance`.
+- [x] Vistas con `security_invoker = true` y `revoke` para `anon`.
+- [x] Consecutivos sin choques: tabla `document_sequences` + función `next_document_number()` (`UPDATE … RETURNING`) para compras, ventas y comprobantes.
+- [x] Triggers de auditoría hacia `audit_log` en todas las tablas financieras; corregir la página de auditoría (`audit_logs` → `audit_log`).
+- [x] Prohibir `DELETE` en tablas financieras y cambiarlo por anulación (`status = 'anulado'` + motivo, usuario y fecha) en la UI de compras y de caja menor.
+- [x] Regenerar `types/database.ts`.
 
 ### FASE 3 — Backend estándar y soportes
 - [ ] Estructura: `lib/server/{auth,db,storage}.ts`, `lib/server/services/{terceros,compras,caja-menor,ventas,contabilidad,ingesta,ia}/`, `lib/validation/` (zod), `lib/utils/{money,nit,dates}.ts`.

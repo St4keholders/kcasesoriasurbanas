@@ -285,21 +285,23 @@ export function ComprasClientView({
                 >
                   <EyeIcon className="w-4 h-4" /> Detalle
                 </button>
-                <button
-                  onClick={async () => {
-                    if (window.confirm('¿Estás seguro de que deseas eliminar esta transacción? Esta acción no se puede deshacer.')) {
+                {row.status !== 'anulado' && (
+                  <button
+                    onClick={async () => {
+                      const motivo = window.prompt('Indica el motivo para anular esta compra:');
+                      if (!motivo || !motivo.trim()) return;
                       try {
-                        await deletePurchase(row.id);
+                        await deletePurchase(row.id, motivo.trim());
                         window.location.reload();
-                      } catch (err) {
-                        alert('No se pudo eliminar la transacción.');
+                      } catch {
+                        alert('No se pudo anular la compra.');
                       }
-                    }
-                  }}
-                  className="btn btn-ghost text-xs px-2 py-1 flex items-center gap-1 !text-red-500 hover:!bg-red-500/10"
-                >
-                  <TrashIcon className="w-4 h-4" /> Eliminar
-                </button>
+                    }}
+                    className="btn btn-ghost text-xs px-2 py-1 flex items-center gap-1 !text-red-500 hover:!bg-red-500/10"
+                  >
+                    <TrashIcon className="w-4 h-4" /> Anular
+                  </button>
+                )}
               </div>
             ),
           },

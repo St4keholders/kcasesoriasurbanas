@@ -165,19 +165,33 @@ export async function updatePurchase(id: string, data: any) {
   revalidatePath('/admin/compras');
 }
 
-export async function deletePurchase(id: string) {
+export async function voidPurchase(id: string, reason: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('No autorizado');
 
+  const trimmedReason = (reason || '').trim();
+  if (!trimmedReason) {
+    throw new Error('Debes indicar el motivo de anulación.');
+  }
+
   const { error } = await supabase
     .from('purchases')
-    .delete()
+    .update({
+      status: 'anulado',
+      void_reason: trimmedReason,
+      voided_by: user.id,
+      voided_at: new Date().toISOString(),
+    })
     .eq('id', id);
 
   if (error) {
-    throw new Error('Error al eliminar compra: ' + error.message);
+    throw new Error('Error al anular compra: ' + error.message);
   }
 
   revalidatePath('/admin/compras');
+}
+
+export async function deletePurchase(id: string, reason = 'Anulado desde compras') {
+  return voidPurchase(id, reason);
 }
