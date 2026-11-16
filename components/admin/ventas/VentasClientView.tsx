@@ -29,7 +29,7 @@ export function VentasClientView({ sales }: { sales: any[] }) {
           <div className="flex gap-2">
             <button 
               onClick={() => setIsExportModalOpen(true)}
-              className="neu-btn-secondary"
+              className="btn btn-secondary"
             >
               <DownloadIcon className="w-4 h-4 mr-2" /> Exportar Excel
             </button>

@@ -76,7 +76,7 @@ export function CostCenterClientPage({ costCenters }: { costCenters: { id: strin
         title="Centros de Costo" 
         subtitle="Catálogo de categorías para registro de compras y gastos."
         action={
-          <button onClick={openNew} className="neu-btn-primary">
+          <button onClick={openNew} className="btn btn-primary">
             <PlusIcon className="w-4 h-4" /> Nuevo Centro de Costo
           </button>
         }
@@ -95,14 +95,14 @@ export function CostCenterClientPage({ costCenters }: { costCenters: { id: strin
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => openEdit(row)}
-                  className="neu-btn p-2"
+                  className="btn btn-secondary p-2"
                   title="Editar"
                 >
                   <EditIcon className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => handleDelete(row.id, row.name)}
-                  className="neu-btn p-2 text-rose-500 hover:text-rose-600"
+                  className="btn btn-secondary p-2 text-rose-500 hover:text-rose-600"
                   title="Eliminar"
                 >
                   <TrashIcon className="w-4 h-4" />

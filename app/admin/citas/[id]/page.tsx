@@ -44,7 +44,7 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
         title={<span>Detalle de <em>cita</em></span>}
         subtitle="Gestiona el estado y seguimiento de esta reunión."
         action={
-          <Link href="/admin/citas" className="neu-btn text-sm flex items-center gap-2">
+          <Link href="/admin/citas" className="btn btn-secondary text-sm flex items-center gap-2">
             ← Volver a Citas
           </Link>
         }
@@ -130,14 +130,14 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
               <button
                 name="status" value="agendada"
                 disabled={appointment.status === 'agendada'}
-                className="neu-btn text-sm disabled:opacity-40"
+                className="btn btn-secondary text-sm disabled:opacity-40"
               >
                 Agendada
               </button>
               <button
                 name="status" value="en_curso"
                 disabled={appointment.status === 'en_curso'}
-                className="neu-btn text-sm disabled:opacity-40"
+                className="btn btn-secondary text-sm disabled:opacity-40"
                 style={{ borderColor: 'var(--warning)', color: 'var(--warning)' }}
               >
                 En Curso
@@ -145,7 +145,7 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
               <button
                 name="status" value="atendida"
                 disabled={appointment.status === 'atendida'}
-                className="neu-btn text-sm disabled:opacity-40"
+                className="btn btn-secondary text-sm disabled:opacity-40"
                 style={{ borderColor: 'var(--success)', color: 'var(--success)' }}
               >
                 Marcar como Atendida
@@ -153,7 +153,7 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
               <button
                 name="status" value="cancelada"
                 disabled={appointment.status === 'cancelada'}
-                className="neu-btn text-sm disabled:opacity-40"
+                className="btn btn-secondary text-sm disabled:opacity-40"
                 style={{ borderColor: 'var(--danger)', color: 'var(--danger)' }}
               >
                 Cancelar Cita
@@ -168,7 +168,7 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
                 </div>
                 <Link
                   href={`/admin/ventas/nueva?leadId=${appointment.lead_id}&appointmentId=${appointment.id}`}
-                  className="neu-btn-primary text-sm"
+                  className="btn btn-primary text-sm"
                 >
                   Crear Venta
                 </Link>
@@ -191,7 +191,7 @@ export default async function DetalleCitaPage({ params }: { params: Promise<{ id
 
             <Link
               href={`/admin/leads/${appointment.lead_id}`}
-              className="neu-btn w-full justify-center text-sm"
+              className="btn btn-secondary w-full justify-center text-sm"
             >
               Ver Ficha Cliente
             </Link>

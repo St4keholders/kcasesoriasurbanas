@@ -28,7 +28,7 @@ export function CajaMenorClientView({ boxes }: { boxes: any[] }) {
         subtitle="Administra y supervisa los gastos de caja menor."
         searchPlaceholder="Buscar por número o responsable..."
         action={
-          <Link href="/admin/caja-menor/nueva" className="neu-btn-primary py-1.5 px-3 text-sm flex items-center gap-2">
+          <Link href="/admin/caja-menor/nueva" className="btn btn-primary py-1.5 px-3 text-sm flex items-center gap-2">
             <PlusIcon className="w-4 h-4" /> Nueva caja menor
           </Link>
         }
@@ -84,7 +84,7 @@ export function CajaMenorClientView({ boxes }: { boxes: any[] }) {
               <div className="flex items-center gap-2">
                 <Link
                   href={`/admin/caja-menor/${row.id}`}
-                  className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1"
+                  className="btn btn-secondary text-xs px-2 py-1 flex items-center gap-1"
                 >
                   <EyeIcon className="w-3 h-3" />
                   Detalle
@@ -100,7 +100,7 @@ export function CajaMenorClientView({ boxes }: { boxes: any[] }) {
                         alert('No se pudo anular la caja menor.');
                       }
                     }}
-                    className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1 text-red-500 hover:text-red-600"
+                    className="btn btn-secondary text-xs px-2 py-1 flex items-center gap-1 text-red-500 hover:text-red-600"
                   >
                     <TrashIcon className="w-3 h-3" />
                     Anular

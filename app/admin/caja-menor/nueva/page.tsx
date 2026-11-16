@@ -85,10 +85,10 @@ export default async function NuevaCajaPage() {
           </div>
           
           <div className="flex gap-4 pt-4 border-t border-[var(--shadow-dark)]">
-            <Link href="/admin/caja-menor" className="neu-btn flex-1 text-center justify-center">
+            <Link href="/admin/caja-menor" className="btn btn-secondary flex-1 text-center justify-center">
               Cancelar
             </Link>
-            <button type="submit" className="neu-btn-primary flex-1">
+            <button type="submit" className="btn btn-primary flex-1">
               Abrir Caja Menor
             </button>
           </div>

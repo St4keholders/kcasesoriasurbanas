@@ -75,7 +75,7 @@ export function SupplierAutocomplete({
         }}
         onFocus={() => setIsOpen(true)}
         placeholder="Buscar proveedor por NIT o nombre..."
-        className={`neu-input w-full ${error ? 'border-rose-500' : ''}`}
+        className={`input w-full ${error ? 'border-rose-500' : ''}`}
       />
       {error && <p className="text-rose-500 text-xs mt-1">{error}</p>}
 

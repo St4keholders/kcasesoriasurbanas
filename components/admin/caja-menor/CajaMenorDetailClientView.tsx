@@ -56,7 +56,7 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
           <div className="flex gap-2">
             <button
               onClick={handleDownloadPDF}
-              className="neu-btn-secondary flex items-center gap-2"
+              className="btn btn-secondary flex items-center gap-2"
             >
               <DownloadIcon className="w-4 h-4" /> Descargar PDF
             </button>
@@ -168,14 +168,14 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
                   href={`/api/contabilidad/comprobantes/${row.id}/pdf?source=petty_cash_entry`}
                   target="_blank"
                   rel="noreferrer"
-                  className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1"
+                  className="btn btn-secondary text-xs px-2 py-1 flex items-center gap-1"
                   title="Descargar comprobante PDF"
                 >
                   <DownloadIcon className="w-3 h-3" /> Comprobante
                 </a>
                 <button
                   onClick={() => setEditingEntry(row)}
-                  className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1"
+                  className="btn btn-secondary text-xs px-2 py-1 flex items-center gap-1"
                 >
                   <PencilIcon className="w-3 h-3" /> Editar
                 </button>
@@ -205,7 +205,7 @@ export function CajaMenorDetailClientView({ box, entries }: CajaMenorDetailClien
                         alert('Error al anular el movimiento: ' + msg);
                       }
                     }}
-                    className="neu-btn-secondary text-xs px-2 py-1 flex items-center gap-1 text-red-500 hover:text-red-600"
+                    className="btn btn-secondary text-xs px-2 py-1 flex items-center gap-1 text-red-500 hover:text-red-600"
                   >
                     <TrashIcon className="w-3 h-3" /> Anular
                   </button>

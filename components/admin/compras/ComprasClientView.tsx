@@ -141,7 +141,7 @@ export function ComprasClientView({
             </div>
 
             <select 
-              className="neu-input py-1.5 w-full text-sm"
+              className="input py-1.5 w-full text-sm"
               value={costCenterFilter}
               onChange={(e) => setCostCenterFilter(e.target.value)}
             >
@@ -152,7 +152,7 @@ export function ComprasClientView({
             </select>
             
             <select 
-              className="neu-input py-1.5 w-full text-sm"
+              className="input py-1.5 w-full text-sm"
               value={supplierFilter}
               onChange={(e) => setSupplierFilter(e.target.value)}
             >
@@ -167,7 +167,7 @@ export function ComprasClientView({
               <input 
                 type="text"
                 placeholder="Buscar por factura o proveedor..."
-                className="neu-input pl-9 w-full py-1.5 text-sm"
+                className="input pl-9 w-full py-1.5 text-sm"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
               />
@@ -184,14 +184,14 @@ export function ComprasClientView({
               )}
               <button 
               onClick={() => setIsExportModalOpen(true)}
-              className="neu-btn-secondary py-1.5 px-3 text-sm flex items-center gap-2"
+              className="btn btn-secondary py-1.5 px-3 text-sm flex items-center gap-2"
             >
               <DownloadIcon className="w-4 h-4" /> Exportar Excel
             </button>
-              <button onClick={() => setIsModalOpen(true)} className="neu-btn-secondary py-1.5 px-3 text-sm flex items-center gap-2">
+              <button onClick={() => setIsModalOpen(true)} className="btn btn-secondary py-1.5 px-3 text-sm flex items-center gap-2">
                 <UploadCloudIcon className="w-4 h-4" /> Masivo
               </button>
-              <Link href="/admin/compras/nueva" className="neu-btn-primary py-1.5 px-3 text-sm flex items-center gap-2">
+              <Link href="/admin/compras/nueva" className="btn btn-primary py-1.5 px-3 text-sm flex items-center gap-2">
                 <PlusIcon className="w-4 h-4" /> Nueva compra
               </Link>
             </div>

@@ -8,9 +8,9 @@ interface NeuCardProps {
 }
 
 export function NeuCard({ children, variant = 'raised', className = '', onClick }: NeuCardProps) {
-  let baseClass = 'neu-raised';
-  if (variant === 'raised-sm') baseClass = 'neu-raised-sm';
-  if (variant === 'inset') baseClass = 'neu-inset';
+  let baseClass = 'glass-panel';
+  if (variant === 'raised-sm') baseClass = 'glass-panel';
+  if (variant === 'inset') baseClass = 'glass-panel';
 
   return (
     <div className={`${baseClass} ${className}`} onClick={onClick}>

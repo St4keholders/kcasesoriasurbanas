@@ -15,7 +15,7 @@ export default async function AdminLayout({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/admin/login');
+    redirect('/login');
   }
 
   const { data: profile } = await supabase
@@ -25,7 +25,8 @@ export default async function AdminLayout({
     .single();
 
   if (profile && !profile.is_active) {
-    redirect('/admin/login');
+    await supabase.auth.signOut();
+    redirect('/login?error=inactive');
   }
 
   const role = profile?.role || 'asesor';

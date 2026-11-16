@@ -203,7 +203,7 @@ export default async function DetalleCompraPage({ params }: { params: Promise<{ 
               </p>
 
               <form action={handlePayment} className="space-y-3">
-                <select name="payment_method" required className="neu-input w-full">
+                <select name="payment_method" required className="input w-full">
                   <option value="">Seleccionar método...</option>
                   <option value="transferencia">Transferencia bancaria</option>
                   <option value="tarjeta">Tarjeta</option>

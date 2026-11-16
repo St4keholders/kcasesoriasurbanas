@@ -15,7 +15,7 @@ export function NeuButton({
   disabled,
   ...props 
 }: NeuButtonProps) {
-  const baseClass = variant === 'primary' ? 'neu-btn-primary' : 'neu-btn';
+  const baseClass = variant === 'primary' ? 'btn btn-primary' : 'btn btn-secondary';
   const loadingClass = isLoading ? 'opacity-70 cursor-not-allowed' : '';
   const disabledClass = disabled ? 'opacity-50 cursor-not-allowed' : '';
 

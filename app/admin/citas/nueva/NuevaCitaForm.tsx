@@ -103,7 +103,7 @@ export function NuevaCitaForm({
 
         <div className="space-y-1">
           <label className="block text-sm font-medium text-[var(--fg-soft)]">Servicio</label>
-          <select {...register('service_type_id')} className="neu-input w-full">
+          <select {...register('service_type_id')} className="input w-full">
             <option value="">-- Seleccionar servicio (opcional) --</option>
             {services.map((s) => (
               <option key={s.id} value={s.id}>
@@ -117,7 +117,7 @@ export function NuevaCitaForm({
           <label className="block text-sm font-medium text-[var(--fg-soft)]">
             Asesor asignado <span className="text-rose-500">*</span>
           </label>
-          <select {...register('assigned_advisor_id')} className="neu-input w-full">
+          <select {...register('assigned_advisor_id')} className="input w-full">
             <option value="">-- Seleccionar asesor --</option>
             {advisors.map((a) => (
               <option key={a.id} value={a.id}>
@@ -134,7 +134,7 @@ export function NuevaCitaForm({
           <label className="block text-sm font-medium text-[var(--fg-soft)]">
             Fecha y hora <span className="text-rose-500">*</span>
           </label>
-          <input {...register('scheduled_at')} type="datetime-local" className="neu-input w-full" />
+          <input {...register('scheduled_at')} type="datetime-local" className="input w-full" />
           {errors.scheduled_at && (
             <p className="text-rose-500 text-xs mt-1">{errors.scheduled_at.message}</p>
           )}
@@ -149,7 +149,7 @@ export function NuevaCitaForm({
             type="number"
             min="15"
             step="15"
-            className="neu-input w-full"
+            className="input w-full"
           />
         </div>
 
@@ -160,13 +160,13 @@ export function NuevaCitaForm({
           <textarea
             {...register('notes')}
             rows={3}
-            className="neu-input w-full resize-none"
+            className="input w-full resize-none"
           ></textarea>
         </div>
       </div>
 
       <div className="pt-4 flex justify-end">
-        <button type="submit" disabled={isSubmitting} className="neu-btn-primary">
+        <button type="submit" disabled={isSubmitting} className="btn btn-primary">
           {isSubmitting ? 'Guardando...' : 'Agendar cita'}
         </button>
       </div>

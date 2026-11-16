@@ -11,7 +11,7 @@ export function AddIncomeButton({ boxId }: { boxId: string }) {
     <>
       <button 
         onClick={() => setIsOpen(true)} 
-        className="neu-btn"
+        className="btn btn-secondary"
         style={{ borderColor: 'var(--success)', color: 'var(--success)' }}
       >
         <BanknoteIcon className="w-4 h-4" /> + Ingreso

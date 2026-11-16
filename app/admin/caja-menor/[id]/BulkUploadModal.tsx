@@ -220,7 +220,7 @@ export function BulkUploadModal({ boxId, onClose, onSuccess }: BulkUploadModalPr
           {uploadResults.length > 0 ? (
             <button 
               onClick={onClose}
-              className="neu-btn-primary"
+              className="btn btn-primary"
             >
               Cerrar
             </button>
@@ -228,7 +228,7 @@ export function BulkUploadModal({ boxId, onClose, onSuccess }: BulkUploadModalPr
             <>
               <button 
                 onClick={onClose}
-                className="neu-btn"
+                className="btn btn-secondary"
                 disabled={isUploading}
               >
                 Cancelar
@@ -236,7 +236,7 @@ export function BulkUploadModal({ boxId, onClose, onSuccess }: BulkUploadModalPr
               <button 
                 onClick={handleUpload}
                 disabled={files.length === 0 || isUploading}
-                className="neu-btn-primary disabled:opacity-50 flex items-center gap-2"
+                className="btn btn-primary disabled:opacity-50 flex items-center gap-2"
               >
                 {isUploading ? (
                   <>

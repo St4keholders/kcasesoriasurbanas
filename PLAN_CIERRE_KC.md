@@ -201,12 +201,12 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
 - [x] `/admin/contabilidad/pendientes`: totales por motivo y valor, filtros, acciones por fila y exportación a XLSX.
 
 ### FASE 8 — UI: liquid glass, textos y colores
-- [ ] Un solo sistema de estilos (`app/styles/tokens.css` + primitivas). Eliminar `neu-forms.css` y las 92 clases `neu-*`; recortar `globals.css` y `admin-styles.css`.
-- [ ] Tokens glass: blanco al ~55 %, `backdrop-filter: blur(20px) saturate(180%)`, borde claro de 1 px, brillo interior y sombra sky suave; fondo sólido de respaldo si no hay `backdrop-filter`.
-- [ ] Aplicar a modales, drawers, detalles, ficha de proveedor, bandeja de ingesta, borradores y filtros; ajustar los paneles principales para que combinen.
-- [ ] Contraste WCAG AA (≥ 4.5:1), con test automático sobre los tokens.
-- [ ] Textos en español con tuteo y tildes; estados legibles; COP sin decimales; fechas `dd MMM yyyy`; sin emojis ni textos de relleno.
-- [ ] Actualizar `DIRECTRICES_PANEL_ADMIN.md` con el sistema liquid glass.
+- [x] Un solo sistema de estilos (`app/styles/tokens.css` + primitivas). Eliminar `neu-forms.css` y las 92 clases `neu-*`; recortar `globals.css` y `admin-styles.css`.
+- [x] Tokens glass: blanco al ~55 %, `backdrop-filter: blur(20px) saturate(180%)`, borde claro de 1 px, brillo interior y sombra sky suave; fondo sólido de respaldo si no hay `backdrop-filter`.
+- [x] Aplicar a modales, drawers, detalles, ficha de proveedor, bandeja de ingesta, borradores y filtros; ajustar los paneles principales para que combinen.
+- [x] Contraste WCAG AA (≥ 4.5:1), con test automático sobre los tokens.
+- [x] Textos en español con tuteo y tildes; estados legibles; COP sin decimales; fechas `dd MMM yyyy`; sin emojis ni textos de relleno.
+- [x] Actualizar `DIRECTRICES_PANEL_ADMIN.md` con el sistema liquid glass.
 
 ### FASE 9 — Animación SVG de carga
 - [ ] `components/ui/KcLoader.tsx`: SVG inline de menos de 3 KB, de unos 1.2 s en bucle (el monograma "KC" se dibuja y lo recorre un brillo glass); `role="status"`; con `prefers-reduced-motion`, solo un pulso.

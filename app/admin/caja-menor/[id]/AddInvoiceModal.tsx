@@ -237,14 +237,14 @@ export function AddInvoiceModal({ boxId, onClose }: { boxId: string; onClose: ()
             <button
               type="button"
               onClick={onClose}
-              className="neu-btn flex-1 text-center justify-center"
+              className="btn btn-secondary flex-1 text-center justify-center"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="neu-btn-primary flex-1 justify-center flex items-center"
+              className="btn btn-primary flex-1 justify-center flex items-center"
             >
               {isLoading ? (
                 <>

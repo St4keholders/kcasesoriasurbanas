@@ -131,7 +131,7 @@ export function BulkUploadModal({ onClose, onSuccess, costCenters = [] }: BulkUp
           {uploadResults.length > 0 ? (
             <button 
               onClick={onClose}
-              className="neu-btn-primary"
+              className="btn btn-primary"
             >
               Cerrar
             </button>
@@ -139,7 +139,7 @@ export function BulkUploadModal({ onClose, onSuccess, costCenters = [] }: BulkUp
             <>
               <button 
                 onClick={onClose}
-                className="neu-btn-secondary"
+                className="btn btn-secondary"
                 disabled={isUploading}
               >
                 Cancelar
@@ -147,7 +147,7 @@ export function BulkUploadModal({ onClose, onSuccess, costCenters = [] }: BulkUp
               <button 
                 onClick={handleUpload}
                 disabled={files.length === 0 || isUploading}
-                className="neu-btn-primary disabled:opacity-50 flex items-center gap-2"
+                className="btn btn-primary disabled:opacity-50 flex items-center gap-2"
               >
                 {isUploading ? (
                   <>
@@ -258,7 +258,7 @@ export function BulkUploadModal({ onClose, onSuccess, costCenters = [] }: BulkUp
                         Centro de Costos (Aplica para todos)
                       </label>
                       <select 
-                        className="neu-input w-full text-sm py-2"
+                        className="input w-full text-sm py-2"
                         value={selectedCostCenter}
                         onChange={(e) => setSelectedCostCenter(e.target.value)}
                         required

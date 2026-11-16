@@ -237,13 +237,13 @@ export function PurchaseDetailModal({ purchase, costCenters, suppliers, onClose,
             href={`/api/contabilidad/comprobantes/${purchase.id}/pdf?source=purchase`}
             target="_blank"
             rel="noreferrer"
-            className="neu-btn text-xs flex items-center gap-1.5"
+            className="btn btn-secondary text-xs flex items-center gap-1.5"
           >
             <ExternalLinkIcon className="w-4 h-4" /> Descargar comprobante
           </a>
           <div className="flex gap-3">
-            <button onClick={onClose} className="neu-btn" disabled={isSaving}>Cancelar</button>
-            <button type="submit" form="purchase-form" className="neu-btn-primary flex items-center gap-2" disabled={isSaving}>
+            <button onClick={onClose} className="btn btn-secondary" disabled={isSaving}>Cancelar</button>
+            <button type="submit" form="purchase-form" className="btn btn-primary flex items-center gap-2" disabled={isSaving}>
               {isSaving ? <Loader2Icon className="w-4 h-4 animate-spin" /> : <SaveIcon className="w-4 h-4" />}
               Guardar Cambios
             </button>

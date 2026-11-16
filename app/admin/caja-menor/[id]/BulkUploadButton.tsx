@@ -11,7 +11,7 @@ export function BulkUploadButton({ boxId }: { boxId: string }) {
     <>
       <button 
         onClick={() => setIsOpen(true)} 
-        className="neu-btn"
+        className="btn btn-secondary"
       >
         <UploadCloudIcon className="w-4 h-4 mr-2" />
         Carga Masiva

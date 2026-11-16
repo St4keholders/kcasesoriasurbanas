@@ -1,0 +1,95 @@
+/* =====================================================================
+   KC ASESORÍAS URBANAS S.A.S — SISTEMA DE TOKENS + LIQUID GLASS (WCAG AA)
+   ===================================================================== */
+
+:root {
+  /* Fondos principales */
+  --bg:           #f3f9fd;
+  --bg-soft:      #f7fbfd;
+  --bg-card:      #ffffff;
+  --bg-hover:     #eef6fc;
+  --bg-pale:      #e4f0fa;
+
+  /* Texto con contraste WCAG AA verificado (>= 4.5:1 sobre #ffffff y #f3f9fd) */
+  --fg:           #142433;   /* Contraste 15.1:1 sobre blanco */
+  --fg-soft:      #2c4459;   /* Contraste 9.6:1 sobre blanco */
+  --dim:          #455f75;   /* Contraste 6.2:1 sobre blanco, 5.7:1 sobre --bg */
+  --dim-2:        #8fa9be;
+
+  /* Paleta Sky (con --sky-deep ajustado para contraste AA >= 4.5:1 en texto y botones) */
+  --sky:          #3b82c4;
+  --sky-deep:     #235d93;   /* Contraste 6.8:1 sobre blanco y con texto #ffffff */
+  --sky-light:    #a8d1f0;
+  --sky-pale:     #dceefb;
+  --sky-glow:     rgba(59, 130, 196, 0.24);
+  --sky-dim:      rgba(59, 130, 196, 0.10);
+
+  /* Bordes editoriales de 1 px */
+  --border:       #d4e4f0;
+  --border-soft:  #e5eff7;
+  --border-hover: #b6cde0;
+  --line:         rgba(59, 130, 196, 0.22);
+  --line-strong:  rgba(35, 93, 147, 0.45);
+  --hair:         rgba(59, 130, 196, 0.10);
+
+  /* Liquid Glass Tokens (Fase 8) */
+  --glass-bg:           rgba(255, 255, 255, 0.55);
+  --glass-bg-strong:    rgba(255, 255, 255, 0.72);
+  --glass-fallback:     rgba(255, 255, 255, 0.96);
+  --glass-blur:         blur(20px) saturate(180%);
+  --glass-border:       rgba(255, 255, 255, 0.78);
+  --glass-border-outer: rgba(182, 205, 224, 0.65);
+  --glass-inner-glow:   inset 0 1px 0 rgba(255, 255, 255, 0.88),
+                        inset 0 0 20px rgba(95, 163, 211, 0.08);
+  --glass-shadow:       0 8px 32px rgba(20, 36, 51, 0.08),
+                        0 2px 8px rgba(59, 130, 196, 0.06);
+
+  /* Semánticos (con variantes de texto WCAG AA >= 4.5:1) */
+  --success:      #059669;
+  --success-text: #065f46;
+  --success-bg:   #d1fae5;
+  --success-soft: #ecfdf5;
+  --warning:      #d97706;
+  --warning-text: #854d0e;
+  --warning-bg:   #fef3c7;
+  --danger:       #dc2626;
+  --danger-text:  #991b1b;
+  --danger-bg:    #fee2e2;
+
+  /* Sombras editoriales */
+  --shadow-xs:    0 1px 2px rgba(20, 36, 51, 0.04);
+  --shadow-sm:    0 1px 3px rgba(20, 36, 51, 0.05),
+                  0 4px 12px rgba(20, 36, 51, 0.04);
+  --shadow-md:    0 4px 18px rgba(20, 36, 51, 0.07),
+                  0 1px 3px rgba(20, 36, 51, 0.05);
+  --shadow-lg:    0 12px 40px rgba(20, 36, 51, 0.11),
+                  0 4px 12px rgba(20, 36, 51, 0.06);
+
+  /* Tipografía */
+  --sans:    var(--font-sans), 'DM Sans', system-ui, -apple-system, sans-serif;
+  --display: var(--font-display), 'DM Serif Display', Georgia, serif;
+  --mono:    var(--font-mono), 'IBM Plex Mono', ui-monospace, monospace;
+  --ease:    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Superficie Liquid Glass con respaldo sólido automático */
+.glass-panel,
+.modal,
+.drawer-panel {
+  background: var(--glass-fallback);
+  border: 1px solid var(--glass-border-outer);
+  box-shadow: var(--glass-inner-glow), var(--glass-shadow);
+}
+
+@supports ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  .glass-panel,
+  .modal,
+  .drawer-panel {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    outline: 1px solid var(--glass-border-outer);
+    box-shadow: var(--glass-inner-glow), var(--glass-shadow);
+  }
+}

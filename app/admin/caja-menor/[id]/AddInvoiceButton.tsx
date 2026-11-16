@@ -11,7 +11,7 @@ export function AddInvoiceButton({ boxId }: { boxId: string }) {
     <>
       <button 
         onClick={() => setIsOpen(true)} 
-        className="neu-btn-primary"
+        className="btn btn-primary"
       >
         <PlusIcon className="w-4 h-4" /> Añadir Factura
       </button>

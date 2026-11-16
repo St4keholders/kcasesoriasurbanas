@@ -108,7 +108,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
             <label className="block text-sm font-medium text-[var(--fg-soft)]">Estado Inicial</label>
             <select
               {...register('status')}
-              className="neu-input w-full"
+              className="input w-full"
             >
               <option value="cotizacion">Cotización (Borrador)</option>
               <option value="pendiente_pago">Venta Confirmada (Pendiente Pago)</option>
@@ -140,7 +140,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
                     register(`items.${index}.service_type_id`).onChange(e);
                     handleServiceChange(index, e.target.value);
                   }}
-                  className="neu-input w-full"
+                  className="input w-full"
                 >
                   <option value="">Manual / Ninguno</option>
                   {services.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -152,7 +152,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
                 <input
                   {...register(`items.${index}.description`)}
                   type="text"
-                  className="neu-input w-full"
+                  className="input w-full"
                 />
                 {errors.items?.[index]?.description && <p className="text-rose-500 text-xs">{errors.items[index]?.description?.message}</p>}
               </div>
@@ -163,7 +163,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
                   {...register(`items.${index}.quantity`, { valueAsNumber: true })}
                   type="number"
                   step="0.1"
-                  className="neu-input w-full"
+                  className="input w-full"
                 />
               </div>
 
@@ -172,7 +172,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
                 <input
                   {...register(`items.${index}.unit_price`, { valueAsNumber: true })}
                   type="number"
-                  className="neu-input w-full"
+                  className="input w-full"
                 />
               </div>
 
@@ -181,7 +181,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
                   type="button"
                   onClick={() => remove(index)}
                   disabled={fields.length === 1}
-                  className="p-2 text-rose-500 hover:text-rose-600 disabled:opacity-50 neu-icon"
+                  className="p-2 text-rose-500 hover:text-rose-600 disabled:opacity-50 btn btn-icon"
                   style={{width: 40, height: 40}}
                 >
                   <TrashIcon className="w-4 h-4 mx-auto" />
@@ -198,7 +198,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
             <textarea
               {...register('notes')}
               rows={4}
-              className="neu-input w-full resize-none"
+              className="input w-full resize-none"
               placeholder="Términos, condiciones, comentarios..."
             ></textarea>
           </div>
@@ -214,7 +214,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
               <input
                 {...register('tax', { valueAsNumber: true })}
                 type="number"
-                className="neu-input w-24 text-right py-1"
+                className="input w-24 text-right py-1"
               />
             </div>
             
@@ -223,7 +223,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
               <input
                 {...register('discount', { valueAsNumber: true })}
                 type="number"
-                className="neu-input w-24 text-right py-1"
+                className="input w-24 text-right py-1"
               />
             </div>
 
@@ -236,7 +236,7 @@ export function NuevaVentaForm({ services, defaultLeadId, defaultLead }: { servi
       </div>
 
       <div className="flex justify-end">
-        <button type="submit" disabled={isSubmitting} className="neu-btn-primary">
+        <button type="submit" disabled={isSubmitting} className="btn btn-primary">
           {isSubmitting ? 'Guardando...' : 'Guardar Documento'}
         </button>
       </div>

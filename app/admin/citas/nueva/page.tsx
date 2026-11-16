@@ -23,7 +23,7 @@ export default async function NuevaCitaPage({ searchParams }: { searchParams: { 
   return (
     <div className="main">
       <div className="mb-6 flex items-center gap-4">
-        <Link href="/admin/citas" className="neu-icon" style={{ width: 40, height: 40 }}>
+        <Link href="/admin/citas" className="btn btn-icon" style={{ width: 40, height: 40 }}>
           <ArrowLeftIcon className="w-5 h-5" />
         </Link>
         <div>

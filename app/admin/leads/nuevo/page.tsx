@@ -45,7 +45,7 @@ export default function NuevoLeadPage() {
   return (
     <div className="main">
       <div className="mb-6 flex items-center gap-4">
-        <Link href="/admin/leads" className="neu-icon" style={{ width: 40, height: 40 }}>
+        <Link href="/admin/leads" className="btn btn-icon" style={{ width: 40, height: 40 }}>
           <ArrowLeftIcon className="w-5 h-5" />
         </Link>
         <div>
@@ -67,7 +67,7 @@ export default function NuevoLeadPage() {
             <input
               {...register('full_name')}
               type="text"
-              className="neu-input w-full"
+              className="input w-full"
               placeholder="Ej. Juan Pérez"
             />
             {errors.full_name && <p className="text-rose-500 text-xs mt-1">{errors.full_name.message}</p>}
@@ -78,7 +78,7 @@ export default function NuevoLeadPage() {
             <input
               {...register('document_number')}
               type="text"
-              className="neu-input w-full"
+              className="input w-full"
               placeholder="Ej. 1000000000"
             />
           </div>
@@ -88,7 +88,7 @@ export default function NuevoLeadPage() {
             <input
               {...register('phone')}
               type="tel"
-              className="neu-input w-full"
+              className="input w-full"
               placeholder="Ej. 300 000 0000"
             />
             {errors.phone && <p className="text-rose-500 text-xs mt-1">{errors.phone.message}</p>}
@@ -99,7 +99,7 @@ export default function NuevoLeadPage() {
             <input
               {...register('email')}
               type="email"
-              className="neu-input w-full"
+              className="input w-full"
               placeholder="ejemplo@correo.com"
             />
             {errors.email && <p className="text-rose-500 text-xs mt-1">{errors.email.message}</p>}
@@ -109,7 +109,7 @@ export default function NuevoLeadPage() {
             <label className="block text-sm font-medium text-[var(--fg-soft)]">Fuente</label>
             <select
               {...register('source')}
-              className="neu-input w-full"
+              className="input w-full"
             >
               <option value="WhatsApp">WhatsApp</option>
               <option value="Web">Sitio Web</option>
@@ -125,14 +125,14 @@ export default function NuevoLeadPage() {
             <textarea
               {...register('notes')}
               rows={3}
-              className="neu-input w-full resize-none"
+              className="input w-full resize-none"
               placeholder="Comentarios, requerimientos, historial breve..."
             ></textarea>
           </div>
         </div>
 
         <div className="pt-4 flex justify-end">
-          <button type="submit" disabled={isSubmitting} className="neu-btn-primary">
+          <button type="submit" disabled={isSubmitting} className="btn btn-primary">
             {isSubmitting ? 'Guardando...' : 'Guardar Cliente'}
           </button>
         </div>

@@ -6,32 +6,58 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const STATUS_LABELS: Record<string, string> = {
+  pendiente_pago: 'Pendiente de pago',
+  pagado: 'Pagado',
+  pagada: 'Pagada',
+  anulado: 'Anulado',
+  anulada: 'Anulada',
+  cotizacion: 'Cotización',
+  borrador: 'Borrador',
+  contabilizado: 'Contabilizado',
+  abierta: 'Abierta',
+  cerrada: 'Cerrada',
+  reembolsada: 'Reembolsada',
+  agendada: 'Agendada',
+  en_curso: 'En curso',
+  reprogramada: 'Reprogramada',
+  cancelada: 'Cancelada',
+  atendida: 'Atendida',
+  activo: 'Activo',
+  inactivo: 'Inactivo',
+  aprobado: 'Aprobado',
+  pendiente_revision: 'Pendiente de revisión',
+};
+
 interface StatusBadgeProps {
   status: string;
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  const normalized = status.toLowerCase();
-  
-  let variantClass = '';
-  let label = status;
+  const normalized = (status || '').toLowerCase().trim();
 
-  if (['pagada', 'atendida', 'completado', 'activo'].includes(normalized)) {
-    variantClass = 'attended';
-  } else if (['pendiente', 'en_curso'].includes(normalized)) {
-    variantClass = 'pending';
-  } else if (['cancelada', 'anulado', 'inactivo'].includes(normalized)) {
-    variantClass = 'cancelled';
-  } else if (['agendada', 'pendiente_pago', 'cotizacion'].includes(normalized)) {
-    variantClass = 'scheduled';
+  let variantClass = 'neutral';
+  if (
+    ['pagada', 'pagado', 'atendida', 'completado', 'activo', 'contabilizado', 'aprobado'].includes(
+      normalized
+    )
+  ) {
+    variantClass = 'success';
+  } else if (
+    ['pendiente', 'en_curso', 'pendiente_pago', 'borrador', 'pendiente_revision', 'reprogramada'].includes(
+      normalized
+    )
+  ) {
+    variantClass = 'warning';
+  } else if (['cancelada', 'anulado', 'anulada', 'inactivo', 'rechazado'].includes(normalized)) {
+    variantClass = 'danger';
+  } else if (['agendada', 'cotizacion', 'abierta'].includes(normalized)) {
+    variantClass = 'info';
   }
 
-  // format label visually (e.g. "pendiente_pago" -> "Pendiente Pago")
-  label = label.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const label =
+    STATUS_LABELS[normalized] ||
+    status.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
 
-  return (
-    <span className={`status-badge ${variantClass}`}>
-      {label}
-    </span>
-  );
+  return <span className={`badge ${variantClass}`}>{label}</span>;
 }

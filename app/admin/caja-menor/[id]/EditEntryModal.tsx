@@ -115,10 +115,10 @@ export function EditEntryModal({ entry, onClose }: EditEntryModalProps) {
           </div>
           
           <div className="flex gap-4 pt-4 border-t border-[var(--shadow-dark)]">
-            <button type="button" onClick={onClose} className="neu-btn flex-1 text-center justify-center">
+            <button type="button" onClick={onClose} className="btn btn-secondary flex-1 text-center justify-center">
               Cancelar
             </button>
-            <button type="submit" disabled={isLoading} className="neu-btn-primary flex-1 justify-center flex items-center">
+            <button type="submit" disabled={isLoading} className="btn btn-primary flex-1 justify-center flex items-center">
               {isLoading ? (
                 <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Guardando...</>
               ) : (

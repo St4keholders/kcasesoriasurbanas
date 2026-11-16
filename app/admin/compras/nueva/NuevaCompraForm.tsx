@@ -145,7 +145,7 @@ export function NuevaCompraForm({
             <label className="block text-sm font-medium text-[var(--fg-soft)]">
               Concepto / descripción <span className="text-rose-500">*</span>
             </label>
-            <input {...register('concept')} type="text" className="neu-input w-full" />
+            <input {...register('concept')} type="text" className="input w-full" />
             {errors.concept && <p className="text-rose-500 text-xs">{errors.concept.message}</p>}
           </div>
 
@@ -153,7 +153,7 @@ export function NuevaCompraForm({
             <label className="block text-sm font-medium text-[var(--fg-soft)]">
               Tipo de transacción <span className="text-rose-500">*</span>
             </label>
-            <select {...register('transaction_type')} className="neu-input w-full">
+            <select {...register('transaction_type')} className="input w-full">
               <option value="costo_gasto">Costo / Gasto</option>
               <option value="inversion">Inversión</option>
               <option value="otro">Otro</option>
@@ -164,7 +164,7 @@ export function NuevaCompraForm({
             <label className="block text-sm font-medium text-[var(--fg-soft)]">
               Centro de costo
             </label>
-            <select {...register('cost_center_id')} className="neu-input w-full">
+            <select {...register('cost_center_id')} className="input w-full">
               <option value="">-- Seleccionar --</option>
               {costCenters.map((cc) => (
                 <option key={cc.id} value={cc.id}>
@@ -178,14 +178,14 @@ export function NuevaCompraForm({
             <label className="block text-sm font-medium text-[var(--fg-soft)]">
               Número de factura (Ref)
             </label>
-            <input {...register('invoice_number')} type="text" className="neu-input w-full" />
+            <input {...register('invoice_number')} type="text" className="input w-full" />
           </div>
 
           <div className="space-y-1">
             <label className="block text-sm font-medium text-[var(--fg-soft)]">
               Fecha de transacción <span className="text-rose-500">*</span>
             </label>
-            <input {...register('transaction_date')} type="date" className="neu-input w-full" />
+            <input {...register('transaction_date')} type="date" className="input w-full" />
             {errors.transaction_date && (
               <p className="text-rose-500 text-xs">{errors.transaction_date.message}</p>
             )}
@@ -195,7 +195,7 @@ export function NuevaCompraForm({
             <label className="block text-sm font-medium text-[var(--fg-soft)]">
               Fecha de vencimiento (pago)
             </label>
-            <input {...register('due_date')} type="date" className="neu-input w-full" />
+            <input {...register('due_date')} type="date" className="input w-full" />
           </div>
 
           <div className="space-y-1">
@@ -229,7 +229,7 @@ export function NuevaCompraForm({
               {...register('amount', { valueAsNumber: true })}
               type="number"
               step="1"
-              className="neu-input w-full"
+              className="input w-full"
             />
             {errors.amount && <p className="text-rose-500 text-xs">{errors.amount.message}</p>}
           </div>
@@ -240,7 +240,7 @@ export function NuevaCompraForm({
               {...register('tax_iva', { valueAsNumber: true })}
               type="number"
               step="1"
-              className="neu-input w-full"
+              className="input w-full"
             />
           </div>
 
@@ -250,7 +250,7 @@ export function NuevaCompraForm({
               {...register('withholding_tax', { valueAsNumber: true })}
               type="number"
               step="1"
-              className="neu-input w-full"
+              className="input w-full"
             />
           </div>
 
@@ -271,13 +271,13 @@ export function NuevaCompraForm({
           <textarea
             {...register('notes')}
             rows={2}
-            className="neu-input w-full resize-none"
+            className="input w-full resize-none"
           ></textarea>
         </div>
       </div>
 
       <div className="flex justify-end">
-        <button type="submit" disabled={isSubmitting} className="neu-btn-primary">
+        <button type="submit" disabled={isSubmitting} className="btn btn-primary">
           {isSubmitting ? 'Guardando...' : 'Registrar gasto'}
         </button>
       </div>

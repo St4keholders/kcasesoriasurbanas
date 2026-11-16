@@ -108,10 +108,10 @@ export function ExportCSVModal({
       title={title}
       footer={
         <div className="flex justify-end gap-3 w-full">
-          <button onClick={onClose} className="neu-btn-secondary">
+          <button onClick={onClose} className="btn btn-secondary">
             Cancelar
           </button>
-          <button onClick={handleExport} className="neu-btn-primary flex items-center gap-2">
+          <button onClick={handleExport} className="btn btn-primary flex items-center gap-2">
             <DownloadIcon className="w-4 h-4" />
             Exportar Excel
           </button>
@@ -129,7 +129,7 @@ export function ExportCSVModal({
             </label>
             <input
               type="date"
-              className="neu-input w-full text-sm"
+              className="input w-full text-sm"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
             />
@@ -140,7 +140,7 @@ export function ExportCSVModal({
             </label>
             <input
               type="date"
-              className="neu-input w-full text-sm"
+              className="input w-full text-sm"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
             />
