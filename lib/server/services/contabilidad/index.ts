@@ -1,4 +1,5 @@
 import { getServerDb } from '@/lib/server/db';
+import type { Database } from '@/types/database';
 import {
   classifyTransaction,
   normalizeTextForMatch,
@@ -503,7 +504,7 @@ export async function ensureDraftEntriesForPurchase(params: {
     if (ccErr) throw new Error(ccErr.message);
     ccEntry = insertedCc;
 
-    const ccLines: Array<Record<string, unknown>> = [
+    const ccLines: Database['public']['Tables']['journal_lines']['Insert'][] = [
       {
         entry_id: ccEntry.id,
         line_order: 1,
@@ -843,7 +844,7 @@ export async function ensureDraftEntriesForPettyCash(entryId: string) {
     if (ccErr) throw new Error(ccErr.message);
     ccEntry = insertedCc;
 
-    const ccLines: Array<Record<string, unknown>> = [
+    const ccLines: Database['public']['Tables']['journal_lines']['Insert'][] = [
       {
         entry_id: ccEntry.id,
         line_order: 1,

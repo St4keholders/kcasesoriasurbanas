@@ -23,7 +23,6 @@ export async function createAppointment(data: z.infer<typeof AppointmentSchema>)
 
   if (!finalLeadId) {
     const leadNameToCreate = data.lead_name?.trim() || 'Cliente Final';
-    // @ts-ignore
     const { data: newLead, error: leadError } = await supabase
       .from('leads')
       .insert({
@@ -38,7 +37,6 @@ export async function createAppointment(data: z.infer<typeof AppointmentSchema>)
     finalLeadId = newLead.id;
   }
 
-  // @ts-ignore
   const { data: appointment, error } = await supabase
     .from('appointments')
     .insert({

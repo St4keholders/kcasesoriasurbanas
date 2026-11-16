@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SITE } from '@/lib/constants';
 import { logout } from '@/app/(public)/login/actions';
 import { KcLinkPendingIndicator } from '@/components/ui/KcLoader';
 import {
@@ -70,11 +69,6 @@ export function AdminSidebar({ role, userName }: { role: string; userName?: stri
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Close sidebar on route change
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
-
   return (
     <>
       <button 
@@ -132,6 +126,7 @@ export function AdminSidebar({ role, userName }: { role: string; userName?: stri
                     <Link
                       key={item.label}
                       href={item.href}
+                      onClick={() => setIsOpen(false)}
                       className={`nav-item ${isActive ? 'active' : ''}`}
                     >
                       <Icon strokeWidth={2} className="w-4 h-4 shrink-0" />

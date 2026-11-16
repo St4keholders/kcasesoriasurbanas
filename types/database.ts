@@ -1848,8 +1848,6 @@ export type Database = {
           score: number
         }[]
       }
-      show_limit: { Args: never; Returns: number }
-      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       appointment_status:

@@ -15,11 +15,9 @@ export async function saveService(id: string | null, data: z.infer<typeof Servic
   const supabase = await createClient();
   
   if (id) {
-    // @ts-ignore
     const { error } = await supabase.from('service_types').update(data).eq('id', id);
     if (error) throw new Error(error.message);
   } else {
-    // @ts-ignore
     const { error } = await supabase.from('service_types').insert(data);
     if (error) throw new Error(error.message);
   }

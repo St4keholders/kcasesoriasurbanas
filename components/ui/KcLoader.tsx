@@ -16,18 +16,15 @@ export function KcLoader({
   delayMs = 150,
   className = '',
 }: KcLoaderProps) {
-  const [visible, setVisible] = useState(delayMs <= 0);
+  const [delayedReady, setDelayedReady] = useState(delayMs <= 0);
 
   useEffect(() => {
-    if (delayMs <= 0) {
-      setVisible(true);
-      return;
-    }
-    const timer = setTimeout(() => setVisible(true), delayMs);
+    if (delayMs <= 0) return;
+    const timer = setTimeout(() => setDelayedReady(true), delayMs);
     return () => clearTimeout(timer);
   }, [delayMs]);
 
-  if (!visible) return null;
+  if (delayMs > 0 && !delayedReady) return null;
 
   return (
     <span

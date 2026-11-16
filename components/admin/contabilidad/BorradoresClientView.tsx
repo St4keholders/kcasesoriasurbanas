@@ -6,7 +6,7 @@ import {
   updateDraftEntryAction,
   postEntriesBulkAction,
   voidJournalEntryAction,
-} from '../actions';
+} from '@/app/admin/contabilidad/actions';
 import { formatCOP } from '@/lib/utils/money';
 import { formatDateCO } from '@/lib/utils/dates';
 import { useRouter } from 'next/navigation';

@@ -589,7 +589,7 @@ export async function ingestDocumentService(params: {
       withholding_tax: extracted.withholding_tax || 0,
       total: extracted.total || 0,
       suggested_account_code: classification.accountCode,
-      extracted_data: extracted as unknown as Record<string, unknown>,
+      extracted_data: JSON.parse(JSON.stringify(extracted)),
       confidence: effectiveConfidence,
       warnings: validation.warnings,
       purchase_id: purchaseId,

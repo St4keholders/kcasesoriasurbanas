@@ -12,16 +12,15 @@ export function RevealOnScroll({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+    return false;
+  });
 
   useEffect(() => {
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    if (reduced) {
-      setVisible(true);
-      return;
-    }
+    if (visible) return;
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -33,7 +32,7 @@ export function RevealOnScroll({
     );
     if (ref.current) io.observe(ref.current);
     return () => io.disconnect();
-  }, []);
+  }, [visible]);
 
   const delayClass = delay ? ` d${delay}` : "";
   return (

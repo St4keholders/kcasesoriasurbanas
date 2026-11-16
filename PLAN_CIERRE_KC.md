@@ -213,16 +213,16 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
 - [x] Usarlo en `app/admin/loading.tsx` y en un `loading.tsx` por módulo, al hacer clic en enlaces (estado pendiente del link en Next 16) y en botones que ejecutan acciones; mostrarlo solo si la espera pasa de 150 ms.
 
 ### FASE 10 — Verificación y reporte
-- [ ] typecheck, lint, test y build en verde, sin `ignoreBuildErrors`.
-- [ ] `get_advisors` de nuevo, comparado con el diagnóstico inicial.
-- [ ] `docs/REPORTE_SUPABASE.md`:
+- [x] typecheck, lint, test y build en verde, sin `ignoreBuildErrors`.
+- [x] `get_advisors` de nuevo, comparado con el diagnóstico inicial.
+- [x] `docs/REPORTE_SUPABASE.md`:
   - qué se encontró y qué se saneó, con la migración de cada arreglo;
   - advisors antes y después;
   - cifras: borradores, valor en clase 5 y clase 6, pendientes por motivo y valor;
   - lo que falta, con responsable (dev / auxiliar / contador);
   - optimizaciones sugeridas;
   - lista de verificación manual de la UI.
-- [ ] Commit final y push de la rama (sin merge).
+- [x] Commit final y push de la rama (sin merge).
 
 ---
 
@@ -243,6 +243,10 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
     - **Acierto en subcuenta PUC (6 dígitos):** `18/20` (**90.0 %**, meta ≥ 80 %).
   - **Fusión de terceros (`docs/FUSION_TERCEROS.md`):** de 463 proveedores en `suppliers` se consolidaron 451 terceros únicos en `third_parties` (11 grupos duplicados fusionados sin `DELETE`).
   - **Backfill contable 2026 (`docs/BACKFILL.md`):** se generaron 1.920 comprobantes en estado `borrador` (960 `CC` + 960 `CE` enlazados) con partida doble exacta (Débitos = Créditos = `$877.990.380`), 373 causaciones marcadas para revisión por confianza baja y 0 tokens de IA consumidos gracias al motor determinístico de reglas + respaldo Sección C.
+- **Fase 8, 9 y 10 — UI Liquid Glass, `KcLoader` y Verificación Final (`docs/REPORTE_SUPABASE.md`):**
+  - Se eliminaron `app/neu-forms.css` y todas las clases `neu-*`, unificando los tokens Liquid Glass en `app/styles/tokens.css` con test automático WCAG AA (`tests/fase8-wcag-tokens.test.ts`).
+  - Se implementó `components/ui/KcLoader.tsx` (< 3 KB, monograma KC con brillo glass, `role="status"`, `prefers-reduced-motion` y retardo de 150 ms) integrado en `app/admin/loading.tsx`, `loading.tsx` por módulo, enlaces (`useLinkStatus`) y botones de acción.
+  - En la verificación final de Supabase (`get_advisors`), se eliminaron el 100 % de los errores `SECURITY DEFINER` en vistas (de 3 a 0), el 100 % de las políticas abiertas `USING (true)` (de 7 a 0), el 100 % de las tablas con RLS sin políticas (de 3 a 0), el 100 % de las alertas `auth_rls_initplan` (de 18 a 0), el 100 % de `multiple_permissive_policies` (de 9 a 0) y el 100 % de `unindexed_foreign_keys` (de 8 a 0).
 
 ---
 

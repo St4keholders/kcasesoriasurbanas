@@ -6,7 +6,7 @@ import { ChevronUpIcon, ChevronDownIcon } from 'lucide-react';
 interface Column<T> {
   header: string;
   accessor: keyof T | ((row: T) => React.ReactNode);
-  sortAccessor?: (row: T) => any;
+  sortAccessor?: (row: T) => string | number | null | undefined;
   sortable?: boolean;
 }
 
@@ -24,6 +24,7 @@ export function DataTable<T>({ data, columns, keyExtractor }: DataTableProps<T>)
   const itemsPerPage = 5;
 
   const handleSort = (colIndex: number) => {
+    setCurrentPage(1);
     if (sortCol === colIndex) {
       if (sortDesc) {
         setSortCol(null);
@@ -43,8 +44,8 @@ export function DataTable<T>({ data, columns, keyExtractor }: DataTableProps<T>)
     if (!col) return data;
 
     return [...data].sort((a, b) => {
-      let valA: any = '';
-      let valB: any = '';
+      let valA: unknown = '';
+      let valB: unknown = '';
 
       if (col.sortAccessor) {
         valA = col.sortAccessor(a);
@@ -63,22 +64,18 @@ export function DataTable<T>({ data, columns, keyExtractor }: DataTableProps<T>)
         return sortDesc ? -cmp : cmp;
       }
       
-      if (valA < valB) return sortDesc ? 1 : -1;
-      if (valA > valB) return sortDesc ? -1 : 1;
+      if (Number(valA) < Number(valB)) return sortDesc ? 1 : -1;
+      if (Number(valA) > Number(valB)) return sortDesc ? -1 : 1;
       return 0;
     });
   }, [data, columns, sortCol, sortDesc]);
 
-  // Reset page when data changes or sort changes
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [sortedData.length, sortCol, sortDesc]);
-
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(sortedData.length / itemsPerPage));
+  const safePage = Math.min(currentPage, totalPages);
   const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
+    const start = (safePage - 1) * itemsPerPage;
     return sortedData.slice(start, start + itemsPerPage);
-  }, [sortedData, currentPage]);
+  }, [sortedData, safePage]);
 
   return (
     <div className="data-table-wrap">
