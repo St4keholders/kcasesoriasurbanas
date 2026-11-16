@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SITE } from '@/lib/constants';
 import { logout } from '@/app/(public)/login/actions';
+import { KcLinkPendingIndicator } from '@/components/ui/KcLoader';
 import {
   HomeIcon,
   CalendarIcon,
@@ -18,7 +19,12 @@ import {
   ListIcon,
   MenuIcon,
   XIcon,
-  WalletIcon
+  WalletIcon,
+  BookOpenIcon,
+  FileCheck2Icon,
+  AlertTriangleIcon,
+  SlidersHorizontalIcon,
+  ScanLineIcon,
 } from 'lucide-react';
 
 const NAV_SECTIONS = [
@@ -37,6 +43,16 @@ const NAV_SECTIONS = [
       { label: 'Tesorería', href: '/admin/compras', roles: ['admin', 'tesoreria'], icon: ReceiptIcon },
       { label: 'Proveedores', href: '/admin/proveedores', roles: ['admin', 'tesoreria'], icon: TruckIcon },
       { label: 'Cajas Menores', href: '/admin/caja-menor', roles: ['admin', 'asesor', 'tesoreria'], icon: WalletIcon },
+      { label: 'Ingesta Soportes', href: '/admin/ingesta', roles: ['admin', 'tesoreria'], icon: ScanLineIcon },
+    ]
+  },
+  {
+    title: 'Contabilidad 2026',
+    items: [
+      { label: 'Libro Diario y AZ', href: '/admin/contabilidad/libro-diario', roles: ['admin', 'tesoreria'], icon: BookOpenIcon },
+      { label: 'Borradores', href: '/admin/contabilidad/borradores', roles: ['admin', 'tesoreria'], icon: FileCheck2Icon },
+      { label: 'Pendientes Legales', href: '/admin/contabilidad/pendientes', roles: ['admin', 'tesoreria'], icon: AlertTriangleIcon },
+      { label: 'Parametrización PUC', href: '/admin/contabilidad/parametrizacion', roles: ['admin', 'tesoreria'], icon: SlidersHorizontalIcon },
     ]
   },
   {
@@ -119,7 +135,8 @@ export function AdminSidebar({ role, userName }: { role: string; userName?: stri
                       className={`nav-item ${isActive ? 'active' : ''}`}
                     >
                       <Icon strokeWidth={2} className="w-4 h-4 shrink-0" />
-                      {item.label}
+                      <span className="truncate">{item.label}</span>
+                      <KcLinkPendingIndicator size={16} />
                     </Link>
                   );
                 })}

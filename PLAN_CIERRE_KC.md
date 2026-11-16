@@ -209,8 +209,8 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
 - [x] Actualizar `DIRECTRICES_PANEL_ADMIN.md` con el sistema liquid glass.
 
 ### FASE 9 — Animación SVG de carga
-- [ ] `components/ui/KcLoader.tsx`: SVG inline de menos de 3 KB, de unos 1.2 s en bucle (el monograma "KC" se dibuja y lo recorre un brillo glass); `role="status"`; con `prefers-reduced-motion`, solo un pulso.
-- [ ] Usarlo en `app/admin/loading.tsx` y en un `loading.tsx` por módulo, al hacer clic en enlaces (estado pendiente del link en Next 16) y en botones que ejecutan acciones; mostrarlo solo si la espera pasa de 150 ms.
+- [x] `components/ui/KcLoader.tsx`: SVG inline de menos de 3 KB, de unos 1.2 s en bucle (el monograma "KC" se dibuja y lo recorre un brillo glass); `role="status"`; con `prefers-reduced-motion`, solo un pulso.
+- [x] Usarlo en `app/admin/loading.tsx` y en un `loading.tsx` por módulo, al hacer clic en enlaces (estado pendiente del link en Next 16) y en botones que ejecutan acciones; mostrarlo solo si la espera pasa de 150 ms.
 
 ### FASE 10 — Verificación y reporte
 - [ ] typecheck, lint, test y build en verde, sin `ignoreBuildErrors`.

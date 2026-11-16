@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { HomeIcon, UsersIcon, CalendarIcon, ShoppingCartIcon, WalletIcon } from 'lucide-react';
+import { KcLinkPendingIndicator } from '@/components/ui/KcLoader';
 
 const TABS = [
   { path: '/admin', icon: HomeIcon, color: 'var(--sky-deep)' },
@@ -56,6 +57,7 @@ export function MobileTabBar() {
                   style={{ transition: 'all 300ms', transform: isActive ? 'translateY(-16px)' : 'none' }}
                 >
                   <Icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} />
+                  <KcLinkPendingIndicator size={14} />
                 </Link>
               </li>
             );
