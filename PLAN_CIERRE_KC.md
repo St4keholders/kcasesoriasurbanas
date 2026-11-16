@@ -184,9 +184,9 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
 - [x] Proveedor no identificado → Proveedor Ocasional + pendiente "identificar tercero".
 
 ### FASE 7 — Proveedores y pendientes legales
-- [ ] `/admin/proveedores/[id]`: ficha, KPIs 2026 (total pagado, número de pagos, último pago, retenciones) y **todos los pagos** (tesorería, cajas menores y CE) con enlace al soporte y al PDF, filtros y exportación a XLSX.
-- [ ] Lista de proveedores con las columnas "Total pagado 2026" y "Pendientes".
-- [ ] Vista `v_pendientes_legales` con estos motivos:
+- [x] `/admin/proveedores/[id]`: ficha, KPIs 2026 (total pagado, número de pagos, último pago, retenciones) y **todos los pagos** (tesorería, cajas menores y CE) con enlace al soporte y al PDF, filtros y exportación a XLSX.
+- [x] Lista de proveedores con las columnas "Total pagado 2026" y "Pendientes".
+- [x] Vista `v_pendientes_legales` con estos motivos:
   - sin soporte;
   - soporte que no es factura;
   - no obligado a facturar sin documento soporte de adquisiciones (Res. DIAN 000167 de 2021);
@@ -198,7 +198,7 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
   - posible duplicado;
   - confianza baja;
   - borrador sin contabilizar.
-- [ ] `/admin/contabilidad/pendientes`: totales por motivo y valor, filtros, acciones por fila y exportación a XLSX.
+- [x] `/admin/contabilidad/pendientes`: totales por motivo y valor, filtros, acciones por fila y exportación a XLSX.
 
 ### FASE 8 — UI: liquid glass, textos y colores
 - [ ] Un solo sistema de estilos (`app/styles/tokens.css` + primitivas). Eliminar `neu-forms.css` y las 92 clases `neu-*`; recortar `globals.css` y `admin-styles.css`.
