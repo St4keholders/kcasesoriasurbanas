@@ -175,13 +175,13 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
 - [x] (8) `npm run eval:clasificador` con `tests/fixtures/clasificador.json` (anonimizado; casos de oficina, obras, notariales y personales). Meta: 90 % de acierto en la clase y 80 % en la subcuenta. Anotar el resultado en la sección F.
 
 **6B. Lectura de facturas** (`lib/server/services/ingesta/`)
-- [ ] Tabla `document_ingestions` (ruta, sha256, origen, estado, tipo de documento, datos extraídos, confianza, advertencias).
-- [ ] XML/ZIP de factura electrónica DIAN: lectura directa sin IA (CUFE, NIT+DV, número, fecha, base, IVA, retenciones, total).
-- [ ] PDF con texto → texto + CUFE; PDF escaneado → páginas como imagen; imagen → visión. Salida estructurada con zod; se excluye el NIT de KC.
-- [ ] Validaciones: base + IVA − retenciones ≈ total (±1 peso), DV válido, fecha no futura y dentro de 2026, duplicados (sha256 / NIT + número / NIT + fecha + total) y total en $0 → advertencias. Nunca guardar en $0 sin revisión.
-- [ ] Al terminar se llama al clasificador 6A y se crean la compra + CC + CE en borrador.
-- [ ] Bandeja `/admin/ingesta`: documento a la izquierda; campos y cuenta sugerida a la derecha, con lo de baja confianza resaltado; botones Aprobar / Corregir.
-- [ ] Proveedor no identificado → Proveedor Ocasional + pendiente "identificar tercero".
+- [x] Tabla `document_ingestions` (ruta, sha256, origen, estado, tipo de documento, datos extraídos, confianza, advertencias).
+- [x] XML/ZIP de factura electrónica DIAN: lectura directa sin IA (CUFE, NIT+DV, número, fecha, base, IVA, retenciones, total).
+- [x] PDF con texto → texto + CUFE; PDF escaneado → páginas como imagen; imagen → visión. Salida estructurada con zod; se excluye el NIT de KC.
+- [x] Validaciones: base + IVA − retenciones ≈ total (±1 peso), DV válido, fecha no futura y dentro de 2026, duplicados (sha256 / NIT + número / NIT + fecha + total) y total en $0 → advertencias. Nunca guardar en $0 sin revisión.
+- [x] Al terminar se llama al clasificador 6A y se crean la compra + CC + CE en borrador.
+- [x] Bandeja `/admin/ingesta`: documento a la izquierda; campos y cuenta sugerida a la derecha, con lo de baja confianza resaltado; botones Aprobar / Corregir.
+- [x] Proveedor no identificado → Proveedor Ocasional + pendiente "identificar tercero".
 
 ### FASE 7 — Proveedores y pendientes legales
 - [ ] `/admin/proveedores/[id]`: ficha, KPIs 2026 (total pagado, número de pagos, último pago, retenciones) y **todos los pagos** (tesorería, cajas menores y CE) con enlace al soporte y al PDF, filtros y exportación a XLSX.

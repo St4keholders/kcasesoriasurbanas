@@ -343,6 +343,165 @@ export type Database = {
         }
         Relationships: []
       }
+      document_ingestions: {
+        Row: {
+          cc_entry_id: string | null
+          ce_entry_id: string | null
+          concept: string | null
+          confidence: number
+          cost_center_id: string | null
+          created_at: string
+          created_by: string | null
+          cufe: string | null
+          document_type: string
+          extracted_data: Json
+          id: string
+          invoice_number: string | null
+          issue_date: string | null
+          purchase_id: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sha256: string
+          source: string
+          status: string
+          storage_path: string
+          subtotal: number
+          suggested_account_code: string | null
+          supplier_dv: string | null
+          supplier_name: string | null
+          supplier_nit: string | null
+          tax_iva: number
+          third_party_id: string | null
+          total: number
+          updated_at: string
+          warnings: string[]
+          withholding_tax: number
+        }
+        Insert: {
+          cc_entry_id?: string | null
+          ce_entry_id?: string | null
+          concept?: string | null
+          confidence?: number
+          cost_center_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          cufe?: string | null
+          document_type?: string
+          extracted_data?: Json
+          id?: string
+          invoice_number?: string | null
+          issue_date?: string | null
+          purchase_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sha256: string
+          source?: string
+          status?: string
+          storage_path: string
+          subtotal?: number
+          suggested_account_code?: string | null
+          supplier_dv?: string | null
+          supplier_name?: string | null
+          supplier_nit?: string | null
+          tax_iva?: number
+          third_party_id?: string | null
+          total?: number
+          updated_at?: string
+          warnings?: string[]
+          withholding_tax?: number
+        }
+        Update: {
+          cc_entry_id?: string | null
+          ce_entry_id?: string | null
+          concept?: string | null
+          confidence?: number
+          cost_center_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          cufe?: string | null
+          document_type?: string
+          extracted_data?: Json
+          id?: string
+          invoice_number?: string | null
+          issue_date?: string | null
+          purchase_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sha256?: string
+          source?: string
+          status?: string
+          storage_path?: string
+          subtotal?: number
+          suggested_account_code?: string | null
+          supplier_dv?: string | null
+          supplier_name?: string | null
+          supplier_nit?: string | null
+          tax_iva?: number
+          third_party_id?: string | null
+          total?: number
+          updated_at?: string
+          warnings?: string[]
+          withholding_tax?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_ingestions_cc_entry_id_fkey"
+            columns: ["cc_entry_id"]
+            isOneToOne: false
+            referencedRelation: "journal_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_ingestions_ce_entry_id_fkey"
+            columns: ["ce_entry_id"]
+            isOneToOne: false
+            referencedRelation: "journal_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_ingestions_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_ingestions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_ingestions_purchase_id_fkey"
+            columns: ["purchase_id"]
+            isOneToOne: false
+            referencedRelation: "purchases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_ingestions_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_ingestions_suggested_account_code_fkey"
+            columns: ["suggested_account_code"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "document_ingestions_third_party_id_fkey"
+            columns: ["third_party_id"]
+            isOneToOne: false
+            referencedRelation: "third_parties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_sequences: {
         Row: {
           last_value: number
@@ -1613,6 +1772,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      v_pendientes_legales: {
+        Row: {
+          amount: number | null
+          concept: string | null
+          cost_center_id: string | null
+          cost_center_name: string | null
+          detalle: string | null
+          document_ref: string | null
+          motivo: string | null
+          record_date: string | null
+          source_id: string | null
+          source_table: string | null
+          third_party_id: string | null
+          third_party_name: string | null
+          third_party_nit: string | null
+        }
+        Relationships: []
       }
     }
     Functions: {
