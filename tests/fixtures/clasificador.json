@@ -1,0 +1,202 @@
+[
+  {
+    "id": "case-01",
+    "costCenterName": "Medellín",
+    "supplierName": "Empresas Públicas de Medellín E.S.P.",
+    "nitNormalized": "890904996",
+    "concept": "Pago factura de energía eléctrica y servicios públicos oficina",
+    "amount": 385000,
+    "expectedClass": 5,
+    "expectedAccount": "513530"
+  },
+  {
+    "id": "case-02",
+    "costCenterName": "Medellín",
+    "supplierName": "Ciber Color",
+    "nitNormalized": "43156109",
+    "concept": "Impresión de 6 planos arquitectónicos y fotocopias",
+    "amount": 60000,
+    "expectedClass": 5,
+    "expectedAccount": "519530"
+  },
+  {
+    "id": "case-03",
+    "costCenterName": "Medellín",
+    "supplierName": "Móvil Éxito",
+    "nitNormalized": "890900608",
+    "concept": "Recarga paquete de internet y telefonía celular oficina",
+    "amount": 45000,
+    "expectedClass": 5,
+    "expectedAccount": "513535"
+  },
+  {
+    "id": "case-04",
+    "costCenterName": "Medellín",
+    "supplierName": "Inmobiliaria Central S.A.S",
+    "nitNormalized": "900112233",
+    "concept": "Canon de arrendamiento oficina Medellín mes de junio",
+    "amount": 2800000,
+    "expectedClass": 5,
+    "expectedAccount": "512010"
+  },
+  {
+    "id": "case-05",
+    "costCenterName": "Medellín",
+    "supplierName": "Consultores Jurídicos S.A.S",
+    "nitNormalized": "901223344",
+    "concept": "Honorarios asesoría jurídica estudio de títulos",
+    "amount": 1500000,
+    "expectedClass": 5,
+    "expectedAccount": "511025"
+  },
+  {
+    "id": "case-06",
+    "costCenterName": "Medellín",
+    "supplierName": "Distracom S.A.",
+    "nitNormalized": "811009788",
+    "concept": "Tanqueo gasolina y parqueadero diligencias urbanas",
+    "amount": 95000,
+    "expectedClass": 5,
+    "expectedAccount": "513550"
+  },
+  {
+    "id": "case-07",
+    "costCenterName": "Medellín",
+    "supplierName": "Kairo Mensajería",
+    "nitNormalized": "71727274",
+    "concept": "Servicio de mensajería y domicilio radicación documentos",
+    "amount": 28000,
+    "expectedClass": 5,
+    "expectedAccount": "513540"
+  },
+  {
+    "id": "case-08",
+    "costCenterName": "Medellín",
+    "supplierName": "Almacenes Éxito S.A.",
+    "nitNormalized": "890900608",
+    "concept": "Compra de café, azúcar e implementos de aseo y cafetería",
+    "amount": 112000,
+    "expectedClass": 5,
+    "expectedAccount": "519525"
+  },
+  {
+    "id": "case-09",
+    "costCenterName": "Medellín",
+    "supplierName": "Curaduría Urbana Segunda",
+    "nitNormalized": "800998877",
+    "concept": "Radicación trámite licencia y certificado catastro",
+    "amount": 420000,
+    "expectedClass": 5,
+    "expectedAccount": "514015"
+  },
+  {
+    "id": "case-10",
+    "costCenterName": "Medellín",
+    "supplierName": "Bancolombia S.A.",
+    "nitNormalized": "890903938",
+    "concept": "Cuota de manejo y comisión bancaria transferencia",
+    "amount": 32000,
+    "expectedClass": 5,
+    "expectedAccount": "530505"
+  },
+  {
+    "id": "case-11",
+    "costCenterName": "TOLÚ",
+    "supplierName": "Ferretería y Materiales El Constructor",
+    "nitNormalized": "900554433",
+    "concept": "Compra de 40 bultos de cemento, arena y varilla corrugada",
+    "amount": 1850000,
+    "expectedClass": 6,
+    "expectedAccount": "612005"
+  },
+  {
+    "id": "case-12",
+    "costCenterName": "TOLÚ",
+    "supplierName": "Contratista Obra Civil",
+    "nitNormalized": "1017223344",
+    "concept": "Pago avance mano de obra mampostería y revoque",
+    "amount": 2400000,
+    "expectedClass": 6,
+    "expectedAccount": "612015"
+  },
+  {
+    "id": "case-13",
+    "costCenterName": "Apto Bello",
+    "supplierName": "Pinvicolor S.A.S",
+    "nitNormalized": "900251553",
+    "concept": "Compra de pintura vinilo tipo 1 y estuco plástico",
+    "amount": 640000,
+    "expectedClass": 6,
+    "expectedAccount": "612005"
+  },
+  {
+    "id": "case-14",
+    "costCenterName": "Apto Bello",
+    "supplierName": "Puertas y Servicios",
+    "nitNormalized": "900776655",
+    "concept": "Suministro de puertas en madera, closeth y ventanería en aluminio",
+    "amount": 3200000,
+    "expectedClass": 6,
+    "expectedAccount": "612020"
+  },
+  {
+    "id": "case-15",
+    "costCenterName": "TOLÚ",
+    "supplierName": "Transportes Tolú",
+    "nitNormalized": "900332211",
+    "concept": "Flete y acarreo de materiales en volqueta y retiro de escombros",
+    "amount": 480000,
+    "expectedClass": 6,
+    "expectedAccount": "612025"
+  },
+  {
+    "id": "case-16",
+    "costCenterName": "TOLÚ",
+    "supplierName": "Ingeniería y Suelos S.A.S",
+    "nitNormalized": "901445566",
+    "concept": "Levantamiento de topografía y diseño estructural proyecto",
+    "amount": 1950000,
+    "expectedClass": 6,
+    "expectedAccount": "612030"
+  },
+  {
+    "id": "case-17",
+    "costCenterName": "Medellín",
+    "supplierName": "Notaría Quince de Medellín",
+    "nitNormalized": "890980123",
+    "concept": "Pago gastos notariales, boleta fiscal y registro instrumentos públicos escritura cliente",
+    "amount": 980000,
+    "expectedClass": 6,
+    "expectedAccount": "615595"
+  },
+  {
+    "id": "case-18",
+    "costCenterName": "Medellín",
+    "supplierName": "Gobernación de Antioquia",
+    "nitNormalized": "890900286",
+    "concept": "Impuesto de rentas departamentales y beneficencia protocolo cliente",
+    "amount": 1450000,
+    "expectedClass": 6,
+    "expectedAccount": "615595"
+  },
+  {
+    "id": "case-19",
+    "costCenterName": "Medellín",
+    "supplierName": "Consultorio Médico",
+    "nitNormalized": "71223344",
+    "concept": "Pago terapias y cita de salud personal",
+    "amount": 180000,
+    "expectedClass": 5,
+    "expectedAccount": "531595"
+  },
+  {
+    "id": "case-20",
+    "costCenterName": "Medellín",
+    "supplierName": "Transferencia Familiar",
+    "nitNormalized": "",
+    "concept": "Transferencia cuenta del papi gastos personales",
+    "amount": 500000,
+    "expectedClass": 5,
+    "expectedAccount": "531595"
+  }
+]

@@ -136,17 +136,17 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
 - [x] Tests: NIT/DV, montos colombianos, totales, permisos por rol (con el método de la sección C).
 
 ### FASE 4 — Motor contable (causación + egreso)
-- [ ] Tablas: `chart_of_accounts`, `third_parties` (migrando `suppliers` y fusionando duplicados por NIT; reporte en `docs/FUSION_TERCEROS.md`), `tax_parameters`, `posting_rules` (`source` manual/aprendida), `payment_accounts`, `journal_entries` (tipos CC, CE, RC, NC; estados borrador/contabilizado/anulado; `source_table`/`source_id`; `ai_confidence`; `ai_rationale`), `journal_lines` (débito, crédito, base, `is_deductible`), `classification_feedback`.
-- [ ] Triggers: al contabilizar, débitos = créditos; un comprobante contabilizado no se puede modificar y solo se anula con un reverso.
-- [ ] Siembra: PUC del Decreto 2650 para las clases 1 a 6 hasta subcuenta, con `keywords` en las clases 5 y 6; las cuentas de la sección B se crean con sus nombres; parámetros tributarios de la sección B; centros de costo de la sección B (crear los que falten).
-- [ ] Motor idempotente (por origen + tipo de comprobante). Todo queda en **borrador**:
+- [x] Tablas: `chart_of_accounts`, `third_parties` (migrando `suppliers` y fusionando duplicados por NIT; reporte en `docs/FUSION_TERCEROS.md`), `tax_parameters`, `posting_rules` (`source` manual/aprendida), `payment_accounts`, `journal_entries` (tipos CC, CE, RC, NC; estados borrador/contabilizado/anulado; `source_table`/`source_id`; `ai_confidence`; `ai_rationale`), `journal_lines` (débito, crédito, base, `is_deductible`), `classification_feedback`.
+- [x] Triggers: al contabilizar, débitos = créditos; un comprobante contabilizado no se puede modificar y solo se anula con un reverso.
+- [x] Siembra: PUC del Decreto 2650 para las clases 1 a 6 hasta subcuenta, con `keywords` en las clases 5 y 6; las cuentas de la sección B se crean con sus nombres; parámetros tributarios de la sección B; centros de costo de la sección B (crear los que falten).
+- [x] Motor idempotente (por origen + tipo de comprobante). Todo queda en **borrador**:
   - Compra → **CC**: débito a la cuenta 5 o 6 (base) + 240810 si aplica; crédito a 2365xx si la factura trae retención, y a **210505** (bienes) o **230505** (gastos/servicios).
   - Su pago → **CE** con la misma fecha y enlazado: débito 210505/230505; crédito 111005 (o 110510 si es de caja menor).
   - Recarga de caja menor → **CE**: débito 110510, crédito 111005.
   - Venta pagada → **RC**: débito 111005, crédito **413505**.
-- [ ] Backfill (después de la 6A): generar CC + CE en borrador para todas las compras, entradas de caja menor y ventas de 2026. Resumen en `docs/BACKFILL.md`: cantidades, confianza baja, sin tercero, valor por cuenta, y tokens y costo de la IA.
-- [ ] UI `/admin/contabilidad/parametrizacion`: plan de cuentas, reglas, cuentas de pago, parámetros tributarios y firmas.
-- [ ] UI `/admin/contabilidad/borradores`: revisar, cambiar cuenta o centro de costo y botón **Contabilizar en bloque** (solo admin; lo usa el contador, no la IA).
+- [x] Backfill (después de la 6A): generar CC + CE en borrador para todas las compras, entradas de caja menor y ventas de 2026. Resumen en `docs/BACKFILL.md`: cantidades, confianza baja, sin tercero, valor por cuenta, y tokens y costo de la IA.
+- [x] UI `/admin/contabilidad/parametrizacion`: plan de cuentas, reglas, cuentas de pago, parámetros tributarios y firmas.
+- [x] UI `/admin/contabilidad/borradores`: revisar, cambiar cuenta o centro de costo y botón **Contabilizar en bloque** (solo admin; lo usa el contador, no la IA).
 
 ### FASE 5 — Libro diario y comprobante para AZ
 - [ ] `/admin/contabilidad/libro-diario`: filtros (fechas, tipo, tercero, cuenta, centro de costo, estado), orden fecha → tipo → número, totales débito = crédito y paginación en servidor.
@@ -162,17 +162,17 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
 
 ### FASE 6 — IA optimizada
 **6A. Clasificador de cuenta** (`lib/server/services/ia/clasificador.ts`), en este orden:
-- [ ] (1) **Centro de costo** → fija la clase (sección B).
-- [ ] (2) **Memoria por NIT** → si el tercero tiene 2 o más clasificaciones confirmadas a la misma subcuenta, usar esa.
-- [ ] (3) **Palabras clave** (`posting_rules`, `chart_of_accounts.keywords`).
-- [ ] (4) **Modelo de IA**, solo si los pasos anteriores no resuelven:
+- [x] (1) **Centro de costo** → fija la clase (sección B).
+- [x] (2) **Memoria por NIT** → si el tercero tiene 2 o más clasificaciones confirmadas a la misma subcuenta, usar esa.
+- [x] (3) **Palabras clave** (`posting_rules`, `chart_of_accounts.keywords`).
+- [x] (4) **Modelo de IA**, solo si los pasos anteriores no resuelven:
   - salida estructurada con un `enum` de las subcuentas válidas de esa clase, para que no pueda inventar cuentas;
   - devuelve `confidence`, `rationale` (máximo 20 palabras) y las marcas `posible_personal`, `soporte_a_nombre_de_tercero` y `posible_activo`;
   - recibe como contexto 5 ejemplos parecidos ya confirmados (con `pg_trgm`), y corre con temperatura 0.
-- [ ] (5) Confianza de 0.85 o más → borrador listo; menor → bandeja de revisión.
-- [ ] (6) Cada corrección se guarda en `classification_feedback` y crea una `posting_rule` aprendida.
-- [ ] (7) Caché por (NIT, concepto normalizado); procesar en lotes con concurrencia 4 y reintentos.
-- [ ] (8) `npm run eval:clasificador` con `tests/fixtures/clasificador.json` (anonimizado; casos de oficina, obras, notariales y personales). Meta: 90 % de acierto en la clase y 80 % en la subcuenta. Anotar el resultado en la sección F.
+- [x] (5) Confianza de 0.85 o más → borrador listo; menor → bandeja de revisión.
+- [x] (6) Cada corrección se guarda en `classification_feedback` y crea una `posting_rule` aprendida.
+- [x] (7) Caché por (NIT, concepto normalizado); procesar en lotes con concurrencia 4 y reintentos.
+- [x] (8) `npm run eval:clasificador` con `tests/fixtures/clasificador.json` (anonimizado; casos de oficina, obras, notariales y personales). Meta: 90 % de acierto en la clase y 80 % en la subcuenta. Anotar el resultado en la sección F.
 
 **6B. Lectura de facturas** (`lib/server/services/ingesta/`)
 - [ ] Tabla `document_ingestions` (ruta, sha256, origen, estado, tipo de documento, datos extraídos, confianza, advertencias).
@@ -237,6 +237,12 @@ Para ejecutarlo: modo automático + `/goal` (comando al final del archivo).
 - **Fase 3 — Soportes y migración de Google Drive:**
   - Se aplicó respaldo de Sección C en `scripts/migrar-drive-a-storage.ts`: al no existir credenciales de API de Google Drive en `.env.local`, los 20 enlaces históricos de Drive en `petty_cash_entries` fueron preservados en `legacy_drive_url` sin alterar `receipt_url`, mientras que toda nueva carga de soportes opera directamente contra el bucket privado `soportes` de Supabase Storage mediante URLs firmadas y hash `sha256`.
   - Se eliminaron todos los usos del comodín `000000000` (55 registros saneados a `NULL`) y se consolidó un único tercero activo "Proveedor Ocasional".
+- **Fase 4 y Fase 6A — Evaluación del clasificador y Backfill 2026:**
+  - Resultado de `npm run eval:clasificador` sobre `tests/fixtures/clasificador.json` (20 casos representativos de oficina Medellín, obras Tolú/Apto Bello, pagos notariales a nombre de tercero y gastos personales no deducibles):
+    - **Acierto en clase contable (5 vs 6):** `20/20` (**100.0 %**, meta ≥ 90 %).
+    - **Acierto en subcuenta PUC (6 dígitos):** `18/20` (**90.0 %**, meta ≥ 80 %).
+  - **Fusión de terceros (`docs/FUSION_TERCEROS.md`):** de 463 proveedores en `suppliers` se consolidaron 451 terceros únicos en `third_parties` (11 grupos duplicados fusionados sin `DELETE`).
+  - **Backfill contable 2026 (`docs/BACKFILL.md`):** se generaron 1.920 comprobantes en estado `borrador` (960 `CC` + 960 `CE` enlazados) con partida doble exacta (Débitos = Créditos = `$877.990.380`), 373 causaciones marcadas para revisión por confianza baja y 0 tokens de IA consumidos gracias al motor determinístico de reglas + respaldo Sección C.
 
 ---
 

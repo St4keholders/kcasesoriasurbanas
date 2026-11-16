@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      accounting_settings: {
+        Row: {
+          aprobo_name: string
+          company_name: string
+          company_nit: string
+          id: number
+          reviso_name: string
+          updated_at: string
+        }
+        Insert: {
+          aprobo_name?: string
+          company_name?: string
+          company_nit?: string
+          id?: number
+          reviso_name?: string
+          updated_at?: string
+        }
+        Update: {
+          aprobo_name?: string
+          company_name?: string
+          company_nit?: string
+          id?: number
+          reviso_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           assigned_advisor_id: string | null
@@ -132,8 +159,164 @@ export type Database = {
           },
         ]
       }
+      chart_of_accounts: {
+        Row: {
+          account_class: number
+          code: string
+          created_at: string
+          default_tax_concept: string | null
+          is_active: boolean
+          is_postable: boolean
+          keywords: string[]
+          level: string
+          name: string
+          nature: string
+          parent_code: string | null
+          requires_cost_center: boolean
+          requires_third_party: boolean
+        }
+        Insert: {
+          account_class: number
+          code: string
+          created_at?: string
+          default_tax_concept?: string | null
+          is_active?: boolean
+          is_postable?: boolean
+          keywords?: string[]
+          level: string
+          name: string
+          nature: string
+          parent_code?: string | null
+          requires_cost_center?: boolean
+          requires_third_party?: boolean
+        }
+        Update: {
+          account_class?: number
+          code?: string
+          created_at?: string
+          default_tax_concept?: string | null
+          is_active?: boolean
+          is_postable?: boolean
+          keywords?: string[]
+          level?: string
+          name?: string
+          nature?: string
+          parent_code?: string | null
+          requires_cost_center?: boolean
+          requires_third_party?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chart_of_accounts_parent_code_fkey"
+            columns: ["parent_code"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      classification_feedback: {
+        Row: {
+          concept: string
+          confirmed_account_code: string
+          corrected_by: string | null
+          cost_center_id: string | null
+          created_at: string
+          created_rule_id: string | null
+          entry_id: string | null
+          id: string
+          nit_normalized: string | null
+          previous_account_code: string | null
+          source_id: string | null
+          source_table: string | null
+          third_party_id: string | null
+        }
+        Insert: {
+          concept: string
+          confirmed_account_code: string
+          corrected_by?: string | null
+          cost_center_id?: string | null
+          created_at?: string
+          created_rule_id?: string | null
+          entry_id?: string | null
+          id?: string
+          nit_normalized?: string | null
+          previous_account_code?: string | null
+          source_id?: string | null
+          source_table?: string | null
+          third_party_id?: string | null
+        }
+        Update: {
+          concept?: string
+          confirmed_account_code?: string
+          corrected_by?: string | null
+          cost_center_id?: string | null
+          created_at?: string
+          created_rule_id?: string | null
+          entry_id?: string | null
+          id?: string
+          nit_normalized?: string | null
+          previous_account_code?: string | null
+          source_id?: string | null
+          source_table?: string | null
+          third_party_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classification_feedback_confirmed_account_code_fkey"
+            columns: ["confirmed_account_code"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "classification_feedback_corrected_by_fkey"
+            columns: ["corrected_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_feedback_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_feedback_created_rule_id_fkey"
+            columns: ["created_rule_id"]
+            isOneToOne: false
+            referencedRelation: "posting_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_feedback_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "journal_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classification_feedback_previous_account_code_fkey"
+            columns: ["previous_account_code"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "classification_feedback_third_party_id_fkey"
+            columns: ["third_party_id"]
+            isOneToOne: false
+            referencedRelation: "third_parties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cost_centers: {
         Row: {
+          accounting_class: number
+          center_type: string
           created_at: string
           description: string | null
           id: string
@@ -141,6 +324,8 @@ export type Database = {
           name: string
         }
         Insert: {
+          accounting_class?: number
+          center_type?: string
           created_at?: string
           description?: string | null
           id?: string
@@ -148,6 +333,8 @@ export type Database = {
           name: string
         }
         Update: {
+          accounting_class?: number
+          center_type?: string
           created_at?: string
           description?: string | null
           id?: string
@@ -179,6 +366,244 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      journal_entries: {
+        Row: {
+          ai_confidence: number
+          ai_rationale: string | null
+          aprobo_name: string
+          concept: string
+          cost_center_id: string | null
+          created_at: string
+          created_by: string | null
+          elaboro_name: string
+          entry_date: string
+          entry_number: string
+          entry_type: string
+          id: string
+          is_personal_expense: boolean
+          is_possible_asset: boolean
+          is_third_party_support: boolean
+          linked_entry_id: string | null
+          missing_withholding: boolean
+          needs_review: boolean
+          posted_at: string | null
+          posted_by: string | null
+          reversed_entry_id: string | null
+          reviso_name: string
+          source_id: string
+          source_table: string
+          status: string
+          support_url: string | null
+          third_party_id: string | null
+          total_credit: number
+          total_debit: number
+          updated_at: string
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
+          withholding_applied: number
+          withholding_expected: number
+        }
+        Insert: {
+          ai_confidence?: number
+          ai_rationale?: string | null
+          aprobo_name?: string
+          concept: string
+          cost_center_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          elaboro_name?: string
+          entry_date: string
+          entry_number: string
+          entry_type: string
+          id?: string
+          is_personal_expense?: boolean
+          is_possible_asset?: boolean
+          is_third_party_support?: boolean
+          linked_entry_id?: string | null
+          missing_withholding?: boolean
+          needs_review?: boolean
+          posted_at?: string | null
+          posted_by?: string | null
+          reversed_entry_id?: string | null
+          reviso_name?: string
+          source_id: string
+          source_table: string
+          status?: string
+          support_url?: string | null
+          third_party_id?: string | null
+          total_credit?: number
+          total_debit?: number
+          updated_at?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
+          withholding_applied?: number
+          withholding_expected?: number
+        }
+        Update: {
+          ai_confidence?: number
+          ai_rationale?: string | null
+          aprobo_name?: string
+          concept?: string
+          cost_center_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          elaboro_name?: string
+          entry_date?: string
+          entry_number?: string
+          entry_type?: string
+          id?: string
+          is_personal_expense?: boolean
+          is_possible_asset?: boolean
+          is_third_party_support?: boolean
+          linked_entry_id?: string | null
+          missing_withholding?: boolean
+          needs_review?: boolean
+          posted_at?: string | null
+          posted_by?: string | null
+          reversed_entry_id?: string | null
+          reviso_name?: string
+          source_id?: string
+          source_table?: string
+          status?: string
+          support_url?: string | null
+          third_party_id?: string | null
+          total_credit?: number
+          total_debit?: number
+          updated_at?: string
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
+          withholding_applied?: number
+          withholding_expected?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_entries_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entries_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entries_linked_entry_id_fkey"
+            columns: ["linked_entry_id"]
+            isOneToOne: false
+            referencedRelation: "journal_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entries_posted_by_fkey"
+            columns: ["posted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entries_reversed_entry_id_fkey"
+            columns: ["reversed_entry_id"]
+            isOneToOne: false
+            referencedRelation: "journal_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entries_third_party_id_fkey"
+            columns: ["third_party_id"]
+            isOneToOne: false
+            referencedRelation: "third_parties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_entries_voided_by_fkey"
+            columns: ["voided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      journal_lines: {
+        Row: {
+          account_code: string
+          base_amount: number
+          cost_center_id: string | null
+          created_at: string
+          credit: number
+          debit: number
+          description: string | null
+          entry_id: string
+          id: string
+          is_deductible: boolean
+          line_order: number
+          third_party_id: string | null
+        }
+        Insert: {
+          account_code: string
+          base_amount?: number
+          cost_center_id?: string | null
+          created_at?: string
+          credit?: number
+          debit?: number
+          description?: string | null
+          entry_id: string
+          id?: string
+          is_deductible?: boolean
+          line_order?: number
+          third_party_id?: string | null
+        }
+        Update: {
+          account_code?: string
+          base_amount?: number
+          cost_center_id?: string | null
+          created_at?: string
+          credit?: number
+          debit?: number
+          description?: string | null
+          entry_id?: string
+          id?: string
+          is_deductible?: boolean
+          line_order?: number
+          third_party_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_lines_account_code_fkey"
+            columns: ["account_code"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "journal_lines_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_lines_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "journal_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_lines_third_party_id_fkey"
+            columns: ["third_party_id"]
+            isOneToOne: false
+            referencedRelation: "third_parties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       leads: {
         Row: {
@@ -224,6 +649,44 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_accounts: {
+        Row: {
+          account_code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          is_default: boolean
+          name: string
+          payment_method: Database["public"]["Enums"]["payment_method"] | null
+        }
+        Insert: {
+          account_code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          name: string
+          payment_method?: Database["public"]["Enums"]["payment_method"] | null
+        }
+        Update: {
+          account_code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          name?: string
+          payment_method?: Database["public"]["Enums"]["payment_method"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_accounts_account_code_fkey"
+            columns: ["account_code"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
           },
         ]
       }
@@ -321,6 +784,7 @@ export type Database = {
           support_sha256: string | null
           support_storage_path: string | null
           tax_amount: number
+          third_party_id: string | null
           total_amount: number
           updated_at: string
           void_reason: string | null
@@ -344,6 +808,7 @@ export type Database = {
           support_sha256?: string | null
           support_storage_path?: string | null
           tax_amount?: number
+          third_party_id?: string | null
           total_amount: number
           updated_at?: string
           void_reason?: string | null
@@ -367,6 +832,7 @@ export type Database = {
           support_sha256?: string | null
           support_storage_path?: string | null
           tax_amount?: number
+          third_party_id?: string | null
           total_amount?: number
           updated_at?: string
           void_reason?: string | null
@@ -396,11 +862,100 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "petty_cash_entries_third_party_id_fkey"
+            columns: ["third_party_id"]
+            isOneToOne: false
+            referencedRelation: "third_parties"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "petty_cash_entries_voided_by_fkey"
             columns: ["voided_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      posting_rules: {
+        Row: {
+          account_class: number | null
+          cost_center_id: string | null
+          created_at: string
+          credit_account_code: string | null
+          debit_account_code: string
+          id: string
+          is_active: boolean
+          is_deductible: boolean
+          keyword_pattern: string
+          mark_personal: boolean
+          mark_possible_asset: boolean
+          mark_third_party_support: boolean
+          name: string
+          nit_normalized: string | null
+          priority: number
+          source: string
+          tax_concept: string | null
+        }
+        Insert: {
+          account_class?: number | null
+          cost_center_id?: string | null
+          created_at?: string
+          credit_account_code?: string | null
+          debit_account_code: string
+          id?: string
+          is_active?: boolean
+          is_deductible?: boolean
+          keyword_pattern: string
+          mark_personal?: boolean
+          mark_possible_asset?: boolean
+          mark_third_party_support?: boolean
+          name: string
+          nit_normalized?: string | null
+          priority?: number
+          source?: string
+          tax_concept?: string | null
+        }
+        Update: {
+          account_class?: number | null
+          cost_center_id?: string | null
+          created_at?: string
+          credit_account_code?: string | null
+          debit_account_code?: string
+          id?: string
+          is_active?: boolean
+          is_deductible?: boolean
+          keyword_pattern?: string
+          mark_personal?: boolean
+          mark_possible_asset?: boolean
+          mark_third_party_support?: boolean
+          name?: string
+          nit_normalized?: string | null
+          priority?: number
+          source?: string
+          tax_concept?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posting_rules_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posting_rules_credit_account_code_fkey"
+            columns: ["credit_account_code"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "posting_rules_debit_account_code_fkey"
+            columns: ["debit_account_code"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
           },
         ]
       }
@@ -462,6 +1017,7 @@ export type Database = {
           support_sha256: string | null
           support_storage_path: string | null
           tax_iva: number
+          third_party_id: string | null
           total: number
           transaction_date: string
           transaction_type: Database["public"]["Enums"]["transaction_type"]
@@ -492,6 +1048,7 @@ export type Database = {
           support_sha256?: string | null
           support_storage_path?: string | null
           tax_iva?: number
+          third_party_id?: string | null
           total: number
           transaction_date: string
           transaction_type?: Database["public"]["Enums"]["transaction_type"]
@@ -522,6 +1079,7 @@ export type Database = {
           support_sha256?: string | null
           support_storage_path?: string | null
           tax_iva?: number
+          third_party_id?: string | null
           total?: number
           transaction_date?: string
           transaction_type?: Database["public"]["Enums"]["transaction_type"]
@@ -551,6 +1109,13 @@ export type Database = {
             columns: ["supplier_id"]
             isOneToOne: false
             referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchases_third_party_id_fkey"
+            columns: ["third_party_id"]
+            isOneToOne: false
+            referencedRelation: "third_parties"
             referencedColumns: ["id"]
           },
           {
@@ -629,6 +1194,7 @@ export type Database = {
           support_sha256: string | null
           support_storage_path: string | null
           tax: number
+          third_party_id: string | null
           total: number
           updated_at: string
           void_reason: string | null
@@ -653,6 +1219,7 @@ export type Database = {
           support_sha256?: string | null
           support_storage_path?: string | null
           tax?: number
+          third_party_id?: string | null
           total?: number
           updated_at?: string
           void_reason?: string | null
@@ -677,6 +1244,7 @@ export type Database = {
           support_sha256?: string | null
           support_storage_path?: string | null
           tax?: number
+          third_party_id?: string | null
           total?: number
           updated_at?: string
           void_reason?: string | null
@@ -703,6 +1271,13 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_third_party_id_fkey"
+            columns: ["third_party_id"]
+            isOneToOne: false
+            referencedRelation: "third_parties"
             referencedColumns: ["id"]
           },
           {
@@ -788,6 +1363,136 @@ export type Database = {
           phone?: string | null
         }
         Relationships: []
+      }
+      tax_parameters: {
+        Row: {
+          account_code: string
+          concept: string
+          created_at: string
+          id: string
+          is_active: boolean
+          min_base_cop: number
+          min_base_uvt: number
+          notes: string | null
+          rate_pct: number
+          uvt_value: number
+          valid_from: string
+          valid_to: string
+          year: number
+        }
+        Insert: {
+          account_code: string
+          concept: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          min_base_cop: number
+          min_base_uvt: number
+          notes?: string | null
+          rate_pct: number
+          uvt_value?: number
+          valid_from: string
+          valid_to: string
+          year?: number
+        }
+        Update: {
+          account_code?: string
+          concept?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          min_base_cop?: number
+          min_base_uvt?: number
+          notes?: string | null
+          rate_pct?: number
+          uvt_value?: number
+          valid_from?: string
+          valid_to?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tax_parameters_account_code_fkey"
+            columns: ["account_code"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      third_parties: {
+        Row: {
+          address: string | null
+          created_at: string
+          default_account_code: string | null
+          document_number: string | null
+          document_type: string
+          dv: string | null
+          email: string | null
+          has_rut: boolean
+          id: string
+          is_active: boolean
+          is_billing_obligated: boolean
+          is_dv_valid: boolean
+          is_occasional: boolean
+          legacy_supplier_id: string | null
+          merged_supplier_ids: string[]
+          name: string
+          nit_normalized: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          default_account_code?: string | null
+          document_number?: string | null
+          document_type?: string
+          dv?: string | null
+          email?: string | null
+          has_rut?: boolean
+          id?: string
+          is_active?: boolean
+          is_billing_obligated?: boolean
+          is_dv_valid?: boolean
+          is_occasional?: boolean
+          legacy_supplier_id?: string | null
+          merged_supplier_ids?: string[]
+          name: string
+          nit_normalized?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          default_account_code?: string | null
+          document_number?: string | null
+          document_type?: string
+          dv?: string | null
+          email?: string | null
+          has_rut?: boolean
+          id?: string
+          is_active?: boolean
+          is_billing_obligated?: boolean
+          is_dv_valid?: boolean
+          is_occasional?: boolean
+          legacy_supplier_id?: string | null
+          merged_supplier_ids?: string[]
+          name?: string
+          nit_normalized?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "third_parties_default_account_code_fkey"
+            columns: ["default_account_code"]
+            isOneToOne: false
+            referencedRelation: "chart_of_accounts"
+            referencedColumns: ["code"]
+          },
+        ]
       }
     }
     Views: {
